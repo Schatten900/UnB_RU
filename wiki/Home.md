@@ -104,4 +104,4 @@ Durante a sprint, ferramentas de Inteligência Artificial podem ser utilizadas c
 
 | Ferramenta de IA | Parte do projeto | Estratégia de utilização |
 |---|---|---|
-| A preencher | A preencher | Descrever como a ferramenta foi utilizada, quais atividades auxiliou e como os resultados foram revisados e validados. |
+| GitHub Copilot | Edições gerais de arquivos | O GitHub Copilot foi utilizado dentro do VS Code, auxiliando no autocomplete e na formatação de arquivos de forma geral, acelerando o processo de escrita e edição sem substituir o trabalho do desenvolvedor |
