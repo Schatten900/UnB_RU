@@ -1,23 +1,23 @@
 # Como administrador, eu quero definir os horários dos turnos e dividi-los em time-frames configuráveis, para organizar a distribuição do FastPass.
 
-#language: en
-Feature: Define shift time and divide in configurable timeframes
-  As an administrator
-  In order to organize FastPass distribution
-  I want to be able to define shift times and divide them into configurable timeframes
+#language: pt
+Funcionalidade: Definir horário de turno e dividi-lo em intervalos configuráveis
+  Como um administrador
+  Para organizar a distribuição do FastPass
+  Eu quero poder definir horários de turno e dividi-los em intervalos configuráveis
 
-  Background:
-    Given I am authenticated as staff "999991111"
-    And I navigate to the staff management page
+  Contexto:
+    Dado que estou autenticado como funcionário "999991111"
+    E eu navego para a página de gerenciamento de funcionários
 
-  Scenario: Sad Path - User lacks administrative permissions
-    Given my staff account is not an administrator
-    When I click "Configure Shift Time"
-    Then the shift configuration page should not render
-    And I should see an error message "You lack permissions for this functionality"
+  Cenário: Caminho Infeliz - O usuário não possui permissões administrativas
+    Dado que minha conta de funcionário não é de administrador
+    Quando eu clico em "Configurar Horário de Turno"
+    Então a página de configuração de turno não deve ser renderizada
+    E eu devo ver uma mensagem de erro "Você não tem permissões para esta funcionalidade"
 
-  Scenario: Happy Path - User has administrative permissions
-    Given my staff account is an administrator
-    When I click "Configure Shift Time"
-    Then the shift configuration page should render with all information on shift times and configurable time frames
-    And I should be able to modify the configurations
+  Cenário: Caminho Feliz - O usuário possui permissões administrativas
+    Dado que minha conta de funcionário é de administrador
+    Quando eu clico em "Configurar Horário de Turno"
+    Então a página de configuração de turno deve ser renderizada com todas as informações sobre os horários de turno e os intervalos configuráveis
+    E eu devo ser capaz de modificar as configurações

@@ -6,30 +6,29 @@
 # (provided code)
 # Output:
 
-Given('I am a student') do
+Given('que eu sou um estudante') do
   @user_role = :student
 end
 
-Given('I do not have an account') do
+Given('eu não tenho uma conta') do
   @current_user = nil
   @account_created = false
 end
 
-Given('I navigate to the sign-up page and fill in the create an account form') do
+Given('eu navego até a página de cadastro e preencho o formulário de criação de conta') do
   @page = :sign_up_page
   @form_data = { role: @user_role }
 end
 
-
-Given('I provide an invalid student ID') do
+Given('euforneço um número de estudante inválido') do
   @form_data[:student_id] = "albert" # Non-numeric / invalid format
 end
 
-Given('I provide a valid student ID') do
+Given('eu forneço um número de estudante válido') do
   @form_data[:student_id] = "250011111"
 end
 
-When('I click sign up') do
+Quando('eu clico em cadastrar') do
   # Simulating backend validation logic based on the student ID provided
   if @form_data[:student_id] =~ /\A\d+\z/
     # Valid ID (numeric only)
@@ -44,25 +43,25 @@ When('I click sign up') do
   else
     # Invalid ID
     @account_created = false
-    @error_message = "You must provide a valid student ID"
+    @error_message = "Você deve fornecer um número de estudante válido"
   end
 end
 
-Then('a new account should not be created') do
+Então('uma nova conta não deve ser criada') do
   expect(@account_created).to be(false)
   expect(@current_user).to be_nil
 end
 
-Then('I should see an error message {string}') do |expected_message|
+Então('eu devo ver uma mensagem de erro {string}') do |expected_message|
   expect(@error_message).to eq(expected_message)
 end
 
-Then('a new account should be created') do
+Então('uma nova conta deve ser criada') do
   expect(@account_created).to be(true)
   expect(@current_user).not_to be_nil
 end
 
-Then('I should be logged in with my new account') do
+Então('eu devo estar logado com minha nova conta') do
   expect(@current_user[:logged_in]).to be(true)
 end
 

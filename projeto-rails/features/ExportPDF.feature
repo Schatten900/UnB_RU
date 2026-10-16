@@ -29,24 +29,25 @@
 # Your Gherkin is mostly correct in structure and logic, but it contains syntax errors and standard Gherkin formatting issues that will prevent Cucumber from parsing and executing it properly.
 # language: en
 
-Feature: Export Global Operations Report
-  As a system general administrator
-  In order to conduct internal auditing
-  I want to be able to export Operation Reports in PDF
+#language: pt
+Funcionalidade: Exportar Relatório de Operações Globais
+  Como um administrador geral do sistema
+  Para realizar auditorias internas
+  Eu quero poder exportar Relatórios de Operações em PDF
 
-  Background:
-    Given I am authenticated as staff "999991111"
-    And I navigate to the global operations report page
+  Contexto:
+    Dado que estou autenticado como funcionário "999991111"
+    E eu navego para a página do relatório de operações globais
 
-  Scenario: Sad Path - User lacks administrative permissions
-    Given my staff account is not a general administrator
-    When I click "Export Report"
-    Then the global operations report should not be generated or downloaded
-    And I should see an error message "You lack permissions for this functionality"
+  Cenário: Caminho Infeliz - O usuário não possui permissões administrativas
+    Dado que minha conta de funcionário não é de administrador geral
+    Quando eu clico em "Exportar Relatório"
+    Então o relatório de operações globais não deve ser gerado ou baixado
+    E eu devo ver uma mensagem de erro "Você não tem permissões para esta funcionalidade"
 
-  Scenario: Happy Path - User has administrative permissions
-    Given my staff account is a general administrator
-    When I click "Export Report"
-    Then the global operations report should be generated
-    And the PDF file should be downloaded successfully
+  Cenário: Caminho Feliz - O usuário possui permissões administrativas
+    Dado que minha conta de funcionário é de administrador geral
+    Quando eu clico em "Exportar Relatório"
+    Então o relatório de operações globais deve ser gerado
+    E o arquivo PDF deve ser baixado com sucesso
 

@@ -7,26 +7,26 @@
 # Gemini provided the correct form:
 
 
-#language: en
-Feature: Add account credit via PIX or credit card
-  As a student
-  In order to have sufficient balance to access the university restaurant (RU)
-  I want to add credits to my account using PIX or a credit card
+#language: pt
+Funcionalidade: Adicionar crédito para conta via PIX ou cartão
+  Como um estudante
+  Para ter créditos suficientes na conta para acessar o RU
+  Eu quero adicionar créditos à minha conta usando PIX ou cartão de crédito
 
-  Background:
-    Given I am authenticated as a student
-    And I navigate to the add credit page
+  Contexto:
+    Dado que estou autenticado como estudante
+    E eu navego para a página de adição de crédito
 
-  Scenario: Happy Path - Successfully add credit via PIX
-    When I select PIX as the payment method
-    And I enter the amount of "20.00"
-    And I confirm the payment
-    Then I should see a PIX payment code generated
-    And my pending balance should reflect the added amount
+  Cenário: Caminho Feliz - Adicionar crédito com sucesso via PIX
+    Quando eu seleciono PIX como o método de pagamento
+    E eu insiro o valor de "20.00"
+    E eu confirmo o pagamento
+    Então eu devo ver um código de pagamento PIX gerado
+    E meu saldo pendente deve refletir o valor adicionado
 
-  Scenario: Sad Path - Invalid credit amount
-    When I select credit card as the payment method
-    And I enter an invalid amount of "-5.00"
-    And I submit the form
-    Then a new transaction should not be created
-    And I should see an error message "Please enter a valid credit amount"
+  Cenário: Caminho Infeliz - Valor de crédito inválido
+    Quando eu seleciono cartão de crédito como o método de pagamento
+    E eu insiro um valor inválido de "-5.00"
+    E eu envio o formulário
+    Então uma nova transação não deve ser criada
+    E eu devo ver uma mensagem de erro "Por favor, insira um valor de crédito válido"

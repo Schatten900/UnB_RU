@@ -57,51 +57,51 @@ It won't quite work out of the box for two main reason...
 
 # features/step_definitions/shift_time_steps.rb
 
-Given('I am authenticated as staff {string}') do |staff_id|
+Dado('que estou autenticado como funcionário {string}') do |staff_id|
   @staff_id = staff_id
   # Default setup; role will be updated by the next step if specified
   @current_user = { id: staff_id, role: :staff } 
 end
 
-Given('I navigate to the staff management page') do
+Dado('eu navego para a página de gerenciamento de funcionários') do
   @page = :staff_management
 end
 
-Given('my staff account is not an administrator') do
+Dado('que minha conta de funcionário não é de administrador') do
   @current_user[:role] = :staff # Regular staff, not an admin
 end
 
-Given('my staff account is an administrator') do
+Dado('que minha conta de funcionário é de administrador') do
   @current_user[:role] = :administrator # Administrator
 end
 
-When('I click {string}') do |button_text|
-  if button_text == "Configure Shift Time"
+Quando('eu clico em {string}') do |button_text|
+  if button_text == "Configurar Horário de Turno"
     # Check permissions based on role (using == instead of =)
     if @current_user[:role] == :administrator
       @page = :shift_time_configurations
       @error_message = nil
       @configurations_modifiable = true
     else
-      @error_message = "You lack permissions for this functionality"
+      @error_message = "Você não tem permissões para esta funcionalidade"
       @configurations_modifiable = false
     end
   end
 end
 
-Then('the shift configuration page should not render') do
+Então('a página de configuração de turno não deve ser renderizada') do
   expect(@page).not_to be(:shift_time_configurations)
 end
 
-Then('I should see an error message {string}') do |expected_message|
+Então('eu devo ver uma mensagem de erro {string}') do |expected_message|
   expect(@error_message).to eq(expected_message)
 end
 
-Then('the shift configuration page should render with all information on shift times and configurable time frames') do
+Então('a página de configuração de turno deve ser renderizada com todas as informações sobre os horários de turno e os intervalos configuráveis') do
   expect(@page).to be(:shift_time_configurations)
 end
 
-Then('I should be able to modify the configurations') do
+Então('eu devo ser capaz de modificar as configurações') do
   expect(@configurations_modifiable).to be(true)
 end
 

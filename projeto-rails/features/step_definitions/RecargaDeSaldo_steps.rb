@@ -9,34 +9,34 @@ output below:
 
 # features/step_definitions/add_credit_steps.rb
 
-Given('I am authenticated as a student') do
+Dado('que estou autenticado como estudante') do
   # Mock or set up a logged-in student session
   @current_user = { role: :student, id: 250111111, balance: 0.00 }
   # In a real app using Capybara, you might visit a login page and fill credentials
 end
 
-Given('I navigate to the add credit page') do
+Dado('eu navego para a página de adição de crédito') do
   # Navigation step (e.g., visit('/credits/new') using Capybara)
   @page = :add_credit_page
 end
 
-When('I select PIX as the payment method') do
+Quando('eu seleciono PIX como o método de pagamento') do
   @payment_method = 'PIX'
 end
 
-When('I select credit card as the payment method') do
+Quando('eu seleciono cartão de crédito como o método de pagamento') do
   @payment_method = 'Credit Card'
 end
 
-When('I enter the amount of {string}') do |amount|
+Quando('eu insiro o valor de {string}') do |amount|
   @amount = amount.to_f
 end
 
-When('I enter an invalid amount of {string}') do |amount|
+Quando('eu insiro um valor inválido de {string}') do |amount|
   @amount = amount.to_f
 end
 
-When('I confirm the payment') do
+Quando('eu confirmo o pagamento') do
   # Simulate form submission for a valid path
   @transaction = { method: @payment_method, amount: @amount, status: :pending }
   if @amount > 0
@@ -44,33 +44,32 @@ When('I confirm the payment') do
   end
 end
 
-When('I submit the form') do
+Quando('eu envio o formulário') do
   # Simulate form submission for a sad path (invalid amount)
   if @amount <= 0
-    @error_message = "Please enter a valid credit amount"
+    @error_message = "Por favor, insira um valor de crédito válido"
     @transaction_created = false
   else
     @transaction_created = true
   end
 end
 
-Then('I should see a PIX payment code generated') do
+Então('eu devo ver um código de pagamento PIX gerado') do
   expect(@pix_code).not_to be_nil
 end
 
-Then('my pending balance should reflect the added amount') do
+Então('meu saldo pendente deve refletir o valor adicionado') do
   expected_balance = @current_user[:balance] + @amount
   expect(expected_balance).to eq(@amount)
 end
 
-Then('a new transaction should not be created') do
+Então('uma nova transação não deve ser criada') do
   expect(@transaction_created).to be(false)
 end
 
-Then('I should see an error message {string}') do |expected_message|
+Então('eu devo ver uma mensagem de erro {string}') do |expected_message|
   expect(@error_message).to eq(expected_message)
 end
-
 
 
 

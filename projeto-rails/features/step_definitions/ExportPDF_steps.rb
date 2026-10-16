@@ -9,25 +9,25 @@
 
 # features/step_definitions/shift_time_steps.rb
 
-Given('I am authenticated as staff {string}') do |staff_id|
+Dado('que estou autenticado como funcionário {string}') do |staff_id|
   @staff_id = staff_id
   @current_user = { id: staff_id, role: :staff } 
 end
 
-Given('I navigate to the global operations report page') do
+Dado('eu navego para a página do relatório de operações globais') do
   @page = :global_operations_report
 end
 
-Given('my staff account is not a general administrator') do
+Dado('que minha conta de funcionário não é de administrador geral') do
   @current_user[:role] = :staff # Regular staff, not a general admin
 end
 
-Given('my staff account is a general administrator') do
+Dado('que minha conta de funcionário é de administrador geral') do
   @current_user[:role] = :general_administrator # General administrator
 end
 
-When('I click {string}') do |button_text|
-  if button_text == "Export Report"
+Quando('eu clico em {string}') do |button_text|
+  if button_text == "Exportar Relatório"
     # Check permissions based on role
     if @current_user[:role] == :general_administrator
       @report_generated = true
@@ -36,28 +36,27 @@ When('I click {string}') do |button_text|
     else
       @report_generated = false
       @pdf_downloaded = false
-      @error_message = "You lack permissions for this functionality"
+      @error_message = "Você não tem permissões para esta funcionalidade"
     end
   end
 end
 
-Then('the global operations report should not be generated or downloaded') do
+Então('o relatório de operações globais não deve ser gerado ou baixado') do
   expect(@report_generated).to be(false)
   expect(@pdf_downloaded).to be(false)
 end
 
-Then('I should see an error message {string}') do |expected_message|
+Então('eu devo ver uma mensagem de erro {string}') do |expected_message|
   expect(@error_message).to eq(expected_message)
 end
 
-Then('the global operations report should be generated') do
+Então('o relatório de operações globais deve ser gerado') do
   expect(@report_generated).to be(true)
 end
 
-Then('the PDF file should be downloaded successfully') do
+Então('o arquivo PDF deve ser baixado com sucesso') do
   expect(@pdf_downloaded).to be(true)
 end
-
 =begin
 
 Feature: Export Global Operations Report
