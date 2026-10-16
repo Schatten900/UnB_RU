@@ -23,9 +23,17 @@
 ### Arthur Menezes Botelho
 
 - [ ] [#16 - Validação Rigorosa FastPass](https://github.com/neatzzy/UnB_RU/issues/16)
+  - Regras de negócio: No modo exclusivo FastPass, apenas alunos sorteados, dentro do horário reservado e com saldo suficiente podem ter a entrada liberada. Caso contrário, a entrada é bloqueada sem débito. O saldo só é descontado após a confirmação da passagem pela catraca.
+
 - [ ] [#11 - Exportação em PDF do Histórico do Estudante](https://github.com/neatzzy/UnB_RU/issues/11)
+  - Regras de negócio: O estudante pode exportar seu extrato de recargas e histórico de refeições em PDF. A exportação deve respeitar os filtros aplicados e incluir todos os registros correspondentes, mesmo se não aparecem na tela devido ao limite de paginação. Caso o histórico seja vazio, o PDF ainda assim deve ser gerado, sem registros.
+
 - [ ] [#8 - Gestão de Restaurantes e Catracas](https://github.com/neatzzy/UnB_RU/issues/8)
+  - Regras de negócio: Apenas administradores podem cadastrar, editar e remover restaurantes e catracas. Cada catraca deve estar associada a um restaurante. Usuários sem permissão administrativa não podem realizar essas operações.
+
 - [ ] [#7 - Histórico Local da Catraca](https://github.com/neatzzy/UnB_RU/issues/7)
+  - Regras de negócio: O funcionário pode visualizar apenas os registros de acesso da catraca que está gerenciando, incluindo acessos liberados e bloqueados. Registros de outras catracas não devem ser exibidos.
+
 
 ### Bruno Henrique Duarte
 
