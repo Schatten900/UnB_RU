@@ -82,9 +82,56 @@
 ### Carlos Cauã Rocha
 
 - [ ] [#4 - Autenticação do Funcionário](https://github.com/neatzzy/UnB_RU/issues/4)
+
+    **Regras de negócio**
+
+    - O funcionário deve informar credenciais válidas para realizar o login.
+    - O sistema deve permitir autenticação apenas dentro do horário permitido de operação.
+    - Credenciais válidas não garantem acesso caso o login ocorra fora do horário permitido.
+    - Após autenticação bem-sucedida, o sistema deve criar uma sessão autenticada para o funcionário.
+    - Apenas funcionários autenticados podem acessar e operar as funcionalidades administrativas.
+    - Caso o sistema esteja indisponível durante a autenticação, nenhuma sessão deve ser criada.
+    - O sistema deve informar ao funcionário quando o serviço de autenticação estiver indisponível.
+
+
 - [ ] [#5 - Configuração de Ponto de Acesso](https://github.com/neatzzy/UnB_RU/issues/5)
-- [ ] [#15 - Notificação de Sorteio](https://github.com/neatzzy/UnB_RU/issues/15)
-- [ ] [#10 - Cardápio da Refeição Atual](https://github.com/neatzzy/UnB_RU/issues/10)
+
+    **Regras de negócio**
+
+    - A seleção de restaurante só pode ser realizada por funcionários autenticados.
+    - O funcionário deve selecionar um restaurante previamente cadastrado no sistema.
+    - O restaurante selecionado deve ser definido como contexto de gerenciamento da sessão atual.
+    - As regras de negócio aplicadas pelo sistema devem considerar o restaurante selecionado.
+    - Todas as operações realizadas devem ser registradas em log associadas ao restaurante selecionado.
+    - O sistema deve impedir o acesso à configuração caso o funcionário não esteja autenticado.
+    - Caso o sistema esteja indisponível, a configuração do restaurante não deve ser realizada.
+    - O sistema deve informar ao usuário quando houver indisponibilidade do serviço.
+
+- [ ] [#15 - Notificação de Sorteio](https://github.com/neatzzy/UnBnB_RU/issues/15)
+
+    **Regras de negócio**
+
+    - Todo estudante participante do sorteio deve possuir um resultado associado (ganhou ou não ganhou).
+    - As notificaçõesões devem ser enviadas quando faltar uma hora para o turno do estudante.
+    - Estudantes contemplados devem receber uma notificação informando a obtenção do FastPass.
+    - Estudantes não contemplados devem receber uma notificação informando que não foram sorteados.
+    - O conteúdo da notificação deve refletir corretamente o resultado do sorteio.
+    - O sistema deve confirmar o envio apenas quando a notificação for entregue com sucesso.
+    - Caso o serviço de notificação esteja indisponível, o envio não deve ser confirmado.
+    - Falhas de envio devem ser tratadas conforme a política de tratamento de erros definida pelo sistema.
+
+- [ ] [#10 - Cardápio da Refeição Atual](https://github.com/neatzzy/UnB_RB_RU/issues/10)
+
+    **Regras de negócio**
+
+    - O sistema deve exibir apenas o cardápio referente à refeição que está sendo servida no momento.
+    - O cardápio deve disponibilizar as opções padrão, ovolactovegetariana e vegetariana estrita quando cadastradas.
+    - Os dados exibidos devem corresponder às informações cadastradas para a refeição atual.
+    - O estudante deve poder consultar o cardápio da refeição atual
+    - Quando houver cardápio disponível, o sistema deve apresentar suas opções ao usuário
+    - Quando não houver cardápio disponível para a refeição atual, o sistema deve informar indisponibilidade do cardápio.
+
+
 
 ### Vitor Carlos Fernandes
 
