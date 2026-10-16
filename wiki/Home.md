@@ -89,10 +89,25 @@
 ### Vitor Carlos Fernandes
 
 - [ ] [#2 - Recarga de Saldo](https://github.com/neatzzy/UnB_RU/issues/2)
+- **Regras de Negócio**
+     - Usuário pode usar PIX ou cartão
+     - Usuário deve ser um aluno
 - [ ] [#1 - Cadastro de Usuário](https://github.com/neatzzy/UnB_RU/issues/1)
+- **Regras de Negócio**
+     - Alunos são separados de staff pelos 3 primeiros números (999 representa sempre staff, ano de matrícula representa aluno)
+     - Usuário permanece logado após criar conta
+     - Matrícula deve ser composta exatamente de 9 dígitos numéricos
 - [ ] [#17 - Gestão de Turnos e Time-Frames](https://github.com/neatzzy/UnB_RU/issues/17)
+- **Regras de Negócio**
+     - Feito na pagina de staff
+     - Apenas administradores ou superior podem fazer gestão
+     - Página não é renderizada para staff normal
 - [ ] [#12 - Exportação em PDF do Relatório de Operação](https://github.com/neatzzy/UnB_RU/issues/12)
-
+- **Regras de Negócio**
+     - Relatório deve conter cabeçalho padrão da UnB
+     - Feito na pagina de staff
+     - Apenas administradores gerais podem baixar relatório
+     - Página não é renderizada para staff normal
 
 ## 4. Padrões do Grupo
 
