@@ -29,10 +29,47 @@
 
 ### Bruno Henrique Duarte
 
-- [ ] [#16 - Extrato e Histórico](https://github.com/neatzzy/UnB_RU/issues/3)
+- [ ] [#3 - Extrato e Histórico](https://github.com/neatzzy/UnB_RU/issues/3)
+
+    **Regras de negócio**
+
+    - A consulta do extrato e do histórico exige que o estudante esteja autenticado.
+    - O estudante deve visualizar somente as recargas e refeições vinculadas a sua identificação.
+    - O extrato deve apresentar a data e o valor de cada recarga feita pelo estudante.
+    - O histórico deve apresentar a data, o tipo de refeição e o valor debitado para cada uso.
+    - Quando não houver registros, deve ser informado que não há recargas ou refeições.
+
 - [ ] [#6 - Validação de Entrada](https://github.com/neatzzy/UnB_RU/issues/6)
+
+    **Regras de negócio**
+
+    - A aplicação de controle deve ler a identificação do aluno para consultar o saldo.
+    - A aplicação deve enviar o comando de liberação para a catraca quando o saldo do aluno for maior ou igual ao valor da refeição.
+    - Quando o saldo for menor que o valor da refeição a aplicação não deve liberar a catraca nem efetuar o débito.
+    - O débito deve ser do valor da refeição e ocorrer somente com passagem do aluno pela catraca.
+    - A leitura da identificação e o envio do comando de liberação, sem a passagem, não deve debitar a refeição.
+
 - [ ] [#9 - Relatório Global de Acessos](https://github.com/neatzzy/UnB_RU/issues/9)
+
+    **Regras de negócio**
+
+    - Somente um administrador autenticado pode consultar o relatório.
+    - A consulta sem filtros deve mostrar todos os acessos registrados.
+    - O filtro por restaurante deve mostrar somente os acessos relacionados ao restaurante selecionado.
+    - O filtro por catraca deve mostrar somente os acessos relacionados a catraca selacionada.
+    - Quando os filtros de restaurante e catraca forem usados juntos, devem mostrar somente os acessos que atendem aos dois filtros.
+    - Quando não houver acessos que atendam aos filtros, a consulta não deve mostrar nenhum acesso.
+
 - [ ] [#14 - Inscrição Única no FastPass](https://github.com/neatzzy/UnB_RU/issues/14)
+
+    **Regras de negócio**
+
+    - O estudante deve estar autenticado para realizar sua inscrição no sorteio do FastPass.
+    - A inscrição no sorteio é gratuita.
+    - Para confirmar a inscrição, o estudante deve escolher um time-frame disponível no turno da refeição.
+    - Cada estudante pode ter somente uma inscrição, em um único time-frame, por turno da refeição no mesmo sorteio.
+    - A tentativa de inscrição em outro time-frame no mesmo turno não deve ser aceita e deve manter a inscrição original.
+    - O estudante pode se inscrever em turnos diferentes do mesmo sorteio.
 
 ### Carlos Cauã Rocha
 
