@@ -2,6 +2,8 @@ erDiagram
     direction LR
     USUARIO ||--o{ RECARGA : realiza
     USUARIO ||--o{ ACESSO : tenta
+    USUARIO ||--o{ TURNO : trabalha
+    USUARIO ||--o{ RESTAURANTE: trabalha
     USUARIO ||--o{ INSCRICAO_FASTPASS : efetua
     RESTAURANTE ||--|{ CATRACA : possui
     RESTAURANTE }|--o{ CARDAPIO : disponibiliza
@@ -17,6 +19,8 @@ erDiagram
         string matricula PK
         string nome
         string senha_hash
+        int turno_id FK
+        int restaurante_id FK
         string perfil
         decimal saldo
     }
