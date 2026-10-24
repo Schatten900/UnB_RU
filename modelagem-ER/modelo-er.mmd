@@ -1,0 +1,99 @@
+erDiagram
+    direction LR
+    USUARIO ||--o{ RECARGA : realiza
+    USUARIO ||--o{ ACESSO : tenta
+    USUARIO ||--o{ TURNO : trabalha
+    USUARIO ||--o{ RESTAURANTE: trabalha
+    USUARIO ||--o{ INSCRICAO_FASTPASS : efetua
+    RESTAURANTE ||--|{ CATRACA : possui
+    RESTAURANTE }|--o{ CARDAPIO : disponibiliza
+    TURNO ||--o{ CARDAPIO : identifica
+    TURNO ||--o{ ACESSO : corresponde_a
+    TURNO ||--o{ TIME_FRAME : possui
+    CATRACA ||--o{ ACESSO : registra
+    SORTEIO ||--o{ INSCRICAO_FASTPASS : recebe
+    TIME_FRAME ||--o{ INSCRICAO_FASTPASS : reserva_horario
+    INSCRICAO_FASTPASS o|--o{ ACESSO : valida_fastpass
+
+    USUARIO {
+        string matricula PK
+        string nome
+        string senha_hash
+        int turno_id FK
+        int restaurante_id FK
+        string perfil
+        decimal saldo
+    }
+
+    RESTAURANTE {
+        int id PK
+        string nome
+    }
+
+    CATRACA {
+        int id PK
+        int restaurante_id FK
+        int piso
+        string modo_acesso
+    }
+
+    TURNO {
+        int id PK
+        string nome
+        time inicio
+        time fim
+        decimal preco
+    }
+
+    TIME_FRAME {
+        int id PK
+        int turno_id FK
+        time inicio
+        time fim
+    }
+
+    CARDAPIO {
+        int id PK
+        int turno_id FK
+        date data
+        string opcao_padrao
+        string opcao_ovolactovegetariana
+        string opcao_vegetariana_estrita
+    }
+
+    RECARGA {
+        int id PK
+        string usuario_matricula FK
+        datetime data_hora
+        decimal valor
+        string metodo
+        string status
+    }
+
+    ACESSO {
+        int id PK
+        string usuario_matricula FK
+        int catraca_id FK
+        int turno_id FK
+        int inscricao_fastpass_id FK
+        datetime data_hora
+        string status
+        datetime passagem_em
+        decimal valor_debitado
+    }
+
+    SORTEIO {
+        int id PK
+        date data
+        string status
+    }
+
+    INSCRICAO_FASTPASS {
+        int id PK
+        string usuario_matricula FK
+        int sorteio_id FK
+        int time_frame_id FK
+        string resultado
+        string status_notificacao
+        datetime notificada_em
+    }
