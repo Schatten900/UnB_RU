@@ -112,7 +112,7 @@
     **Regras de negócio**
 
     - Todo estudante participante do sorteio deve possuir um resultado associado (ganhou ou não ganhou).
-    - As notificaçõesões devem ser enviadas quando faltar uma hora para o turno do estudante.
+    - As notificações devem ser enviadas quando faltar uma hora para o turno do estudante.
     - Estudantes contemplados devem receber uma notificação informando a obtenção do FastPass.
     - Estudantes não contemplados devem receber uma notificação informando que não foram sorteados.
     - O conteúdo da notificação deve refletir corretamente o resultado do sorteio.

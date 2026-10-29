@@ -1,0 +1,34 @@
+<h1>Cardápio da refeição atual</h1>
+
+<% if @cardapio %>
+  <p>
+    <strong>Data:</strong>
+    <%= @cardapio.data.strftime("%d/%m/%Y") %>
+  </p>
+
+  <p>
+    <strong>Turno:</strong>
+    <%= @cardapio.turno.nome %>
+  </p>
+
+  <h2>Opções disponíveis</h2>
+
+  <ul>
+    <li>
+      <strong>Padrão:</strong>
+      <%= @cardapio.opcao_padrao %>
+    </li>
+
+    <li>
+      <strong>Ovolactovegetariana:</strong>
+      <%= @cardapio.opcao_ovolactovegetariana %>
+    </li>
+
+    <li>
+      <strong>Vegetariana estrita:</strong>
+      <%= @cardapio.opcao_vegetariana_estrita %>
+    </li>
+  </ul>
+<% else %>
+  <p>Não há cardápio disponível para a refeição atual.</p>
+<% end %>

@@ -1,0 +1,2 @@
+class Catraca < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class InscricaoFastpass < ApplicationRecord
+end
