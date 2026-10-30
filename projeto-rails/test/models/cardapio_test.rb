@@ -1,6 +1,8 @@
 require "test_helper"
 
 class CardapioTest < ActiveSupport::TestCase
+  self.fixture_table_names = []
+
   test "cardápio exige data" do
     cardapio = Cardapio.new(data: nil)
 

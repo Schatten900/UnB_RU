@@ -1,0 +1,30 @@
+<h1>Login do funcionário</h1>
+
+<% if flash[:alert].present? %>
+  <p role="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<% if flash[:notice].present? %>
+  <p role="status"><%= flash[:notice] %></p>
+<% end %>
+
+<%= form_with url: login_path, method: :post do |form| %>
+  <div>
+    <%= form.label :matricula, "Matrícula" %>
+    <%= form.text_field :matricula,
+                        required: true,
+                        inputmode: "numeric",
+                        autocomplete: "username" %>
+  </div>
+
+  <div>
+    <%= form.label :senha, "Senha" %>
+    <%= form.password_field :senha,
+                            required: true,
+                            autocomplete: "current-password" %>
+  </div>
+
+  <div>
+    <%= form.submit "Entrar" %>
+  </div>
+<% end %>

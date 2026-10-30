@@ -1,0 +1,27 @@
+<h1>Configuração do ponto de acesso</h1>
+
+<% if flash[:alert].present? %>
+  <p role="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<% if flash[:notice].present? %>
+  <p role="status"><%= flash[:notice] %></p>
+<% end %>
+
+<% if @restaurante_atual %>
+  <p>Restaurante selecionado: <%= @restaurante_atual.nome %></p>
+<% end %>
+
+<%= form_with url: ponto_configuracao_path, method: :post do |form| %>
+  <div>
+    <%= form.label :restaurante_id, "Restaurante" %>
+    <%= form.collection_select :restaurante_id,
+                               @restaurantes,
+                               :id,
+                               :nome,
+                               { prompt: "Selecione um restaurante", selected: @restaurante_atual&.id },
+                               required: true %>
+  </div>
+
+  <%= form.submit "Selecionar restaurante" %>
+<% end %>
