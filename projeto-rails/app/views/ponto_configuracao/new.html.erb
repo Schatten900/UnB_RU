@@ -1,27 +1,129 @@
-<h1>Configuração do ponto de acesso</h1>
+<main class="operator-app" data-controller="point-configuration">
+  <header class="topbar">
+    <%= link_to ponto_configuracao_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
+    <% end %>
 
-<% if flash[:alert].present? %>
-  <p role="alert"><%= flash[:alert] %></p>
-<% end %>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "is-current" %>
+      <%= link_to "Cardápio", cardapio_path %>
+    </nav>
 
-<% if flash[:notice].present? %>
-  <p role="status"><%= flash[:notice] %></p>
-<% end %>
+    <div class="operator-menu">
+      <div class="operator-copy">
+        <strong><%= usuario_atual.nome %></strong>
+        <small>Fiscal · SIAPE <%= usuario_atual.matricula %></small>
+      </div>
+      <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+    </div>
+  </header>
 
-<% if @restaurante_atual %>
-  <p>Restaurante selecionado: <%= @restaurante_atual.nome %></p>
-<% end %>
+  <div class="page-content">
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">Configuração de ponto</p>
+        <h1>Configuração de Ponto de Acesso</h1>
+      </div>
+      <div class="authenticated-badge">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span><small>Operador autenticado</small><strong><%= usuario_atual.nome %></strong></span>
+      </div>
+    </section>
 
-<%= form_with url: ponto_configuracao_path, method: :post do |form| %>
-  <div>
-    <%= form.label :restaurante_id, "Restaurante" %>
-    <%= form.collection_select :restaurante_id,
-                               @restaurantes,
-                               :id,
-                               :nome,
-                               { prompt: "Selecione um restaurante", selected: @restaurante_atual&.id },
-                               required: true %>
+    <% if flash[:alert] || flash[:notice] %>
+      <div class="notice <%= flash[:alert] ? "notice-error" : "notice-success" %>" role="status">
+        <%= flash[:alert] || flash[:notice] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: ponto_configuracao_path, method: :post, local: true, class: "configuration-form" do |form| %>
+      <div class="configuration-columns">
+        <div class="configuration-main">
+          <section class="selection-panel">
+            <div class="panel-heading">
+              <span class="step-number">1</span>
+              <div><h2>Unidade operacional</h2><p>Escolha o restaurante para esta sessão.</p></div>
+              <span class="panel-count"><%= pluralize(@restaurantes.size, "unidade") %></span>
+            </div>
+
+            <% if @restaurantes.any? %>
+              <div class="restaurant-list">
+                <% @restaurantes.each do |restaurante| %>
+                  <% selecionado = restaurante.id == @restaurante_atual&.id %>
+                  <label class="restaurant-option <%= "is-selected" if selecionado %>" data-point-configuration-target="restaurantCard" data-restaurant-id="<%= restaurante.id %>">
+                    <%= form.radio_button :restaurante_id, restaurante.id, checked: selecionado, class: "choice-input", data: { point_configuration_target: "restaurantInput", action: "change->point-configuration#changeRestaurant", restaurant_name: restaurante.nome } %>
+                    <span class="choice-indicator" aria-hidden="true"></span>
+                    <span class="restaurant-details">
+                      <strong><%= restaurante.nome %></strong>
+                      <small><%= pluralize(restaurante.catracas.size, "catraca cadastrada") %></small>
+                    </span>
+                    <span class="option-tag"><%= restaurante.catracas.size %> <%= restaurante.catracas.size == 1 ? "catraca" : "catracas" %></span>
+                  </label>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="empty-state">Nenhum restaurante cadastrado no banco de dados.</p>
+            <% end %>
+          </section>
+
+          <section class="selection-panel gate-panel">
+            <div class="panel-heading">
+              <span class="step-number">2</span>
+              <div><h2>Catraca física</h2><p>Selecione um equipamento associado à unidade.</p></div>
+              <span class="panel-count" data-point-configuration-target="gateCount"><%= pluralize(@catracas.size, "catraca") %></span>
+            </div>
+
+            <% if @restaurantes.any? %>
+              <% @restaurantes.each do |restaurante| %>
+                <% catracas = restaurante.catracas.sort_by { |catraca| [catraca.piso, catraca.id] } %>
+                <div class="gate-group" data-point-configuration-target="gateGroup" data-restaurant-id="<%= restaurante.id %>" <%= "hidden" unless restaurante.id == @restaurante_atual&.id %>>
+                  <% if catracas.any? %>
+                    <% catracas.group_by(&:piso).each do |piso, catracas_do_piso| %>
+                      <div class="floor-section">
+                        <div class="floor-heading"><h3>Piso <%= piso %></h3><span><%= pluralize(catracas_do_piso.size, "equipamento") %></span></div>
+                        <div class="gate-list">
+                          <% catracas_do_piso.each do |catraca| %>
+                            <% gate_label = "Catraca ##{catraca.id}" %>
+                            <label class="gate-option <%= "is-selected" if catraca.id == @catraca_atual&.id %>">
+                              <%= form.radio_button :catraca_id, catraca.id, checked: catraca.id == @catraca_atual&.id, class: "choice-input", data: { point_configuration_target: "gateInput", action: "change->point-configuration#changeGate", restaurant_id: restaurante.id, restaurant_name: restaurante.nome, gate_label: gate_label, floor_label: "Piso #{piso}", access_mode: catraca.modo_acesso } %>
+                              <span class="choice-indicator" aria-hidden="true"></span>
+                              <span class="gate-details"><strong><%= gate_label %></strong><small><%= catraca.modo_acesso.humanize %></small></span>
+                              <span class="gate-id">#<%= catraca.id %></span>
+                            </label>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  <% else %>
+                    <p class="empty-state">Esta unidade ainda não possui catracas cadastradas.</p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </section>
+        </div>
+
+        <aside class="configuration-aside">
+          <section class="info-panel server-panel">
+            <p class="eyebrow">Horário do servidor</p>
+            <strong class="server-clock"><%= Time.current.in_time_zone("America/Sao_Paulo").strftime("%H:%M:%S") %></strong>
+            <p class="server-timezone">Horário de Brasília · UTC−3</p>
+            <div class="server-divider"></div>
+            <p class="server-date"><%= l(Time.current.in_time_zone("America/Sao_Paulo").to_date, format: :long) %></p>
+          </section>
+
+          <section class="info-panel summary-panel">
+            <div class="summary-heading"><h2>Resumo da vinculação</h2><span class="summary-mark" aria-hidden="true">↗</span></div>
+            <dl class="summary-list">
+              <div><dt>Restaurante</dt><dd data-point-configuration-target="restaurantSummary"><%= @restaurante_atual&.nome || "Não selecionado" %></dd></div>
+              <div><dt>Catraca física</dt><dd data-point-configuration-target="gateSummary"><%= @catraca_atual ? "Catraca ##{@catraca_atual.id} · Piso #{@catraca_atual.piso}" : "Nenhuma cadastrada" %></dd></div>
+            </dl>
+            <%= form.submit "Confirmar configuração", class: "primary-button", disabled: @catracas.empty?, data: { point_configuration_target: "submitButton" } %>
+            <p class="summary-footnote">A seleção fica vinculada à sessão deste operador.</p>
+          </section>
+        </aside>
+      </div>
+    <% end %>
   </div>
-
-  <%= form.submit "Selecionar restaurante" %>
-<% end %>
+</main>

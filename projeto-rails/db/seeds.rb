@@ -25,7 +25,7 @@ funcionario.save!
 
 cardapio = Cardapio.find_or_initialize_by(turno: turno, data: Date.current)
 cardapio.update!(
-	opcao_padrao: "Frango grelhado com arroz e feijão",
+	opcao_padrao: "Frango Assado",
 	opcao_ovolactovegetariana: "Omelete de legumes",
 	opcao_vegetariana_estrita: "Quinoa com legumes refogados"
 )

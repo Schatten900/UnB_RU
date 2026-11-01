@@ -16,6 +16,14 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test "tela de login renderiza somente o formulário novo" do
+    get login_path
+
+    assert_response :success
+    assert_select "main.login-page", count: 1
+    assert_select "form.login-form", count: 1
+  end
+
   test "funcionário autentica dentro do horário e acessa configuração" do
     travel_to BRASILIA.local(2026, 10, 30, 12, 0) do
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
@@ -60,18 +68,31 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
     assert_nil session[:usuario_matricula]
   end
 
-  test "seleção salva restaurante na sessão e rejeita identificador inválido" do
+  test "seleção salva restaurante e catraca na sessão e rejeita identificadores inválidos" do
     restaurante = Restaurante.create!(nome: "RU de teste")
+    catraca = restaurante.catracas.create!(piso: 1, modo_acesso: "normal")
     travel_to BRASILIA.local(2026, 10, 30, 12, 0) do
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
     end
 
-    post ponto_configuracao_path, params: { restaurante_id: restaurante.id }
+    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
     assert_redirected_to ponto_configuracao_path
     assert_equal restaurante.id, session[:restaurante_id]
+    assert_equal catraca.id, session[:catraca_id]
 
-    post ponto_configuracao_path, params: { restaurante_id: "999999" }
+    get ponto_configuracao_path
+    assert_response :success
+    assert_select ".restaurant-option", text: /RU de teste/
+    assert_select ".gate-option", text: /Catraca ##{catraca.id}/
+
+    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: "999999" }
     assert_response :unprocessable_content
     assert_equal restaurante.id, session[:restaurante_id]
+    assert_equal catraca.id, session[:catraca_id]
+
+    outro_restaurante = Restaurante.create!(nome: "RU não relacionado")
+    outra_catraca = outro_restaurante.catracas.create!(piso: 2, modo_acesso: "fastpass")
+    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: outra_catraca.id }
+    assert_response :unprocessable_content
   end
 end

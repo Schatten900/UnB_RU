@@ -1,30 +1,37 @@
-<h1>Login do funcionário</h1>
+<main class="login-page">
+  <header class="login-topbar">
+    <%= link_to login_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
+    <% end %>
+    <span class="login-context">Sistema de operação dos restaurantes universitários</span>
+  </header>
 
-<% if flash[:alert].present? %>
-  <p role="alert"><%= flash[:alert] %></p>
-<% end %>
+  <section class="login-content">
+    <div class="login-panel">
+      <div class="login-icon" aria-hidden="true">RU</div>
+      <p class="eyebrow">Acesso restrito</p>
+      <h1>Autenticação do Operador</h1>
+      <p class="login-description">Informe suas credenciais funcionais para iniciar uma sessão segura.</p>
 
-<% if flash[:notice].present? %>
-  <p role="status"><%= flash[:notice] %></p>
-<% end %>
+      <% if flash[:alert] %>
+        <div class="notice notice-error" role="alert"><%= flash[:alert] %></div>
+      <% end %>
 
-<%= form_with url: login_path, method: :post do |form| %>
-  <div>
-    <%= form.label :matricula, "Matrícula" %>
-    <%= form.text_field :matricula,
-                        required: true,
-                        inputmode: "numeric",
-                        autocomplete: "username" %>
-  </div>
+      <%= form_with url: login_path, method: :post, local: true, class: "login-form" do |form| %>
+        <div class="field-group">
+          <div class="field-heading"><%= form.label :matricula, "Matrícula SIAPE ou usuário SIGAA / gov.br" %><span>Obrigatório</span></div>
+          <%= form.text_field :matricula, placeholder: "Ex.: 999149608", required: true, autocomplete: "username", autofocus: true %>
+        </div>
 
-  <div>
-    <%= form.label :senha, "Senha" %>
-    <%= form.password_field :senha,
-                            required: true,
-                            autocomplete: "current-password" %>
-  </div>
+        <div class="field-group">
+          <div class="field-heading"><%= form.label :senha, "Senha de acesso" %><span>Obrigatório</span></div>
+          <%= form.password_field :senha, placeholder: "Digite sua senha de operador", required: true, autocomplete: "current-password" %>
+        </div>
 
-  <div>
-    <%= form.submit "Entrar" %>
-  </div>
-<% end %>
+        <%= form.submit "Entrar no sistema", class: "primary-button login-submit" %>
+      <% end %>
+      <p class="login-help">Acesso destinado a operadores autorizados.</p>
+    </div>
+  </section>
+</main>
