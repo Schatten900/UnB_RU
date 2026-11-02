@@ -89,7 +89,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
     expect(liberador.comandos).to be_empty
   end
 
-  it "tambem aceita a nomenclatura contemplada usada no codigo de Carlos" do
+  it "tambem aceita a nomenclatura contemplada" do
     allow(inscricao).to receive(:resultado).and_return("contemplada")
 
     expect(validar.autorizado?).to be(true)
