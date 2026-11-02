@@ -5,13 +5,13 @@ class Recarga < ApplicationRecord
     primary_key: :matricula
 
   enum :metodo, {
-    pix: "pix",
+    pix: "PIX",
     cartao_credito: "cartao_credito"
   }
 
   enum :status, {
     pendente: "pendente",
-    confirmada: "confirmada",
+    concluida: "concluida",
     falhou: "falhou"
   }
 
