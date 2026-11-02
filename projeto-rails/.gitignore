@@ -36,4 +36,3 @@
 
 # Local Bundler dependencies and configuration
 /vendor/bundle/
-/.bundle/
