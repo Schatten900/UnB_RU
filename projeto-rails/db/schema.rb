@@ -1,4 +1,25 @@
-ActiveRecord::Schema[7.1].define(version: 2026_10_27_120010) do
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[7.1].define(version: 2026_10_31_191136) do
+  create_table "accounts", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.decimal "balance"
+    t.decimal "pending_balance"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
   create_table "acessos", force: :cascade do |t|
     t.string "usuario_matricula", null: false
     t.integer "catraca_id", null: false
@@ -62,6 +83,23 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_27_120010) do
     t.string "nome", null: false
   end
 
+  create_table "shift_intervals", force: :cascade do |t|
+    t.integer "shift_id", null: false
+    t.time "start_time"
+    t.time "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shift_id"], name: "index_shift_intervals_on_shift_id"
+  end
+
+  create_table "shifts", force: :cascade do |t|
+    t.time "start_time"
+    t.time "end_time"
+    t.integer "interval_duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sorteios", force: :cascade do |t|
     t.date "data", null: false
     t.string "status", null: false
@@ -72,6 +110,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_27_120010) do
     t.time "inicio", null: false
     t.time "fim", null: false
     t.index ["turno_id"], name: "index_time_frames_on_turno_id"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.decimal "amount"
+    t.integer "payment_method"
+    t.integer "status"
+    t.string "pix_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_transactions_on_account_id"
   end
 
   create_table "turnos", force: :cascade do |t|
@@ -92,6 +141,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_27_120010) do
     t.index ["turno_id"], name: "index_usuarios_on_turno_id"
   end
 
+  add_foreign_key "accounts", "users"
   add_foreign_key "acessos", "catracas"
   add_foreign_key "acessos", "inscricoes_fastpass", column: "inscricao_fastpass_id"
   add_foreign_key "acessos", "turnos"
@@ -104,7 +154,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_27_120010) do
   add_foreign_key "inscricoes_fastpass", "time_frames"
   add_foreign_key "inscricoes_fastpass", "usuarios", column: "usuario_matricula", primary_key: "matricula"
   add_foreign_key "recargas", "usuarios", column: "usuario_matricula", primary_key: "matricula"
+  add_foreign_key "shift_intervals", "shifts"
   add_foreign_key "time_frames", "turnos"
+  add_foreign_key "transactions", "accounts"
   add_foreign_key "usuarios", "restaurantes"
   add_foreign_key "usuarios", "turnos"
 end

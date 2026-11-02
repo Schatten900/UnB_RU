@@ -6,7 +6,7 @@ ruby "3.2.3"
 gem "rails", "~> 7.1.5"
 
 # Prawn for PDF
-gem 'prawn'
+gem "prawn"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
