@@ -7,4 +7,31 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # API 
+  namespace :api do
+
+    # Credits
+    resources :credits, only: [:create] do
+      member do
+        post :confirm
+      end
+    end
+
+    # Global report
+    get 'reports/global_operations',
+      to: 'reports#global_operations'
+
+    # Shifts
+    resources :shifts,
+      only: [:index, :show, :create, :update]
+
+    # Student registration
+    post 'register',
+      to: 'registrations#create'
+
+  end
+
 end
+#AI: GPT desktop, no think (modified from Vitor-Sprint-2-Backend)
+#Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb
