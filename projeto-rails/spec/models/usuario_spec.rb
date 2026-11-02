@@ -43,7 +43,7 @@ RSpec.describe "Extrato e histórico do estudante", type: :model do
     conexao.execute("INSERT OR IGNORE INTO restaurantes (id, nome) VALUES (1, 'RU Darcy Ribeiro')")
     conexao.execute(<<~SQL.squish)
       INSERT OR IGNORE INTO catracas (id, restaurante_id, piso, modo_acesso)
-      VALUES (1, 1, 0, 'comum')
+      VALUES (1, 1, 0, 'normal')
     SQL
   end
 
