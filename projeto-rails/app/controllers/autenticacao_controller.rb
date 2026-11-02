@@ -24,7 +24,8 @@ class AutenticacaoController < ApplicationController
             reset_session               # Cria uma nova sessão
             session[:usuario_matricula] = usuario.matricula # Registra na sessão a matricula logada
 
-            redirect_to ponto_configuracao_path, notice: "Login realizado com sucesso."
+            destino = usuario.funcionario? ? ponto_configuracao_path : cardapio_path
+            redirect_to destino, notice: "Login realizado com sucesso."
         else
             flash.now[:alert] = "Não foi possível autenticar. Confira suas credenciais e o horário permitido."
 

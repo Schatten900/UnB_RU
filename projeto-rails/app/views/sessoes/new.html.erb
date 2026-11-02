@@ -11,8 +11,8 @@
     <div class="login-panel">
       <div class="login-icon" aria-hidden="true">RU</div>
       <p class="eyebrow">Acesso restrito</p>
-      <h1>Autenticação do Operador</h1>
-      <p class="login-description">Informe suas credenciais funcionais para iniciar uma sessão segura.</p>
+      <h1>Autenticação</h1>
+      <p class="login-description">Informe suas credenciais para iniciar uma sessão segura.</p>
 
       <% if flash[:alert] %>
         <div class="notice notice-error" role="alert"><%= flash[:alert] %></div>
@@ -26,12 +26,12 @@
 
         <div class="field-group">
           <div class="field-heading"><%= form.label :senha, "Senha de acesso" %><span>Obrigatório</span></div>
-          <%= form.password_field :senha, placeholder: "Digite sua senha de operador", required: true, autocomplete: "current-password" %>
+          <%= form.password_field :senha, placeholder: "Digite sua senha", required: true, autocomplete: "current-password" %>
         </div>
 
         <%= form.submit "Entrar no sistema", class: "primary-button login-submit" %>
       <% end %>
-      <p class="login-help">Acesso destinado a operadores autorizados.</p>
+      <p class="login-help">Acesso destinado a estudantes e operadores.</p>
     </div>
   </section>
 </main>

@@ -12,6 +12,18 @@ restaurantes.each_with_index do |restaurante, index|
 	catraca.update!(modo_acesso: "normal")
 end
 
+estudante = Usuario.find_or_initialize_by(matricula: "232040501")
+estudante.assign_attributes(
+	nome: "Estudante de demonstração",
+	perfil: "estudante",
+	turno: turno,
+	restaurante: restaurantes.second,
+	saldo: 4.5
+)
+estudante.senha = "Demo1234!"
+estudante.save!
+
+
 funcionario = Usuario.find_or_initialize_by(matricula: "999000001")
 funcionario.assign_attributes(
 	nome: "Funcionário de demonstração",
@@ -32,5 +44,11 @@ cardapio.update!(
 
 puts "Dados de demonstração carregados."
 puts "Login funcionário: 999000001 / Demo1234!"
+puts "Restaurantes: #{restaurantes.map(&:nome).join(', ')}"
+puts "Cardápio disponível hoje, das 17:00 às 20:00."
+
+
+puts "Dados de demonstração carregados."
+puts "Login estudante: 232040501 / Demo1234!"
 puts "Restaurantes: #{restaurantes.map(&:nome).join(', ')}"
 puts "Cardápio disponível hoje, das 17:00 às 20:00."

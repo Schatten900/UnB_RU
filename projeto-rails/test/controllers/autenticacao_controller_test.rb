@@ -33,6 +33,22 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
     assert_equal @funcionario.matricula, session[:usuario_matricula]
   end
 
+  test "estudante autentica e acessa o cardápio" do
+    estudante = Usuario.create!(
+      matricula: "232040501",
+      nome: "Estudante de teste",
+      senha: "senha-segura",
+      perfil: "estudante",
+      turno: @turno,
+      saldo: 4.5
+    )
+
+    post login_path, params: { matricula: estudante.matricula, senha: "senha-segura" }
+
+    assert_redirected_to cardapio_path
+    assert_equal estudante.matricula, session[:usuario_matricula]
+  end
+
   test "funcionário não autentica fora do horário permitido" do
     travel_to BRASILIA.local(2026, 10, 30, 18, 0) do
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
