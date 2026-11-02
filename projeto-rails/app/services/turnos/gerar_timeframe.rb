@@ -1,6 +1,6 @@
 
 module Turnos
-  class GerarTimeFrames
+  class GerarTimeFrame
     def initialize(turno, duracao)
       @turno = turno
       @duracao = duracao.to_i
