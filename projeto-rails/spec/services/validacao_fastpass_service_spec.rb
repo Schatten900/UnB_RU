@@ -92,7 +92,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
   it "nao aceita a nomenclatura contemplada" do
     allow(inscricao).to receive(:resultado).and_return("contemplada")
 
-    expect(validar.autorizado?).to be(true)
+    expect(validar.autorizado?).to be(false)
   end
 
   it "inclui o inicio e exclui o fim do intervalo" do
