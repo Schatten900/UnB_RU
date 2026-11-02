@@ -73,7 +73,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
   end
 
   it "nao aceita inscricao nao vencedora ou de outra pessoa" do
-    allow(inscricao).to receive(:resultado).and_return("nao contemplada")
+    allow(inscricao).to receive(:resultado).and_return("nao_ganhou")
     expect(validar.motivo).to eq(:sem_fastpass)
 
     allow(inscricao).to receive(:resultado).and_return("ganhou")
@@ -89,7 +89,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
     expect(liberador.comandos).to be_empty
   end
 
-  it "tambem aceita a nomenclatura contemplada" do
+  it "nao aceita a nomenclatura contemplada" do
     allow(inscricao).to receive(:resultado).and_return("contemplada")
 
     expect(validar.autorizado?).to be(true)

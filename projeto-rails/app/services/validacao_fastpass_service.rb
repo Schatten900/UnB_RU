@@ -1,7 +1,7 @@
 require "bigdecimal"
 
 class ValidacaoFastpassService
-  RESULTADOS_VENCEDORES = %w[ganhou contemplada].freeze
+  RESULTADOS_VENCEDORES = %w[ganhou].freeze
 
   Resultado = Struct.new(
     :autorizado, :motivo, :usuario, :catraca, :inscricao, :time_frame,
