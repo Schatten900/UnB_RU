@@ -5,7 +5,7 @@ RSpec.describe "Relatório global de acessos", type: :model do
     Usuario.create!(matricula: matricula, nome: perfil, senha_hash: "senha-hash", perfil: perfil, saldo: 0)
   end
 
-  let(:administrador) { criar_usuario("999000001", "administrador") }
+  let(:administrador) { criar_usuario("99990001", "administrador") }
   let(:estudante) { criar_usuario("221012345", "estudante") }
 
   before do
