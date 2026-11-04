@@ -1,4 +1,4 @@
-abort "Os dados de demonstração só podem ser carregados em desenvolvimento." unless Rails.env.development?
+if Rails.env.development?
 
 turno = Turno.find_or_initialize_by(nome: "Demo - refeição atual")
 turno.update!(inicio: "17:00", fim: "23:00", preco: 4.50)
@@ -46,9 +46,9 @@ puts "Dados de demonstração carregados."
 puts "Login funcionário: 999000001 / Demo1234!"
 puts "Restaurantes: #{restaurantes.map(&:nome).join(', ')}"
 puts "Cardápio disponível hoje, das 17:00 às 23:00."
-
-
 puts "Dados de demonstração carregados."
 puts "Login estudante: 232040501 / Demo1234!"
 puts "Restaurantes: #{restaurantes.map(&:nome).join(', ')}"
 puts "Cardápio disponível hoje, das 17:00 às 23:00."
+
+end
