@@ -1,9 +1,9 @@
 class NotificacaoService
   def self.call(inscricao:)
     mensagem = case inscricao.resultado
-               when "contemplada"
+               when InscricaoFastpass::RESULTADO_GANHOU
                  "Parabéns! Você ganhou o FastPass."
-               when "nao contemplada"
+               when InscricaoFastpass::RESULTADO_NAO_GANHOU
                  "Você não foi contemplado no sorteio de FastPass."
                else
                  return false

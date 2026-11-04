@@ -1,40 +1,80 @@
+
 require "bcrypt"
 
 class Usuario < ApplicationRecord
+  self.primary_key = :matricula
 
-    self.primary_key = "matricula"
+  has_many :recargas,
+    foreign_key: :usuario_matricula,
+    primary_key: :matricula,
+    dependent: :destroy
 
-    belongs_to :turno, optional:true
-    belongs_to :restaurante, optional:true
+  has_many :acessos,
+    foreign_key: :usuario_matricula,
+    primary_key: :matricula
 
-    validates :nome, presence: true
-    validates :senha_hash, presence: true
-    validates :perfil, presence: true
-    validates :saldo, numericality: {greater_than_or_equal_to: 0}
+  belongs_to :turno, optional: true
+  belongs_to :restaurante, optional: true
 
-    
-    # recebe a senha digitada e armazena seu hash
-    def senha=(valor)
-        return if valor.blank?
+  validates :matricula,
+    presence: true,
+    uniqueness: true,
+    format: { with: /\A\d{9}\z/ }
 
-        self.senha_hash = BCrypt::Password.create(valor)
-    end
+  validates :nome, presence: true
+  validates :senha_hash, presence: true
+  validates :saldo, numericality: { greater_than_or_equal_to: 0 }
 
+  before_validation :definir_perfil
 
-    # Confere a senha informada com o hash armazenado.
-    def senha_correta?(valor)
-        return false if valor.blank? || senha_hash.blank?
+  def administrador?
+    matricula.to_s.start_with?("9999")
+  end
 
-        BCrypt::Password.new(senha_hash) == valor
+  def funcionario?
+    matricula.to_s.start_with?("999") && !administrador?
+  end
 
-    rescue BCrypt::Errors::InvalidHash
-        false
-    end
+  def estudante?
+    !funcionario? && !administrador?
+  end
 
+  def extrato_recargas
+    recargas
+  end
 
-    # Confere o perfil e o prefixo da matrícula.
-    def funcionario?
-        perfil.to_s.casecmp("funcionario").zero? && matricula.to_s.match?(/\A999\d{6}\z/)
-    end
+  def historico_refeicoes
+    acessos.includes(:turno)
+  end
 
+  def saldo_pendente
+    recargas.pendente.sum(:valor)
+  end
+
+  def senha=(valor)
+    return if valor.blank?
+
+    self.senha_hash = BCrypt::Password.create(valor)
+  end
+
+  def senha_correta?(valor)
+    return false if valor.blank? || senha_hash.blank?
+
+    BCrypt::Password.new(senha_hash) == valor
+  rescue BCrypt::Errors::InvalidHash
+    false
+  end
+
+  private
+
+  def definir_perfil
+    self.perfil =
+      if administrador?
+        "administrador"
+      elsif funcionario?
+        "funcionario"
+      else
+        "estudante"
+      end
+  end
 end

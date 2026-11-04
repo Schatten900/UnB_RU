@@ -7,7 +7,12 @@ class AutenticacaoController < ApplicationController
     def create
         matricula = params[:matricula].to_s.strip
 
-        if matricula.start_with?("999")
+        if matricula.start_with?("9999")
+            usuario = AutenticacaoAdministradorService.call(
+                matricula: matricula,
+                senha: params[:senha]
+            )
+        elsif matricula.start_with?("999")
             usuario = AutenticacaoFuncionarioService.call(
                 matricula: matricula,
                 senha: params[:senha],
@@ -24,7 +29,7 @@ class AutenticacaoController < ApplicationController
             reset_session               # Cria uma nova sessão
             session[:usuario_matricula] = usuario.matricula # Registra na sessão a matricula logada
 
-            destino = usuario.funcionario? ? ponto_configuracao_path : cardapio_path
+            destino = usuario.funcionario? || usuario.administrador? ? ponto_configuracao_path : cardapio_path
             redirect_to destino, notice: "Login realizado com sucesso."
         else
             flash.now[:alert] = "Não foi possível autenticar. Confira suas credenciais e o horário permitido."

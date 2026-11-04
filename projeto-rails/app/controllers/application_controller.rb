@@ -3,6 +3,16 @@ class ApplicationController < ActionController::Base
 
     private
 
+    def current_usuario
+        usuario_atual
+    end
+
+    def authenticate_usuario!
+        return if current_usuario
+
+        render json: { erro: "Autenticação necessária" }, status: :unauthorized
+    end
+
     def usuario_atual
         return unless session[:usuario_matricula]
 
@@ -18,7 +28,7 @@ class ApplicationController < ActionController::Base
     end
 
     def exigir_funcionario
-        return if usuario_atual&.funcionario?
+        return if usuario_atual&.funcionario? || usuario_atual&.administrador?
 
         reset_session
         redirect_to login_path, alert: "Acesso não autorizado."

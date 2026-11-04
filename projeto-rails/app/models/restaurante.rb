@@ -1,8 +1,6 @@
 class Restaurante < ApplicationRecord
+  has_many :catracas, dependent: :restrict_with_error
+  has_many :usuarios
 
-    has_many :catracas
-    has_many :usuarios
-
-    validates :nome, presence: true
-
+  validates :nome, presence: true
 end
