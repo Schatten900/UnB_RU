@@ -33,7 +33,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
     assert_equal @funcionario.matricula, session[:usuario_matricula]
   end
 
-  test "estudante autentica e acessa o cardápio" do
+  test "estudante autentica e acessa a home" do
     estudante = Usuario.create!(
       matricula: "232040501",
       nome: "Estudante de teste",
@@ -45,7 +45,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
 
     post login_path, params: { matricula: estudante.matricula, senha: "senha-segura" }
 
-    assert_redirected_to cardapio_path
+    assert_redirected_to root_path
     assert_equal estudante.matricula, session[:usuario_matricula]
   end
 

@@ -1,7 +1,7 @@
 
 Rails.application.routes.draw do
+  root "cardapio#index"
   get "up" => "rails/health#show", as: :rails_health_check
-  get "cardapio", to: "cardapio#index"
   get "login", to: "autenticacao#new", as: :login
   get "ponto_configuracao", to: "ponto_configuracao#new", as: :ponto_configuracao
   post "login", to: "autenticacao#create"

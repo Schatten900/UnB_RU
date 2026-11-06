@@ -1,4 +1,4 @@
-class SorteioController < ActionController
+class SorteioController < ApplicationController
 
 
 

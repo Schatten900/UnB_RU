@@ -23,12 +23,12 @@ RSpec.describe "Autenticacao", type: :request do
     expect(response.body).to include("login-form")
   end
 
-  it "autentica estudante e direciona ao cardapio" do
+  it "autentica estudante e direciona ao inicio" do
     estudante = criar_usuario(matricula: "232040501", turno: turno)
 
     post login_path, params: { matricula: estudante.matricula, senha: "senha-segura" }
 
-    expect(response).to redirect_to(cardapio_path)
+    expect(response).to redirect_to(root_path)
     expect(session[:usuario_matricula]).to eq(estudante.matricula)
   end
 

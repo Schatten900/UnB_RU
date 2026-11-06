@@ -1,12 +1,12 @@
-<main class="operator-app menu-app">
+<main class="operator-app home-app">
   <header class="topbar">
-    <%= link_to cardapio_path, class: "brand" do %>
+    <%= link_to root_path, class: "brand" do %>
       <span class="brand-mark" aria-hidden="true">RU</span>
-      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
+      <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
     <% end %>
 
     <nav class="main-nav" aria-label="Navegação principal">
-      <%= link_to "Cardápio", cardapio_path, class: "is-current" %>
+      <%= link_to "Início & Carteira", root_path, class: "is-current" %>
       <% if usuario_atual&.funcionario? %>
         <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
       <% end %>
@@ -25,59 +25,106 @@
     </div>
   </header>
 
-  <div class="menu-content">
-    <section class="menu-heading">
+  <div class="home-content">
+    <section class="home-welcome">
       <div>
-        <p class="eyebrow">Refeição atual</p>
-        <h1>Cardápio</h1>
-        <p class="menu-intro">Opções disponíveis para o turno em andamento.</p>
+        <p class="eyebrow">Portal do Restaurante Universitário</p>
+        <h1>Olá, <%= usuario_atual&.nome || "bem-vindo(a)" %></h1>
+        <% if usuario_atual %>
+          <p class="welcome-details">
+            Matrícula: <strong><%= usuario_atual.matricula %></strong>
+            <span aria-hidden="true">·</span>
+            Perfil: <strong><%= usuario_atual.funcionario? ? "Funcionário" : "Estudante" %></strong>
+          </p>
+        <% else %>
+          <p class="welcome-details">Consulte o cardápio e os horários do RU.</p>
+        <% end %>
       </div>
-      <% if @cardapio %>
-        <div class="meal-meta" aria-label="Data e turno">
-          <span class="meal-meta-label">Data</span>
-          <strong><%= @cardapio.data.strftime("%d/%m/%Y") %></strong>
-          <span class="meal-meta-divider" aria-hidden="true"></span>
-          <span class="meal-meta-label">Turno</span>
-          <strong><%= @cardapio.turno.nome %></strong>
-          <small><%= @cardapio.turno.inicio.strftime("%H:%M") %>–<%= @cardapio.turno.fim.strftime("%H:%M") %></small>
-        </div>
-      <% end %>
+      <div class="ru-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span><small>Restaurante Universitário</small><strong><%= usuario_atual&.restaurante&.nome || "Universidade de Brasília" %></strong></span>
+      </div>
     </section>
 
-    <% if @cardapio %>
-      <section class="menu-options" aria-labelledby="menu-options-title">
-        <div class="menu-section-heading">
-          <div><p class="eyebrow">Escolha alimentar</p><h2 id="menu-options-title">Opções do dia</h2></div>
-          <span class="menu-availability"><span class="status-dot" aria-hidden="true"></span>Disponível neste turno</span>
+    <div class="home-dashboard">
+      <div class="home-overview">
+        <section class="wallet-panel" id="carteira" aria-labelledby="wallet-title">
+          <div class="wallet-heading">
+            <div>
+              <p class="eyebrow">Saldo da carteira estudantil</p>
+              <h2 id="wallet-title"><%= usuario_atual ? number_to_currency(usuario_atual.saldo, unit: "R$ ", separator: ",", delimiter: ".") : "Acesse sua conta" %></h2>
+            </div>
+            <span class="fare-tag"><%= @cardapio ? "Tarifa: #{number_to_currency(@cardapio.turno.preco, unit: 'R$ ', separator: ',', delimiter: '.')}" : "RU UnB" %></span>
+          </div>
+
+          <% if usuario_atual %>
+            <div class="wallet-note">
+              <span class="wallet-icon" aria-hidden="true">R$</span>
+              <span><strong>Saldo disponível</strong><small><%= @refeicoes_estimadas ? "Seu saldo cobre até #{@refeicoes_estimadas} refeições pelo valor atual." : "Consulte o cardápio para ver o valor da refeição." %></small></span>
+            </div>
+          <% else %>
+            <%= link_to "Entrar para consultar saldo", login_path, class: "home-login-button" %>
+          <% end %>
+        </section>
+
+        <section class="schedule-panel" id="turnos" aria-labelledby="schedule-title">
+          <div class="schedule-heading">
+            <h2 id="schedule-title"><span class="schedule-icon" aria-hidden="true">◷</span> Turnos do RU</h2>
+            <% if @cardapio %>
+              <span class="schedule-status"><span class="status-dot" aria-hidden="true"></span>Aberto agora</span>
+            <% end %>
+          </div>
+          <% if @turnos.any? %>
+            <div class="turn-list">
+              <% @turnos.each do |turno| %>
+                <div class="turn-item <%= 'is-current' if @cardapio&.turno_id == turno.id %>">
+                  <span class="turn-number"><%= format("%02d", @turnos.index(turno) + 1) %>.</span>
+                  <span class="turn-copy"><strong><%= turno.nome %><%= " (atual)" if @cardapio&.turno_id == turno.id %></strong><small><%= turno.inicio.strftime("%H:%M") %> – <%= turno.fim.strftime("%H:%M") %></small></span>
+                  <% if @cardapio&.turno_id == turno.id %><span class="turn-current-tag">Em andamento</span><% end %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="schedule-empty">Os horários dos turnos não estão disponíveis.</p>
+          <% end %>
+        </section>
+      </div>
+
+      <section class="today-menu" aria-labelledby="today-menu-title">
+        <div class="today-menu-heading">
+          <div class="today-menu-title-row">
+            <span class="menu-heading-icon" aria-hidden="true">⌁</span>
+            <div><p class="eyebrow">Refeição de hoje</p><h2 id="today-menu-title">Cardápio<%= " de #{@cardapio.turno.nome}" if @cardapio %></h2></div>
+          </div>
+          <% if @cardapio %>
+            <span class="menu-availability"><span class="status-dot" aria-hidden="true"></span>Disponível</span>
+            <p class="today-menu-meta"><%= @cardapio.data.strftime("%d/%m/%Y") %> · <%= @cardapio.turno.inicio.strftime("%H:%M") %> às <%= @cardapio.turno.fim.strftime("%H:%M") %></p>
+          <% end %>
         </div>
 
-        <div class="menu-card-grid">
-          <article class="meal-card meal-card-standard">
-            <div class="meal-card-top"><span class="meal-symbol" aria-hidden="true">01</span><span class="meal-kind">Tradicional</span></div>
-            <h3>Opção padrão</h3>
-            <p><%= @cardapio.opcao_padrao %></p>
-          </article>
-
-          <article class="meal-card meal-card-ovo">
-            <div class="meal-card-top"><span class="meal-symbol" aria-hidden="true">02</span><span class="meal-kind">Vegetariana</span></div>
-            <h3>Ovolactovegetariana</h3>
-            <p><%= @cardapio.opcao_ovolactovegetariana %></p>
-          </article>
-
-          <article class="meal-card meal-card-vegan">
-            <div class="meal-card-top"><span class="meal-symbol" aria-hidden="true">03</span><span class="meal-kind">Vegetal</span></div>
-            <h3>Vegetariana estrita</h3>
-            <p><%= @cardapio.opcao_vegetariana_estrita %></p>
-          </article>
-        </div>
+        <% if @cardapio %>
+          <div class="today-meals">
+            <article class="today-meal meal-standard">
+              <div><h3>1. Opção padrão</h3><span class="meal-kind">Tradicional</span></div>
+              <p><%= @cardapio.opcao_padrao.presence || "Opção não informada." %></p>
+            </article>
+            <article class="today-meal meal-vegetarian">
+              <div><h3>2. Opção ovolactovegetariana</h3><span class="meal-kind">Vegetariana</span></div>
+              <p><%= @cardapio.opcao_ovolactovegetariana.presence || "Opção não informada." %></p>
+            </article>
+            <article class="today-meal meal-vegan">
+              <div><h3>3. Opção vegetariana estrita</h3><span class="meal-kind">100% vegetal</span></div>
+              <p><%= @cardapio.opcao_vegetariana_estrita.presence || "Opção não informada." %></p>
+            </article>
+          </div>
+        <% else %>
+          <div class="today-menu-empty" role="status">
+            <p class="eyebrow">Sem refeição ativa</p>
+            <h3>Não há cardápio disponível agora</h3>
+            <p>Não encontramos um cardápio cadastrado para o turno vigente.</p>
+          </div>
+        <% end %>
       </section>
-    <% else %>
-      <section class="menu-empty" role="status">
-        <span class="empty-mark" aria-hidden="true">RU</span>
-        <p class="eyebrow">Sem refeição ativa</p>
-        <h2>Não há cardápio disponível agora</h2>
-        <p>Não encontramos um cardápio cadastrado para o turno vigente.</p>
-      </section>
-    <% end %>
+    </div>
   </div>
 </main>
