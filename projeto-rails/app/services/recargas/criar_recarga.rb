@@ -28,7 +28,7 @@ module Recargas
             codigo_pix: "PIX-MOCK-#{recarga.id}-#{SecureRandom.hex(4)}"
           )
         else
-          recarga.update!(status: :confirmada)
+          recarga.update!(status: :concluida)
 
           @usuario.increment!(:saldo, @valor)
         end

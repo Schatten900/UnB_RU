@@ -18,7 +18,7 @@ RSpec.describe ConfirmacaoPassagemFastpassService, type: :service do
   end
   let(:inscricao) do
     double("InscricaoFastpass", id: 3, usuario_matricula: estudante.matricula,
-           time_frame_id: 7, resultado: "ganhou")
+           time_frame_id: 7, resultado: InscricaoFastpass::RESULTADO_GANHOU)
   end
   let(:repositorio) { RegistroValidacoesRepositoryMock.new }
   let(:liberador) { LiberadorCatracaMock.new }

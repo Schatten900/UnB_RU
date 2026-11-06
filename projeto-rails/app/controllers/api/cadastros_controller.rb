@@ -14,12 +14,15 @@ module Api
       usuario = Usuario.new(
         matricula: matricula,
         nome: params[:nome],
-        senha_hash: params[:senha],
+        senha: params[:senha],
         perfil: "estudante",
         saldo: 0
       )
 
       if usuario.save
+        reset_session
+        session[:usuario_matricula] = usuario.matricula
+
         render json: {
           mensagem: "Conta criada com sucesso",
           usuario: {
