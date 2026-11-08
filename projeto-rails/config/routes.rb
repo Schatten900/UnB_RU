@@ -1,25 +1,24 @@
 
 Rails.application.routes.draw do
+  root "cardapio#index"
+  get "up" => "rails/health#show", as: :rails_health_check
+  get "login", to: "autenticacao#new", as: :login
+  get "ponto_configuracao", to: "ponto_configuracao#new", as: :ponto_configuracao
+  post "login", to: "autenticacao#create"
+  post "ponto_configuracao", to: "ponto_configuracao#create"
+  delete "logout", to: "autenticacao#destroy", as: :logout
+
   namespace :api do
-
-    # Cadastro
-    post 'cadastro',
-      to: 'cadastros#create'
-
-    # Recargas
+    post "cadastro", to: "cadastros#create"
     resources :recargas, only: [:create] do
       member do
         post :confirmar
       end
     end
 
-    # Relatório global
-    get 'relatorios/operacoes',
-      to: 'relatorios#global_operations'
-
+    get "relatorios/operacoes", to: "relatorios#global_operations"
     # Turnos e intervalos
     resources :turnos,
       only: [:index, :show, :create, :update]
-
   end
 end

@@ -17,7 +17,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
   end
   let(:inscricao) do
     double("InscricaoFastpass", id: 3, usuario_matricula: estudante.matricula,
-           time_frame_id: time_frame.id, resultado: "ganhou")
+           time_frame_id: time_frame.id, resultado: InscricaoFastpass::RESULTADO_GANHOU)
   end
   let(:repositorio) { RegistroValidacoesRepositoryMock.new }
   let(:liberador) { LiberadorCatracaMock.new }
@@ -73,10 +73,10 @@ RSpec.describe ValidacaoFastpassService, type: :service do
   end
 
   it "nao aceita inscricao nao vencedora ou de outra pessoa" do
-    allow(inscricao).to receive(:resultado).and_return("nao_ganhou")
+    allow(inscricao).to receive(:resultado).and_return(InscricaoFastpass::RESULTADO_NAO_GANHOU)
     expect(validar.motivo).to eq(:sem_fastpass)
 
-    allow(inscricao).to receive(:resultado).and_return("ganhou")
+    allow(inscricao).to receive(:resultado).and_return(InscricaoFastpass::RESULTADO_GANHOU)
     allow(inscricao).to receive(:usuario_matricula).and_return("999999999")
     expect(validar.motivo).to eq(:sem_fastpass)
     expect(liberador.comandos).to be_empty
@@ -89,7 +89,7 @@ RSpec.describe ValidacaoFastpassService, type: :service do
     expect(liberador.comandos).to be_empty
   end
 
-  it "nao aceita a nomenclatura contemplada" do
+  it "nao aceita o resultado legado contemplada" do
     allow(inscricao).to receive(:resultado).and_return("contemplada")
 
     expect(validar.autorizado?).to be(false)

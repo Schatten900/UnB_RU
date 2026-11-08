@@ -1,4 +1,6 @@
 
+require "bcrypt"
+
 class Usuario < ApplicationRecord
   self.primary_key = :matricula
 
@@ -20,6 +22,8 @@ class Usuario < ApplicationRecord
     format: { with: /\A\d{9}\z/ }
 
   validates :nome, presence: true
+  validates :senha_hash, presence: true
+  validates :saldo, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :definir_perfil
 
@@ -51,6 +55,20 @@ class Usuario < ApplicationRecord
     recargas.pendente.sum(:valor)
   end
 
+  def senha=(valor)
+    return if valor.blank?
+
+    self.senha_hash = BCrypt::Password.create(valor)
+  end
+
+  def senha_correta?(valor)
+    return false if valor.blank? || senha_hash.blank?
+
+    BCrypt::Password.new(senha_hash) == valor
+  rescue BCrypt::Errors::InvalidHash
+    false
+  end
+
   private
 
   def definir_perfil
@@ -64,8 +82,3 @@ class Usuario < ApplicationRecord
       end
   end
 end
-
-
-
-#AI: GPT desktop, no think
-#Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb
