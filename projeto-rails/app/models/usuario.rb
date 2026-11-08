@@ -39,6 +39,10 @@ class Usuario < ApplicationRecord
     !funcionario? && !administrador?
   end
 
+  def saldo_suficiente_para?(turno)
+    saldo >= turno.preco
+  end
+
   def extrato_recargas
     recargas
   end

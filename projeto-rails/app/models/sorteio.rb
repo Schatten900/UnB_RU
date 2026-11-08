@@ -5,4 +5,5 @@ class Sorteio < ApplicationRecord
   validates :data, presence: true
   validates :status, presence: true
 
+  self.table_name = "sorteios"
 end
