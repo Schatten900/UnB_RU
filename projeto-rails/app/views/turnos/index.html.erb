@@ -1,0 +1,214 @@
+<main class="operator-app home-app" style="background: #f8fafc; min-height: 100vh; padding-bottom: 3rem;">
+  <header class="topbar" style="background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <%= link_to root_path, class: "brand" do %>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="brand-mark" style="background: #1e3a8a; color: #fff; padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: bold;" aria-hidden="true">RU UnB</span>
+        <span class="brand-copy" style="font-size: 0.8rem; color: #64748b; border-left: 1px solid #cbd5e1; padding-left: 0.75rem;">DARCY RIBEIRO</span>
+      </div>
+    <% end %>
+
+    <div class="operator-menu" style="display: flex; align-items: center; gap: 1rem;">
+      <div class="operator-copy" style="text-align: right;">
+        <strong style="display: block; font-size: 0.9rem; color: #0f172a;"><%= usuario_atual&.nome || "Prof. Fernando Albuquerque" %></strong>
+      </div>
+      <% if usuario_atual %>
+        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button", style: "background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;" %>
+      <% else %>
+        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+      <% end %>
+    </div>
+  </header>
+
+  <!-- Sub-barra de navegação superior -->
+  <nav class="main-nav" aria-label="Navegação principal" style="background: #fff; padding: 0.75rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 2rem; font-size: 0.9rem;">
+    <%= link_to "Restaurantes e Catracas", "#", style: "color: #475569; text-decoration: none;" %>
+    <%= link_to "Turnos e Time-frames", turnos_path, style: "color: #1e3a8a; text-decoration: none; font-weight: bold; border-bottom: 2px solid #1e3a8a; padding-bottom: 0.25rem;" %>
+    <%= link_to "Vagas e Cotas FastPass", "#", style: "color: #475569; text-decoration: none;" %>
+    <%= link_to "Relatório Global de Operação", relatorio_global_path, style: "color: #475569; text-decoration: none;" %>
+  </nav>
+
+  <div class="home-content" style="padding: 2rem;">
+    <div style="margin-bottom: 2rem;">
+      <p style="font-size: 0.75rem; color: #2563eb; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">⏱ Configuração de Turnos e Time-frames</p>
+      <h1 style="font-size: 1.8rem; color: #0f172a; margin: 0 0 0.5rem 0;">Configuração de Turnos e Time-frames</h1>
+      <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Defina os horários dos turnos e os slots de agendamento para o Restaurante Universitário Darcy Ribeiro.</p>
+    </div>
+
+    <!-- Cabeçalho da Seção -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.1rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🍽</span> Turnos Operacionais Diários (3 Refeições)
+      </h3>
+      <span style="background: #e2e8f0; color: #475569; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 600;">Campus Darcy Ribeiro</span>
+    </div>
+
+    <!-- Grid de Turnos Operacionais Diários -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      
+      <!-- Café da Manhã -->
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+          <h4 style="margin: 0; font-size: 1.1rem; color: #0f172a;">☕ Café da Manhã</h4>
+          <span style="background: #dcfce7; color: #166534; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px;">Ativo</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #475569; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between;"><span>Janela Geral:</span> <strong>07:00 — 09:00</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Duração Total:</span> <strong>2h 00min (120 min)</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Modo FastPass:</span> <span style="color: #64748b;">Fila Única Convencional</span></div>
+        </div>
+        <button type="button" style="width: 100%; padding: 0.6rem; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; cursor: pointer;">Editar Horários</button>
+      </div>
+
+      <!-- Almoço (Destaque Ativo) -->
+      <div style="background: #fff; border: 2px solid #1e3a8a; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative;">
+        <div style="position: absolute; top: -12px; left: 20px; background: #1e3a8a; color: #fff; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">Turno com Janelas FastPass</div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin: 0.5rem 0 1rem 0;">
+          <h4 style="margin: 0; font-size: 1.1rem; color: #1e3a8a;">🍲 Almoço</h4>
+          <span style="background: #dcfce7; color: #166534; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px;">Ativo</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #475569; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between;"><span style="color: #1e3a8a; font-weight: 600;">Janela Geral:</span> <strong style="color: #1e3a8a;">11:15 — 14:15</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Duração Total:</span> <strong>3h 00min (180 min)</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Modo FastPass:</span> <strong style="color: #16a34a;">12 Slots Ativos (15m)</strong></div>
+        </div>
+        <button type="button" style="width: 100%; padding: 0.6rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Editar Horários do Almoço</button>
+      </div>
+
+      <!-- Jantar -->
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+          <h4 style="margin: 0; font-size: 1.1rem; color: #0f172a;">🌙 Jantar</h4>
+          <span style="background: #dcfce7; color: #166534; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px;">Ativo</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #475569; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between;"><span>Janela Geral:</span> <strong>17:30 — 19:30</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Duração Total:</span> <strong>2h 00min (120 min)</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Modo FastPass:</span> <span style="color: #64748b;">Fila Única Convencional</span></div>
+        </div>
+        <button type="button" style="width: 100%; padding: 0.6rem; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; cursor: pointer;">Editar Horários</button>
+      </div>
+
+    </div>
+
+    <!-- Painel Detalhado: Janelas de Agendamento FastPass -->
+    <section style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; color: #0f172a;">⏱ Janelas de Agendamento FastPass</h3>
+          <small style="color: #64748b;">Turno de Referência: <strong>Almoço Oficial (11:15 - 14:15)</strong></small>
+        </div>
+        <span style="font-size: 0.85rem; color: #16a34a; font-weight: 600;">Status: 12 Slots Gerados</span>
+      </div>
+
+      <!-- Configurações de Granularidade -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <small style="color: #64748b; font-size: 0.75rem; display: block;">Granularidade da Janela</small>
+          <strong style="font-size: 0.95rem; color: #0f172a;">15 minutos</strong>
+          <small style="color: #94a3b8; font-size: 0.7rem; display: block;">Duração de cada lote FastPass</small>
+        </div>
+        <div style="background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <small style="color: #64748b; font-size: 0.75rem; display: block;">Tolerância de Atraso</small>
+          <strong style="font-size: 0.95rem; color: #0f172a;">3 minutos</strong>
+          <small style="color: #94a3b8; font-size: 0.7rem; display: block;">Janela aceita pós-expiração</small>
+        </div>
+        <div style="background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <small style="color: #64748b; font-size: 0.75rem; display: block;">Antecedência Liberada</small>
+          <strong style="font-size: 0.95rem; color: #0f172a;">2 minutos antes do slot</strong>
+          <small style="color: #94a3b8; font-size: 0.7rem; display: block;">Liberação prévia na catraca</small>
+        </div>
+      </div>
+
+      <!-- Grade Horária dos Lotes -->
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+          <strong style="font-size: 0.9rem; color: #0f172a;">Grade Horária dos Lotes de Almoço (15 min)</strong>
+          <small style="color: #64748b;">Clique em um slot para ativar/desativar</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+          <!-- Coluna 1 -->
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #01</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">11:30 — 11:45</strong>
+            </div>
+            <div style="background: #eff6ff; padding: 0.5rem; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 0.8rem;">
+              <span style="color: #1e3a8a; font-weight: bold;">Pico #05</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #1e3a8a; margin-top: 0.1rem;">12:30 — 12:45</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #09</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">13:30 — 13:45</strong>
+            </div>
+          </div>
+          <!-- Coluna 2 -->
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #02</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">11:45 — 12:00</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #06</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">12:45 — 13:00</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #10</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">13:45 — 14:00</strong>
+            </div>
+          </div>
+          <!-- Coluna 3 -->
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+            <div style="background: #eff6ff; padding: 0.5rem; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 0.8rem;">
+              <span style="color: #1e3a8a; font-weight: bold;">Pico #03</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #1e3a8a; margin-top: 0.1rem;">12:00 — 12:15</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #07</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">13:00 — 13:15</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #11</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">14:00 — 14:15</strong>
+            </div>
+          </div>
+          <!-- Coluna 4 -->
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+            <div style="background: #eff6ff; padding: 0.5rem; border-radius: 6px; border: 1px solid #bfdbfe; font-size: 0.8rem;">
+              <span style="color: #1e3a8a; font-weight: bold;">Pico #04</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #1e3a8a; margin-top: 0.1rem;">12:15 — 12:30</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Lote #08</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">13:15 — 13:30</strong>
+            </div>
+            <div style="background: #fff; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+              <span style="color: #64748b;">Encerramento</span> <span style="color: #16a34a; float: right;">●</span>
+              <strong style="display: block; color: #0f172a; margin-top: 0.1rem;">14:15 — 14:20</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trava de Pontualidade -->
+      <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <input type="checkbox" id="trava" checked style="width: 16px; height: 16px;">
+        <label for="trava" style="font-size: 0.85rem; color: #334155; cursor: pointer;">Ativar Trava de Pontualidade Rígida (Bloqueio automático após encerramento do lote + tolerância)</label>
+      </div>
+    </section>
+
+    <!-- Rodapé de Ações -->
+    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <small style="color: #64748b; font-size: 0.85rem;">ℹ Alterações são propagadas para os controllers das catracas em até 60 segundos.</small>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <%= link_to "Restaurar Padrão", "#", style: "color: #1e3a8a; text-decoration: none; font-size: 0.9rem; font-weight: 600;" %>
+        <button type="button" style="background: #1e3a8a; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Salvar Configuração</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# AI: Deepseek wit think and search %>
+<%# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a view based on a description of how the view should look like, observations on current levels of integration, and providing it files in .rb from other parts of the project for context %>
+<%# AI: Gemini %>
+<%# Strategy and prompt: Provided previous context of how the backend is structured, what other views exist and how they connect, AI was asked, in natural language, preserve these comments, and to modify the view to fit provided images %>

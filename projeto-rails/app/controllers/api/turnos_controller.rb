@@ -1,4 +1,4 @@
-
+#turnos_controller.rb
 module Api
   class TurnosController < ApplicationController
     before_action :authenticate_usuario!

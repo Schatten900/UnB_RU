@@ -1,0 +1,140 @@
+<main class="operator-app home-app">
+  <header class="topbar">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
+    <% end %>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <%= link_to "Início & Carteira", root_path %>
+      <%= link_to "Recarga", recarga_path, class: "is-current" %>
+      <%= link_to "Extrato", "#" %>
+      <%= link_to "FastPass", fast_pass_path %>
+    </nav>
+
+    <div class="operator-menu">
+      <% if usuario_atual %>
+        <div class="operator-copy">
+          <strong><%= usuario_atual.nome %></strong>
+          <small>Matrícula: <%= usuario_atual.matricula %></small>
+        </div>
+        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+      <% else %>
+        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="home-content">
+    <section class="home-welcome" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,00,0,0.05); margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #1e3a8a; color: #fff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">
+          <%= usuario_atual&.nome&.split&.map(&:first)&.join&.upcase || "RU" %>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin: 0; font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Conta do estudante</p>
+          <h2 style="margin: 0; font-size: 1.2rem; color: #0f172a;"><%= usuario_atual&.nome || "Estudante UnB" %></h2>
+        </div>
+      </div>
+      <div class="ru-status" style="background: #f8fafc; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <small style="display: block; color: #64748b; font-size: 0.75rem;">Saldo atual</small>
+        <strong style="color: #16a34a; font-size: 1.2rem;"><%= number_to_currency(usuario_atual&.saldo || 0, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+      </div>
+    </section>
+
+    <div style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.8rem; color: #0f172a; margin-bottom: 0.25rem;">Recarregar Saldo</h1>
+      <p style="color: #64748b; margin: 0;">Adicione créditos para usar no RU.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start;">
+      
+      <!-- Coluna Esquerda: Pacotes e Métodos -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Bloco 1: Escolha o Pacote -->
+        <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="background: #1e3a8a; color: #fff; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; font-weight: bold;">1</span>
+            <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Escolha o Pacote de Refeições</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="pacote-card" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; cursor: pointer; background: #fff;" onclick="selecionarPacote(2, 9.00)">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b;">
+                <span>2 Refeições</span>
+                <input type="radio" name="pacote" checked>
+              </div>
+              <div style="font-size: 1.25rem; font-weight: bold; color: #1e3a8a; margin: 0.25rem 0;">R$ 9,00</div>
+              <small style="font-size: 0.75rem; color: #64748b;">R$ 4.50 / un</small>
+            </div>
+
+            <div class="pacote-card" style="border: 2px solid #1e3a8a; border-radius: 8px; padding: 1rem; cursor: pointer; background: #f8fafc;" onclick="selecionarPacote(5, 22.50)">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #1e3a8a; font-weight: 600;">
+                <span>5 Refeições</span>
+                <input type="radio" name="pacote" checked>
+              </div>
+              <div style="font-size: 1.25rem; font-weight: bold; color: #1e3a8a; margin: 0.25rem 0;">R$ 22,50</div>
+              <small style="font-size: 0.75rem; color: #64748b;">1 semana</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bloco 2: Selecione o Método -->
+        <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <span style="background: #1e3a8a; color: #fff; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; font-weight: bold;">2</span>
+            <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Selecione o Método</h3>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button type="button" style="flex: 1; padding: 0.75rem; border: 2px solid #1e3a8a; background: #f8fafc; border-radius: 8px; font-weight: 600; color: #1e3a8a;">PIX Instantâneo</button>
+            <button type="button" style="flex: 1; padding: 0.75rem; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; color: #64748b;">Cartão de Crédito</button>
+          </div>
+
+          <!-- Caixa PIX Mockada com unidade Darcy Ribeiro -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; display: flex; gap: 1.5rem; align-items: center;">
+            <div style="background: #fff; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center;">
+              <!-- Placeholder visual QR Code -->
+              <div style="width: 90px; height: 90px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.7rem; font-family: monospace;">QR PIX</div>
+            </div>
+            <div style="flex: 1;">
+              <span style="background: #dcfce7; color: #166534; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px;">INSTANTÂNEO</span>
+              <h4 style="margin: 0.3rem 0; font-size: 0.95rem; color: #0f172a;">Aponte o app do seu banco</h4>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0;">Unidade Única: <strong>RU Darcy Ribeiro</strong></p>
+              <input type="text" readonly value="00020126580014br.gov.bcb.pix0136ru-recarrega-darcy-948831@unb.br" style="width: 100%; font-size: 0.7rem; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #475569;" id="pix-code">
+              <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); alert('Chave Pix copiada!');" style="margin-top: 0.5rem; background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Copiar Código Pix</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Coluna Direita: Resumo da Recarga -->
+      <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; position: sticky; top: 1.5rem;">
+        <h3 style="margin-top: 0; font-size: 1.1rem; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">Resumo da Recarga</h3>
+        
+        <div style="font-size: 0.9rem; color: #475569; display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
+          <div style="display: flex; justify-content: span;"><span>Refeições:</span> <strong>5 refeições</strong></div>
+          <div style="display: flex; justify-content: span;"><span>Tarifa unitária:</span> <strong>R$ 4,50 / un</strong></div>
+          <div style="display: flex; justify-content: span;"><span>Pagamento:</span> <strong>PIX Instantâneo</strong></div>
+          <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; color: #64748b;">
+            Unidade: <strong>RU Darcy Ribeiro</strong>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <small style="color: #64748b; font-size: 0.75rem;">TOTAL</small>
+          <div style="font-size: 1.8rem; font-weight: bold; color: #1e3a8a;">R$ 22,50</div>
+        </div>
+
+        <form id="recarga-form">
+          <button type="submit" class="primary-button login-submit" style="width: 100%; padding: 0.85rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Confirmar Recarga</button>
+        </form>
+      </section>
+
+    </div>
+  </div>
+</main>
+<%# AI: Deepseek wit think and search %>
+<%# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a view based on a description of how the view should look like, observations on current levels of integration, and providing it files in .rb from other parts of the project for context %>

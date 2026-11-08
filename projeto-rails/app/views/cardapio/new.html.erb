@@ -1,0 +1,130 @@
+<main class="operator-app home-app">
+  <header class="topbar">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
+    <% end %>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <%= link_to "Início & Carteira", root_path, class: "is-current" %>
+      <% if usuario_atual&.funcionario? %>
+        <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
+      <% end %>
+    </nav>
+
+    <div class="operator-menu">
+      <% if usuario_atual %>
+        <div class="operator-copy">
+          <strong><%= usuario_atual.nome %></strong>
+          <small><%= usuario_atual.funcionario? ? "Operador" : "Estudante" %></small>
+        </div>
+        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+      <% else %>
+        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="home-content">
+    <section class="home-welcome">
+      <div>
+        <p class="eyebrow">Portal do Restaurante Universitário</p>
+        <h1>Olá, <%= usuario_atual&.nome || "bem-vindo(a)" %></h1>
+        <% if usuario_atual %>
+          <p class="welcome-details">
+            Matrícula: <strong><%= usuario_atual.matricula %></strong>
+            <span aria-hidden="true">·</span>
+            Perfil: <strong><%= usuario_atual.funcionario? ? "Funcionário" : "Estudante" %></strong>
+          </p>
+        <% else %>
+          <p class="welcome-details">Consulte o cardápio e os horários do RU.</p>
+        <% end %>
+      </div>
+      <div class="ru-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span><small>Restaurante Universitário</small><strong><%= usuario_atual&.restaurante&.nome || "Universidade de Brasília" %></strong></span>
+      </div>
+    </section>
+
+    <div class="home-dashboard">
+      <div class="home-overview">
+        <section class="wallet-panel" id="carteira" aria-labelledby="wallet-title">
+          <div class="wallet-heading">
+            <div>
+              <p class="eyebrow">Saldo da carteira estudantil</p>
+              <h2 id="wallet-title"><%= usuario_atual ? number_to_currency(usuario_atual.saldo, unit: "R$ ", separator: ",", delimiter: ".") : "Acesse sua conta" %></h2>
+            </div>
+            <span class="fare-tag"><%= @cardapio ? "Tarifa: #{number_to_currency(@cardapio.turno.preco, unit: 'R$ ', separator: ',', delimiter: '.')}" : "RU UnB" %></span>
+          </div>
+
+          <% if usuario_atual %>
+            <div class="wallet-note">
+              <span class="wallet-icon" aria-hidden="true">R$</span>
+              <span><strong>Saldo disponível</strong><small><%= @refeicoes_estimadas ? "Seu saldo cobre até #{@refeicoes_estimadas} refeições pelo valor atual." : "Consulte o cardápio para ver o valor da refeição." %></small></span>
+            </div>
+          <% else %>
+            <%= link_to "Entrar para consultar saldo", login_path, class: "home-login-button" %>
+          <% end %>
+        </section>
+
+        <section class="schedule-panel" id="turnos" aria-labelledby="schedule-title">
+          <div class="schedule-heading">
+            <h2 id="schedule-title"><span class="schedule-icon" aria-hidden="true">◷</span> Turnos do RU</h2>
+            <% if @cardapio %>
+              <span class="schedule-status"><span class="status-dot" aria-hidden="true"></span>Aberto agora</span>
+            <% end %>
+          </div>
+          <% if @turnos.any? %>
+            <div class="turn-list">
+              <% @turnos.each do |turno| %>
+                <div class="turn-item <%= 'is-current' if @cardapio&.turno_id == turno.id %>">
+                  <span class="turn-number"><%= format("%02d", @turnos.index(turno) + 1) %>.</span>
+                  <span class="turn-copy"><strong><%= turno.nome %><%= " (atual)" if @cardapio&.turno_id == turno.id %></strong><small><%= turno.inicio.strftime("%H:%M") %> – <%= turno.fim.strftime("%H:%M") %></small></span>
+                  <% if @cardapio&.turno_id == turno.id %><span class="turn-current-tag">Em andamento</span><% end %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="schedule-empty">Os horários dos turnos não estão disponíveis.</p>
+          <% end %>
+        </section>
+      </div>
+
+      <section class="today-menu" aria-labelledby="today-menu-title">
+        <div class="today-menu-heading">
+          <div class="today-menu-title-row">
+            <span class="menu-heading-icon" aria-hidden="true">⌁</span>
+            <div><p class="eyebrow">Refeição de hoje</p><h2 id="today-menu-title">Cardápio<%= " de #{@cardapio.turno.nome}" if @cardapio %></h2></div>
+          </div>
+          <% if @cardapio %>
+            <span class="menu-availability"><span class="status-dot" aria-hidden="true"></span>Disponível</span>
+            <p class="today-menu-meta"><%= @cardapio.data.strftime("%d/%m/%Y") %> · <%= @cardapio.turno.inicio.strftime("%H:%M") %> às <%= @cardapio.turno.fim.strftime("%H:%M") %></p>
+          <% end %>
+        </div>
+
+        <% if @cardapio %>
+          <div class="today-meals">
+            <article class="today-meal meal-standard">
+              <div><h3>1. Opção padrão</h3><span class="meal-kind">Tradicional</span></div>
+              <p><%= @cardapio.opcao_padrao.presence || "Opção não informada." %></p>
+            </article>
+            <article class="today-meal meal-vegetarian">
+              <div><h3>2. Opção ovolactovegetariana</h3><span class="meal-kind">Vegetariana</span></div>
+              <p><%= @cardapio.opcao_ovolactovegetariana.presence || "Opção não informada." %></p>
+            </article>
+            <article class="today-meal meal-vegan">
+              <div><h3>3. Opção vegetariana estrita</h3><span class="meal-kind">100% vegetal</span></div>
+              <p><%= @cardapio.opcao_vegetariana_estrita.presence || "Opção não informada." %></p>
+            </article>
+          </div>
+        <% else %>
+          <div class="today-menu-empty" role="status">
+            <p class="eyebrow">Sem refeição ativa</p>
+            <h3>Não há cardápio disponível agora</h3>
+            <p>Não encontramos um cardápio cadastrado para o turno vigente.</p>
+          </div>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</main>

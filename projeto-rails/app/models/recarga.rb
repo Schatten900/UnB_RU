@@ -1,4 +1,4 @@
-
+#models/recarga.rb
 class Recarga < ApplicationRecord
   belongs_to :usuario,
     foreign_key: :usuario_matricula,

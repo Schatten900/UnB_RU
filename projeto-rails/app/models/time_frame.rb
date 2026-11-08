@@ -1,4 +1,4 @@
-
+#models/time_frame.rb
 class TimeFrame < ApplicationRecord
   belongs_to :turno
 

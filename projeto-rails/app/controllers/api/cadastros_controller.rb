@@ -1,4 +1,4 @@
-
+#cadastros_controller.rb
 module Api
   class CadastrosController < ApplicationController
     def create
@@ -14,7 +14,7 @@ module Api
       usuario = Usuario.new(
         matricula: matricula,
         nome: params[:nome],
-        senha_hash: params[:senha],
+        senha: params[:senha],
         perfil: "estudante",
         saldo: 0
       )

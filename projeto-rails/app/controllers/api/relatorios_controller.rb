@@ -1,4 +1,4 @@
-
+#relatorios_controller.rb
 module Api
   class RelatoriosController < ApplicationController
     before_action :authenticate_usuario!

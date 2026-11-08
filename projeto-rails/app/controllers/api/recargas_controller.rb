@@ -1,4 +1,4 @@
-
+#recargas_controller.rb
 module Api
   class RecargasController < ApplicationController
     before_action :authenticate_usuario!
@@ -23,7 +23,7 @@ module Api
       }, status: :unprocessable_entity
     end
 
-    def confirm
+    def confirmar
       usuario = current_usuario
       recarga = usuario.recargas.find(params[:id])
 
@@ -35,7 +35,7 @@ module Api
         end
 
         usuario.increment!(:saldo, recarga.valor)
-        recarga.update!(status: :confirmada)
+        recarga.update!(status: :concluida)
       end
 
       render json: {
