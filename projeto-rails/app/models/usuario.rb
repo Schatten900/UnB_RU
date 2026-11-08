@@ -48,7 +48,7 @@ class Usuario < ApplicationRecord
   end
 
   def historico_refeicoes
-    acessos.includes(:turno)
+    acessos.where.not(passagem_em: nil).includes(:turno)
   end
 
   def saldo_pendente
