@@ -1,0 +1,29 @@
+<header class="rg-admin-header">
+  <div class="rg-header-main">
+    <%= link_to admin_restaurantes_path, class: "rg-brand", aria: { label: "Administração RU UnB" } do %>
+      <span class="rg-brand-title">RU <strong>UnB</strong></span>
+      <span class="rg-brand-subtitle">DARCY RIBEIRO</span>
+    <% end %>
+
+    <div class="rg-header-section">
+      <strong>ADMINISTRAÇÃO GERAL</strong>
+      <span>Equipe 3 · Operações &amp; Configuração</span>
+    </div>
+
+    <div class="rg-header-user">
+      <span class="rg-user-details">
+        <strong><%= usuario_atual.nome %></strong>
+        <small>Gestão RU · Matrícula <%= usuario_atual.matricula %></small>
+      </span>
+      <%= button_to "Sair", logout_path, method: :delete, class: "rg-logout", form: { class: "rg-logout-form" } %>
+    </div>
+  </div>
+
+  <nav class="rg-header-nav" aria-label="Navegação administrativa">
+    <%= link_to "Restaurantes e Catracas (US13)", admin_restaurantes_path, class: "rg-nav-link rg-nav-active", aria: { current: "page" } %>
+    <span class="rg-nav-link rg-nav-future" title="Tela ainda não implementada">Turnos e Time-frames (US14)</span>
+    <span class="rg-nav-link rg-nav-future" title="Tela ainda não implementada">Vagas e Cotas FastPass (US15)</span>
+    <%= link_to "Relatório Global (PDF)", api_relatorios_operacoes_path, class: "rg-nav-link", data: { turbo: false } %>
+    <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "rg-nav-link" %>
+  </nav>
+</header>

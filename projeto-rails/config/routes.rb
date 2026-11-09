@@ -8,6 +8,11 @@ Rails.application.routes.draw do
   post "ponto_configuracao", to: "ponto_configuracao#create"
   delete "logout", to: "autenticacao#destroy", as: :logout
 
+  namespace :admin do
+    resources :restaurantes, only: [:index, :create, :update, :destroy]
+    resources :catracas, only: [:create, :update, :destroy]
+  end
+  
   namespace :api do
     post "cadastro", to: "cadastros#create"
     resources :recargas, only: [:create] do

@@ -7,6 +7,9 @@
 
     <nav class="main-nav" aria-label="Navegação principal">
       <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "is-current" %>
+      <% if usuario_atual&.administrador? %>
+        <%= link_to "Gestão de Restaurantes", admin_restaurantes_path %>
+      <% end %>
       <%= link_to "Início & Carteira", root_path %>
     </nav>
 
