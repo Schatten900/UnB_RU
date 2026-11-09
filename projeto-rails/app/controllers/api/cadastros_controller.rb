@@ -20,6 +20,9 @@ module Api
       )
 
       if usuario.save
+        reset_session
+        session[:usuario_matricula] = usuario.matricula
+
         render json: {
           mensagem: "Conta criada com sucesso",
           usuario: {

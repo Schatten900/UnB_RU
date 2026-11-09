@@ -1,6 +1,8 @@
 #models/usuario.rb
 require "bcrypt"
 
+require "bcrypt"
+
 class Usuario < ApplicationRecord
   self.primary_key = :matricula
 
@@ -39,12 +41,16 @@ class Usuario < ApplicationRecord
     !funcionario? && !administrador?
   end
 
+  def saldo_suficiente_para?(turno)
+    saldo >= turno.preco
+  end
+
   def extrato_recargas
     recargas
   end
 
   def historico_refeicoes
-    acessos.includes(:turno)
+    acessos.where.not(passagem_em: nil).includes(:turno)
   end
 
   def saldo_pendente

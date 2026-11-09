@@ -10,11 +10,9 @@ Funcionalidade: Autenticação do funcionario
 Contexto:
     Dado que existem os seguintes funcionarios:
         | funcionario  |  matricula  |
-        |  jose        |  201149608  |
-        |  fernando    |  231549803  |
-        |  maria       |  192049601  |
-
-
+        |  jose        |  999149608  |
+        |  fernando    |  999549803  |
+        |  maria       |  999049601  |
 
 Cenario: Login realizado dentro do horário permitido 
     Dado que José tentou fazer login às 11:00

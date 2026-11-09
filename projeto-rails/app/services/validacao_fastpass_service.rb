@@ -1,12 +1,9 @@
 require "bigdecimal"
 
 class ValidacaoFastpassService
-  RESULTADOS_VENCEDORES = %w[ganhou].freeze
+  RESULTADOS_VENCEDORES = [InscricaoFastpass::RESULTADO_GANHOU].freeze
 
-  Resultado = Struct.new(
-    :autorizado, :motivo, :usuario, :catraca, :inscricao, :time_frame,
-    :preco, :validado_em, :repositorio, :confirmado, keyword_init: true
-  ) do
+  Resultado = Struct.new(:autorizado, :motivo, :acesso, :confirmado, keyword_init: true) do
     def autorizado?
       autorizado == true
     end
@@ -16,31 +13,42 @@ class ValidacaoFastpassService
     end
   end
 
-  def self.call(usuario:, catraca:, inscricao:, time_frame:, preco:,
-                repositorio:, liberador:, agora: Time.current)
-    # A catraca no modo normal sera tratada pela validacao geral (Issue #6).
+  def self.call(usuario:, catraca:, turno:, inscricao:, time_frame:,
+                liberador:, agora: Time.current)
+    # O modo normal e tratado pela validacao geral da issue #6.
     unless catraca&.modo_acesso == "fastpass"
       return Resultado.new(autorizado: false, motivo: :modo_nao_fastpass)
     end
 
-    valor = BigDecimal(preco.to_s)
+    # Acesso exige um usuario existente (FK nao permite tentativas anonimas).
+    unless usuario&.persisted?
+      return Resultado.new(autorizado: false, motivo: :usuario_invalido)
+    end
+
+    valor = BigDecimal(turno.preco.to_s)
     raise ArgumentError, "Preco da refeicao deve ser positivo" unless valor.positive?
 
     motivo = motivo_bloqueio(usuario, inscricao, time_frame, valor, agora)
-    if motivo
-      registrar_bloqueio(repositorio, catraca, usuario, agora)
-      return Resultado.new(autorizado: false, motivo: motivo)
+    if motivo.nil? && !liberador.liberar(catraca_id: catraca.id)
+      motivo = :falha_liberacao
     end
 
-    unless liberador.liberar(catraca_id: catraca.id)
-      registrar_bloqueio(repositorio, catraca, usuario, agora)
-      return Resultado.new(autorizado: false, motivo: :falha_liberacao)
-    end
+    # Uma tentativa identificada gera Acesso, mesmo quando foi bloqueada.
+    acesso = Acesso.create!(
+      usuario: usuario,
+      catraca: catraca,
+      turno: turno,
+      inscricao_fastpass_id: motivo.nil? ? inscricao.id : nil,
+      data_hora: agora,
+      status: motivo ? "bloqueado" : "pendente",
+      passagem_em: nil,
+      valor_debitado: 0
+    )
 
     Resultado.new(
-      autorizado: true, motivo: :autorizado, usuario: usuario,
-      catraca: catraca, inscricao: inscricao, time_frame: time_frame,
-      preco: valor, validado_em: agora, repositorio: repositorio,
+      autorizado: motivo.nil?,
+      motivo: motivo || :autorizado,
+      acesso: acesso,
       confirmado: false
     )
   end
@@ -58,7 +66,7 @@ class ValidacaoFastpassService
   end
   private_class_method :motivo_bloqueio
 
-  # Horario inicial incluido; horario final excluido (12:30:00 nao pertence a 12:15-12:30).
+  # Inicio incluido; fim excluido.
   def self.dentro_da_janela?(time_frame, agora)
     return false unless time_frame.inicio && time_frame.fim
 
@@ -69,7 +77,7 @@ class ValidacaoFastpassService
     return false if inicio == fim
     return horario >= inicio && horario < fim if inicio < fim
 
-    horario >= inicio || horario < fim # Tambem aceita janela que atravessa meia-noite.
+    horario >= inicio || horario < fim
   end
   private_class_method :dentro_da_janela?
 
@@ -77,14 +85,4 @@ class ValidacaoFastpassService
     horario.hour * 3600 + horario.min * 60 + horario.sec
   end
   private_class_method :segundos
-
-  def self.registrar_bloqueio(repositorio, catraca, usuario, agora)
-    repositorio.registrar(
-      catraca_id: catraca.id,
-      usuario_matricula: usuario&.matricula,
-      status: "Bloqueado",
-      data_hora: agora
-    )
-  end
-  private_class_method :registrar_bloqueio
 end

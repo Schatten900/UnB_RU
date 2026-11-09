@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   post 'ponto_configuracao', to: 'ponto_configuracao#create'
 
   # Páginas principais e operacionais do estudante
-  root 'home#index' # Ou 'cardapio#index' conforme preferência da sprint-2, mantido home#index para atender o HomeController criado
+  root 'cardapio#index' # Ou 'cardapio#index' conforme preferência da sprint-2, mantido home#index para atender o HomeController criado
   get 'recarga', to: 'recargas#index', as: :recarga
   get 'turnos', to: 'turnos#index', as: :turnos
   get 'relatorio_global', to: 'relatorios#global', as: :relatorio_global
