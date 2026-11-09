@@ -1,0 +1,170 @@
+<div class="rg-admin-page">
+  <%= render "shared/admin_header" %>
+
+  <main class="rg-content">
+    <div class="rg-page-intro">
+      <div class="rg-page-heading">
+        <p class="rg-overline">MÓDULO DE ADMINISTRAÇÃO · US13 <span>• Gestão dos pontos de acesso</span></p>
+        <h1>Gestão de Restaurantes e Catracas Físicas</h1>
+      </div>
+
+      <div class="rg-page-actions">
+        <details class="rg-action-popover">
+          <summary class="rg-button rg-button-secondary"><span aria-hidden="true">＋</span> Cadastrar Restaurante</summary>
+          <div class="rg-action-body">
+            <h2>Novo restaurante</h2>
+            <p>Cadastre uma unidade para associar suas catracas.</p>
+            <%= form_with scope: :restaurante, url: admin_restaurantes_path, method: :post, local: true, class: "rg-form" do |f| %>
+              <div class="rg-field">
+                <%= f.label :nome, "Nome do restaurante" %>
+                <%= f.text_field :nome, required: true, placeholder: "Ex.: RU Darcy Ribeiro" %>
+              </div>
+              <%= f.submit "Salvar restaurante", class: "rg-button rg-button-primary rg-button-full" %>
+            <% end %>
+          </div>
+        </details>
+
+        <details class="rg-action-popover">
+          <summary class="rg-button rg-button-primary"><span aria-hidden="true">⊕</span> Associar Nova Catraca</summary>
+          <div class="rg-action-body">
+            <h2>Nova catraca</h2>
+            <p>Cadastre uma catraca física vinculada a uma unidade.</p>
+            <% if @restaurantes.any? %>
+              <%= form_with scope: :catraca, url: admin_catracas_path, method: :post, local: true, class: "rg-form" do |f| %>
+                <div class="rg-field">
+                  <%= f.label :restaurante_id, "Restaurante" %>
+                  <%= f.collection_select :restaurante_id, @restaurantes, :id, :nome, {}, { required: true } %>
+                </div>
+                <div class="rg-field">
+                  <%= f.label :piso, "Piso (0 = térreo)" %>
+                  <%= f.number_field :piso, min: 0, value: 1, required: true %>
+                </div>
+                <div class="rg-field">
+                  <%= f.label :modo_acesso, "Modo de acesso" %>
+                  <%= f.select :modo_acesso, [["Comum", "normal"], ["FastPass", "fastpass"]], {}, { required: true } %>
+                </div>
+                <%= f.submit "Salvar catraca", class: "rg-button rg-button-primary rg-button-full" %>
+              <% end %>
+            <% else %>
+              <p class="rg-form-empty">Cadastre um restaurante antes de adicionar catracas.</p>
+            <% end %>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <% if flash[:notice].present? %>
+      <div class="rg-notice rg-notice-success" role="status"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert].present? %>
+      <div class="rg-notice rg-notice-error" role="alert"><%= flash[:alert] %></div>
+    <% end %>
+
+    <section class="rg-metrics" aria-label="Resumo de cadastros">
+      <article class="rg-metric">
+        <div class="rg-metric-top"><span>TOTAL DE RESTAURANTES</span><span class="rg-metric-icon" aria-hidden="true">▣</span></div>
+        <strong class="rg-metric-value"><%= @restaurantes.length %> <%= @restaurantes.length == 1 ? "Unidade" : "Unidades" %></strong>
+        <small>Restaurantes cadastrados</small>
+      </article>
+      <article class="rg-metric">
+        <div class="rg-metric-top"><span>CATRACAS CADASTRADAS</span><span class="rg-metric-icon" aria-hidden="true">≋</span></div>
+        <strong class="rg-metric-value rg-metric-green"><%= @total_catracas %> <%= @total_catracas == 1 ? "Catraca" : "Catracas" %></strong>
+        <small>Distribuídas entre as unidades</small>
+      </article>
+      <article class="rg-metric">
+        <div class="rg-metric-top"><span>CATRACAS FASTPASS</span><span class="rg-metric-icon" aria-hidden="true">↯</span></div>
+        <strong class="rg-metric-value"><%= @total_fastpass %> <%= @total_fastpass == 1 ? "Catraca" : "Catracas" %></strong>
+        <small>Equipamentos no modo FastPass</small>
+      </article>
+    </section>
+
+    <section class="rg-restaurants" aria-labelledby="rg-units-title">
+      <h2 id="rg-units-title">Unidades Cadastradas <span>(<%= @restaurantes.length %> <%= @restaurantes.length == 1 ? "unidade" : "unidades" %>)</span></h2>
+
+      <% if @restaurantes.empty? %>
+        <div class="rg-empty-state">
+          <strong>Nenhuma unidade cadastrada</strong>
+          <p>Use o botão “Cadastrar Restaurante” acima para criar a primeira unidade.</p>
+        </div>
+      <% else %>
+        <% @restaurantes.each_with_index do |restaurante, numero| %>
+          <% catracas = restaurante.catracas.sort_by { |c| [c.piso, c.id] } %>
+          <article class="rg-restaurant-card">
+            <div class="rg-restaurant-head">
+              <span class="rg-restaurant-number" aria-hidden="true"><%= numero + 1 %></span>
+              <div class="rg-restaurant-title">
+                <h3><%= restaurante.nome %></h3>
+                <p><%= catracas.length %> <%= catracas.length == 1 ? "catraca associada" : "catracas associadas" %> · <%= catracas.map(&:piso).uniq.length %> <%= catracas.map(&:piso).uniq.length == 1 ? "piso" : "pisos" %></p>
+              </div>
+              <div class="rg-restaurant-actions">
+                <details class="rg-action-popover rg-action-popover-edit">
+                  <summary class="rg-button rg-button-tertiary">Editar Unidade</summary>
+                  <div class="rg-action-body">
+                    <h4>Editar restaurante</h4>
+                    <%= form_with model: [:admin, restaurante], local: true, class: "rg-form" do |f| %>
+                      <div class="rg-field">
+                        <%= f.label :nome, "Nome da unidade", for: "restaurante_nome_#{restaurante.id}" %>
+                        <%= f.text_field :nome, id: "restaurante_nome_#{restaurante.id}", required: true %>
+                      </div>
+                      <%= f.submit "Salvar alterações", class: "rg-button rg-button-primary rg-button-full" %>
+                    <% end %>
+                    <%= button_to "Remover restaurante", admin_restaurante_path(restaurante), method: :delete,
+                          class: "rg-button rg-button-danger rg-button-full",
+                          form: { data: { turbo_confirm: "Remover este restaurante? Unidades com catracas ou outros vínculos não serão excluídas." } } %>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <details class="rg-unit-details" open>
+              <summary class="rg-collapse-toggle">Ver Catracas (<%= catracas.length %>) <span class="rg-chevron" aria-hidden="true">⌄</span></summary>
+              <div class="rg-unit-body">
+                <% if catracas.empty? %>
+                  <p class="rg-no-gates">Ainda não existem catracas cadastradas nesta unidade.</p>
+                <% else %>
+                  <% catracas.group_by(&:piso).each do |piso, grupo| %>
+                    <div class="rg-floor-group">
+                      <h4>PISO <%= piso %><%= piso == 0 ? " (TÉRREO)" : "" %></h4>
+                      <div class="rg-gate-grid">
+                        <% grupo.each do |catraca| %>
+                          <div class="rg-gate-tile">
+                            <div class="rg-gate-info">
+                              <strong>Catraca <%= format("%02d", catraca.id) %></strong>
+                              <span class="rg-gate-mode <%= catraca.modo_acesso == "fastpass" ? "rg-gate-fastpass" : "" %>">
+                                <span class="rg-mode-dot" aria-hidden="true"></span>
+                                <%= catraca.modo_acesso == "fastpass" ? "FastPass" : "Modo comum" %>
+                              </span>
+                            </div>
+                            <details class="rg-gate-editor">
+                              <summary aria-label="Editar Catraca <%= catraca.id %>">Editar</summary>
+                              <div class="rg-gate-editor-body">
+                                <%= form_with model: [:admin, catraca], local: true, class: "rg-form" do |f| %>
+                                  <div class="rg-field">
+                                    <%= f.label :piso, "Piso", for: "catraca_piso_#{catraca.id}" %>
+                                    <%= f.number_field :piso, id: "catraca_piso_#{catraca.id}", min: 0, required: true %>
+                                  </div>
+                                  <div class="rg-field">
+                                    <%= f.label :modo_acesso, "Modo de acesso", for: "catraca_modo_#{catraca.id}" %>
+                                    <%= f.select :modo_acesso, [["Comum", "normal"], ["FastPass", "fastpass"]], {}, { id: "catraca_modo_#{catraca.id}" } %>
+                                  </div>
+                                  <%= f.submit "Salvar", class: "rg-button rg-button-primary rg-button-full" %>
+                                <% end %>
+                                <%= button_to "Remover catraca", admin_catraca_path(catraca), method: :delete,
+                                      class: "rg-button rg-button-danger rg-button-full",
+                                      form: { data: { turbo_confirm: "Remover esta catraca? Catracas com acessos registrados não podem ser excluídas." } } %>
+                              </div>
+                            </details>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </details>
+          </article>
+        <% end %>
+      <% end %>
+    </section>
+  </main>
+</div>

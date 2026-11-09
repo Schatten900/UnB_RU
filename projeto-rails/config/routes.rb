@@ -10,6 +10,11 @@ Rails.application.routes.draw do
 
   get "historico_local", to: "historico_local#index", as: :historico_local
   get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
+  namespace :admin do
+    resources :turnos, only: [:index, :create, :update]
+    resources :restaurantes, only: [:index, :create, :update, :destroy]
+    resources :catracas, only: [:create, :update, :destroy]
+  end
   
   namespace :api do
     post "cadastro", to: "cadastros#create"

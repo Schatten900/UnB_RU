@@ -9,6 +9,11 @@
       <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "is-current" %>
       <% if session[:catraca_id].present? && session[:restaurante_id].present? %>
         <%= link_to "Histórico Local", historico_local_path %>
+      <% if usuario_atual&.administrador? %>
+        <%= link_to "Gestão de Restaurantes", admin_restaurantes_path %>
+      <% end %>
+      <% if usuario_atual&.administrador? %>
+        <%= link_to "Turnos e Time-frames", admin_turnos_path %>
       <% end %>
       <%= link_to "Início & Carteira", root_path %>
     </nav>
