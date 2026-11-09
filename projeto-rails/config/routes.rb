@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   post "login", to: "autenticacao#create"
   post "ponto_configuracao", to: "ponto_configuracao#create"
   get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
+  get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass
   delete "logout", to: "autenticacao#destroy", as: :logout
 
   namespace :api do
