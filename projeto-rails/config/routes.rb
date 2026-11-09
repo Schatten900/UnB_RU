@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post "ponto_configuracao", to: "ponto_configuracao#create"
   delete "logout", to: "autenticacao#destroy", as: :logout
 
+  get "historico_local", to: "historico_local#index", as: :historico_local
+  get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
   namespace :admin do
     resources :turnos, only: [:index, :create, :update]
     resources :restaurantes, only: [:index, :create, :update, :destroy]
