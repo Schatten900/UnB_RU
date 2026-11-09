@@ -1,0 +1,142 @@
+<main class="operator-app local-history-page">
+  <header class="topbar">
+    <a href="<%= ponto_configuracao_path %>" class="brand" aria-label="RU UnB - Configuração de ponto">
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
+      <%= link_to "Histórico Local", historico_local_path, class: "is-current", "aria-current": "page" %>
+    </nav>
+
+    <div class="operator-menu">
+      <div class="operator-copy">
+        <strong><%= usuario_atual.nome %></strong>
+        <small>Fiscal - Catraca <%= format("%02d", @catraca.id) %></small>
+      </div>
+      <span class="lh-avatar" aria-hidden="true"><%= usuario_atual.nome.to_s[0].upcase %></span>
+      <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+    </div>
+  </header>
+
+  <div class="page-content lh-content">
+    <nav class="lh-breadcrumbs" aria-label="Caminho da página">
+      <%= link_to "Controle de Catracas", ponto_configuracao_path %>
+      <span aria-hidden="true">/</span>
+      <span><%= @catraca.restaurante.nome %></span>
+      <span aria-hidden="true">/</span>
+      <strong>Histórico Local</strong>
+    </nav>
+
+    <% if flash[:notice] || flash[:alert] %>
+      <p class="notice <%= flash[:alert] ? 'notice-error' : 'notice-success' %>" role="status"><%= flash[:alert] || flash[:notice] %></p>
+    <% end %>
+
+    <section class="lh-heading-card" aria-labelledby="historico-local-titulo">
+      <div>
+        <p class="eyebrow">Controle de acessos - US12</p>
+        <h1 id="historico-local-titulo">Histórico Local da Catraca <%= format("%02d", @catraca.id) %></h1>
+        <p class="lh-heading-subtitle">Tentativas registradas no ponto selecionado.</p>
+      </div>
+      <div class="lh-context">
+        <div><small>Unidade</small><strong><%= @catraca.restaurante.nome %></strong></div>
+        <div><small>Ponto</small><strong>Catraca <%= format("%02d", @catraca.id) %> (Piso <%= @catraca.piso %>)</strong></div>
+        <span class="lh-context-tag"><span class="lh-status-dot"></span>Dados do sistema</span>
+      </div>
+    </section>
+
+    <section class="lh-metrics" aria-label="Indicadores de hoje">
+      <article class="lh-metric">
+        <div class="lh-metric-top"><div><p>MÉTRICA OPERACIONAL</p><h2>Passagens Confirmadas</h2></div><span class="lh-metric-icon">↗</span></div>
+        <div class="lh-metric-bottom"><strong><%= @passagens_hoje %></strong><span>passagens hoje</span></div>
+      </article>
+      <article class="lh-metric">
+        <div class="lh-metric-top"><div><p>ACESSOS BLOQUEADOS</p><h2>Tentativas Rejeitadas</h2></div><span class="lh-metric-icon lh-metric-icon-warn">!</span></div>
+        <div class="lh-metric-bottom"><strong><%= @bloqueios_hoje %></strong><span>bloqueios hoje</span></div>
+      </article>
+      <article class="lh-metric">
+        <div class="lh-metric-top"><div><p>ARRECADAÇÃO LOCAL</p><h2>Total Debitado</h2></div><span class="lh-metric-icon lh-metric-icon-money">R$</span></div>
+        <div class="lh-metric-bottom"><strong class="lh-money"><%= number_to_currency(@valor_debitado_hoje, unit: "R$ ", separator: ",", delimiter: ".") %></strong><span>passagens de hoje</span></div>
+      </article>
+    </section>
+
+    <section class="lh-list-section" aria-labelledby="lh-list-title">
+      <div class="lh-toolbar">
+        <div class="lh-toolbar-head">
+          <h2 id="lh-list-title">Registros de entrada</h2>
+          <span><%= @total_registros %> registros encontrados</span>
+        </div>
+        <div class="lh-toolbar-controls">
+          <form class="lh-filter-form" method="get" action="<%= historico_local_path %>" aria-label="Filtros do historico">
+            <label for="historico_status">Status</label>
+            <select name="status" id="historico_status">
+              <option value="">Todos os status</option>
+              <option value="liberado" <%= 'selected' if @status == 'liberado' %>>Liberado</option>
+              <option value="bloqueado" <%= 'selected' if @status == 'bloqueado' %>>Bloqueado</option>
+              <option value="pendente" <%= 'selected' if @status == 'pendente' %>>Pendente</option>
+            </select>
+            <label for="historico_vinculo">Vínculo FastPass</label>
+            <select name="vinculo" id="historico_vinculo">
+              <option value="">Todos os registros</option>
+              <option value="fastpass" <%= 'selected' if @vinculo == 'fastpass' %>>Com FastPass vinculado</option>
+              <option value="sem_vinculo" <%= 'selected' if @vinculo == 'sem_vinculo' %>>Sem vínculo registrado</option>
+            </select>
+            <button class="lh-filter-submit" type="submit">Filtrar</button>
+          </form>
+          <div class="lh-export-actions">
+            <%= link_to "Atualizar lista", historico_local_path(status: @status, vinculo: @vinculo), class: "lh-secondary-button" %>
+            <%= link_to "Exportar CSV", exportar_historico_local_path(formato: "csv", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
+            <%= link_to "Exportar PDF", exportar_historico_local_path(formato: "pdf", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
+          </div>
+        </div>
+        <p class="lh-toolbar-note">Exibindo <%= @primeiro_registro %> a <%= @ultimo_registro %> de <%= @total_registros %> registros. Exportação inclui todos os registros filtrados.</p>
+      </div>
+
+      <div class="lh-table-container">
+        <table class="lh-table">
+          <thead>
+            <tr>
+              <th scope="col">Horário (BRT)</th>
+              <th scope="col">Matrícula discente</th>
+              <th scope="col">Vínculo FastPass</th>
+              <th scope="col">Tarifa / RU</th>
+              <th scope="col">Status da catraca</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @acessos.each do |acesso| %>
+              <tr class="<%= 'lh-row-blocked' if acesso.status == 'bloqueado' %>">
+                <td><strong class="lh-time"><%= acesso.data_hora.in_time_zone('America/Sao_Paulo').strftime('%H:%M:%S') %></strong><small class="lh-date"><%= acesso.data_hora.in_time_zone('America/Sao_Paulo').strftime('%d/%m/%Y') %></small></td>
+                <td class="lh-matricula"><%= acesso.usuario_matricula %></td>
+                <td>
+                  <% if acesso.inscricao_fastpass_id.present? %>
+                    <span class="lh-type lh-type-fastpass">FastPass vinculado</span>
+                  <% else %>
+                    <span class="lh-type">Sem vínculo registrado</span>
+                  <% end %>
+                </td>
+                <td class="<%= 'lh-muted-amount' if acesso.valor_debitado.zero? %>"><%= number_to_currency(acesso.valor_debitado, unit: 'R$ ', separator: ',', delimiter: '.') %></td>
+                <td><span class="lh-status lh-status-<%= acesso.status.parameterize %>"><span class="lh-status-dot"></span><%= { 'liberado' => 'Liberado', 'bloqueado' => 'Bloqueado', 'pendente' => 'Pendente' }.fetch(acesso.status, acesso.status.humanize) %></span></td>
+              </tr>
+            <% end %>
+            <% if @acessos.empty? %>
+              <tr><td class="lh-empty" colspan="5">Nenhuma tentativa encontrada para estes filtros.</td></tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <footer class="lh-pagination">
+        <span>Página <%= @pagina %> de <%= @total_paginas %></span>
+        <nav aria-label="Paginação do histórico">
+          <% if @pagina > 1 %>
+            <%= link_to 'Anterior', historico_local_path(pagina: @pagina - 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
+          <% end %>
+          <% if @pagina < @total_paginas %>
+            <%= link_to 'Próxima', historico_local_path(pagina: @pagina + 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
+          <% end %>
+        </nav>
+      </footer>
+    </section>
+  </div>
+</main>
