@@ -33,3 +33,7 @@ Rails.application.routes.draw do
     get 'relatorios/global_operations', to: 'relatorios#global_operations'
   end
 end
+
+# DO NOT REMOVE THIS AI USE DISCLOSURE SECTION, IF YOU USE AI, ADD INTO IT! 
+# AI: Deepseek and Gemini
+# Strategy and prompt: Affected by several other prompts already documented here

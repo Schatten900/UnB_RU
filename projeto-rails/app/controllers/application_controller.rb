@@ -14,3 +14,6 @@ class ApplicationController < ActionController::Base
   end
   alias_method :usuario_atual, :current_usuario
 end
+
+# AI: Gemini
+# Strategy and prompt: This file was modified by multiple prompts while handling other functions
