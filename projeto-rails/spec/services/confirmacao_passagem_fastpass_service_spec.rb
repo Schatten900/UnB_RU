@@ -5,95 +5,96 @@ RSpec.describe ConfirmacaoPassagemFastpassService, type: :service do
   let(:agora) { zona.local(2026, 10, 15, 12, 20) }
   let(:passagem_em) { zona.local(2026, 10, 15, 12, 21) }
   let(:estudante) do
-    Usuario.create!(
-      matricula: "221021212", nome: "Estudante", senha_hash: "hash",
-      perfil: "estudante", saldo: BigDecimal("15.50")
+    Usuario.create!(matricula: "221021212", nome: "Estudante", senha_hash: "hash", saldo: "15.50")
+  end
+  let(:restaurante) { Restaurante.create!(nome: "RU Darcy Ribeiro") }
+  let(:catraca) { Catraca.create!(restaurante: restaurante, piso: 1, modo_acesso: "fastpass") }
+  let(:turno) { Turno.create!(nome: "Almoco", inicio: "11:00", fim: "14:00", preco: "4.50") }
+  let(:time_frame) { TimeFrame.create!(turno: turno, inicio: "12:15", fim: "12:30") }
+  let(:sorteio) { Sorteio.create!(data: Date.new(2026, 10, 15), status: "aberto") }
+  let(:inscricao) do
+    InscricaoFastpass.create!(
+      usuario: estudante, sorteio: sorteio, time_frame: time_frame,
+      resultado: InscricaoFastpass::RESULTADO_GANHOU
     )
   end
-  let(:catraca) { double("Catraca", id: 4, modo_acesso: "fastpass") }
-  let(:time_frame) do
-    double("TimeFrame", id: 7, turno_id: 1,
-           inicio: Time.utc(2000, 1, 1, 12, 15),
-           fim: Time.utc(2000, 1, 1, 12, 30))
-  end
-  let(:inscricao) do
-    double("InscricaoFastpass", id: 3, usuario_matricula: estudante.matricula,
-           time_frame_id: 7, resultado: InscricaoFastpass::RESULTADO_GANHOU)
-  end
-  let(:repositorio) { RegistroValidacoesRepositoryMock.new }
   let(:liberador) { LiberadorCatracaMock.new }
   let(:resultado) do
     ValidacaoFastpassService.call(
-      usuario: estudante, catraca: catraca, inscricao: inscricao,
-      time_frame: time_frame, preco: BigDecimal("4.50"),
-      repositorio: repositorio, liberador: liberador, agora: agora
+      usuario: estudante, catraca: catraca, turno: turno,
+      inscricao: inscricao, time_frame: time_frame,
+      liberador: liberador, agora: agora
     )
   end
-  let(:acesso_mock) { double("Acesso criado") }
 
-  before { allow(Acesso).to receive(:create!).and_return(acesso_mock) }
+  it "atualiza o Acesso existente e debita somente apos confirmar" do
+    tentativa = resultado.acesso
+    expect(tentativa.status).to eq("pendente")
+    expect(estudante.reload.saldo).to eq(15.5.to_d)
 
-  it "debita somente apos confirmacao, solicita Acesso e registra Liberado" do
-    expect { described_class.call(resultado: resultado, agora: passagem_em) }
-      .to change { estudante.reload.saldo }
-      .from(BigDecimal("15.50")).to(BigDecimal("11.00"))
+    expect do
+      @acesso = described_class.call(resultado: resultado, agora: passagem_em)
+    end.to change { estudante.reload.saldo }.from(15.5.to_d).to(11.to_d)
 
-    expect(Acesso).to have_received(:create!).with(
-      usuario_matricula: "221021212", catraca_id: 4, turno_id: 1,
-      inscricao_fastpass_id: 3, data_hora: agora, passagem_em: passagem_em,
-      status: "liberado", valor_debitado: BigDecimal("4.50")
-    ).once
+    expect(Acesso.count).to eq(1)
+    expect(@acesso.id).to eq(tentativa.id)
+    expect(@acesso.status).to eq("liberado")
+    expect(@acesso.passagem_em).to eq(passagem_em)
+    expect(@acesso.valor_debitado).to eq(4.5.to_d)
     expect(resultado.confirmado?).to be(true)
-    expect(repositorio.listar(catraca_id: 4).map(&:status)).to eq(["Liberado"])
   end
 
-  it "nao cobra nem registra passagem quando a autorizacao foi bloqueada" do
-    resultado_bloqueado = ValidacaoFastpassService.call(
-      usuario: estudante, catraca: catraca, inscricao: nil,
-      time_frame: nil, preco: BigDecimal("4.50"),
-      repositorio: repositorio, liberador: liberador, agora: agora
+  it "nao confirma uma tentativa bloqueada" do
+    bloqueado = ValidacaoFastpassService.call(
+      usuario: estudante, catraca: catraca, turno: turno,
+      inscricao: nil, time_frame: nil,
+      liberador: liberador, agora: agora
     )
 
     expect do
-      described_class.call(resultado: resultado_bloqueado, agora: passagem_em)
+      described_class.call(resultado: bloqueado, agora: passagem_em)
     end.to raise_error(ConfirmacaoPassagemFastpassService::PassagemNaoAutorizada)
-    expect(Acesso).not_to have_received(:create!)
-    expect(estudante.reload.saldo).to eq(BigDecimal("15.50"))
-    expect(repositorio.listar(catraca_id: 4).map(&:status)).to eq(["Bloqueado"])
+
+    expect(bloqueado.acesso.reload.status).to eq("bloqueado")
+    expect(bloqueado.acesso.passagem_em).to be_nil
+    expect(estudante.reload.saldo).to eq(15.5.to_d)
   end
 
-  it "impede duas confirmacoes da mesma autorizacao" do
-    described_class.call(resultado: resultado, agora: passagem_em)
+  it "mantem a verificacao simples de confirmacao duplicada" do
+    autorizacao = resultado
+    described_class.call(resultado: autorizacao, agora: passagem_em)
 
     expect do
-      described_class.call(resultado: resultado, agora: passagem_em)
+      described_class.call(resultado: autorizacao, agora: passagem_em)
     end.to raise_error(ConfirmacaoPassagemFastpassService::PassagemJaConfirmada)
-    expect(estudante.reload.saldo).to eq(BigDecimal("11.00"))
-    expect(Acesso).to have_received(:create!).once
-    expect(repositorio.listar(catraca_id: 4).map(&:status)).to eq(["Liberado"])
+    expect(estudante.reload.saldo).to eq(11.to_d)
+    expect(Acesso.count).to eq(1)
   end
 
-  it "reavalia o saldo no instante da confirmacao" do
+  it "nao debita se o saldo ficar insuficiente antes da confirmacao" do
     autorizacao = resultado
-    estudante.update!(saldo: BigDecimal("0.00"))
+    estudante.update!(saldo: "0.00")
 
     expect do
       described_class.call(resultado: autorizacao, agora: passagem_em)
     end.to raise_error(ConfirmacaoPassagemFastpassService::SaldoInsuficiente)
-    expect(Acesso).not_to have_received(:create!)
-    expect(estudante.reload.saldo).to eq(BigDecimal("0.00"))
-    expect(repositorio.listar(catraca_id: 4)).to be_empty
+
+    expect(autorizacao.acesso.reload.status).to eq("pendente")
+    expect(autorizacao.acesso.passagem_em).to be_nil
+    expect(autorizacao.confirmado?).to be(false)
+    expect(estudante.reload.saldo).to eq(0.to_d)
   end
 
-  it "nao debita caso a persistencia do Acesso falhe" do
+  it "desfaz o debito se a atualizacao do Acesso falhar" do
     autorizacao = resultado
-    allow(Acesso).to receive(:create!).and_raise("Falha simulada")
+    allow(autorizacao.acesso).to receive(:update!).and_raise("Falha simulada")
 
     expect do
       described_class.call(resultado: autorizacao, agora: passagem_em)
     end.to raise_error("Falha simulada")
-    expect(estudante.reload.saldo).to eq(BigDecimal("15.50"))
+
+    expect(estudante.reload.saldo).to eq(15.5.to_d)
+    expect(autorizacao.acesso.reload.status).to eq("pendente")
     expect(autorizacao.confirmado?).to be(false)
-    expect(repositorio.listar(catraca_id: 4)).to be_empty
   end
 end

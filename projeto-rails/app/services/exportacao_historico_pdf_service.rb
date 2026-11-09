@@ -12,22 +12,19 @@ class ExportacaoHistoricoPdfService
       usuario_matricula: matricula, data_hora: inicio...fim
     )
 
+    # Acesso representa tentativa, mas o historico de refeicoes so inclui passagens.
     registros_acesso = acessos_model.where(
-      usuario_matricula: matricula, data_hora: inicio...fim
+      usuario_matricula: matricula, passagem_em: inicio...fim
     )
 
     lancamentos = recargas.map do |recarga|
-      {
-        tipo: "recarga",
-        data_hora: recarga.data_hora,
-        valor: recarga.valor
-      }
+      { tipo: "recarga", data_hora: recarga.data_hora, valor: recarga.valor }
     end
 
     lancamentos.concat(registros_acesso.map do |acesso|
       {
         tipo: "acesso",
-        data_hora: acesso.data_hora,
+        data_hora: acesso.passagem_em,
         valor: acesso.valor_debitado,
         status: acesso.status
       }

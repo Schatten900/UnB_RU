@@ -34,7 +34,7 @@ class Acesso < ApplicationRecord
     usuario.reload.saldo_suficiente_para?(turno)
   end
 
-  def confirmar_passagem!
+  def confirmar_passagem!(agora: Time.current)
     self.class.transaction do
       preco = turno.preco
       debitos = Usuario.where(matricula: usuario_matricula)
@@ -43,7 +43,7 @@ class Acesso < ApplicationRecord
 
       next false if debitos.zero?
 
-      update!(passagem_em: Time.current, valor_debitado: preco)
+      update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
       usuario.reload
       true
     end
