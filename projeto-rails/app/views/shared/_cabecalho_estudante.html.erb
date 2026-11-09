@@ -1,0 +1,25 @@
+<header class="topbar">
+  <%= link_to root_path, class: "brand" do %>
+    <span class="brand-mark" aria-hidden="true">RU</span>
+    <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
+  <% end %>
+  <nav class="main-nav" aria-label="Navegação principal">
+    <% [["Início & Carteira", root_path], ["Extrato", extrato_refeicoes_path]].each do |nome, caminho| %>
+      <%= link_to nome, caminho, class: ("is-current" if current_page?(caminho)), aria: { current: ("page" if current_page?(caminho)) } %>
+    <% end %>
+    <% if usuario_atual&.funcionario? %>
+      <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
+    <% end %>
+  </nav>
+  <div class="operator-menu">
+    <% if usuario_atual %>
+      <div class="operator-copy">
+        <strong><%= usuario_atual.nome %></strong>
+        <small><%= usuario_atual.funcionario? ? "Operador" : "Estudante" %></small>
+      </div>
+      <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+    <% else %>
+      <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+    <% end %>
+  </div>
+</header>
