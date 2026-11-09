@@ -1,0 +1,168 @@
+<div class="tf-admin-page">
+  <header class="tf-header">
+    <div class="tf-header-main">
+      <div class="tf-brand-wrap">
+        <%= link_to admin_turnos_path, class: "tf-brand" do %>
+          RU <strong>UnB</strong>
+        <% end %>
+        <span class="tf-brand-caption">RESTAURANTE UNIVERSITÁRIO · ADMINISTRAÇÃO</span>
+      </div>
+      <div class="tf-admin-user">
+        <span><strong><%= usuario_atual.nome %></strong><small>Administrador · <%= usuario_atual.matricula %></small></span>
+        <%= button_to "Sair", logout_path, method: :delete, class: "tf-logout" %>
+      </div>
+    </div>
+    <nav class="tf-nav" aria-label="Navegação administrativa">
+      <% if respond_to?(:admin_restaurantes_path) %>
+        <%= link_to "Restaurantes e Catracas", admin_restaurantes_path, class: "tf-nav-link" %>
+      <% end %>
+      <%= link_to "Turnos e Time-frames", admin_turnos_path, class: "tf-nav-link tf-nav-active", aria: { current: "page" } %>
+      <%= link_to "Relatório Global", api_relatorios_operacoes_path, class: "tf-nav-link", data: { turbo: false } %>
+      <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "tf-nav-link" %>
+    </nav>
+  </header>
+
+  <main class="tf-content">
+    <div class="tf-heading">
+      <p class="tf-eyebrow">◷ CONFIGURAÇÃO DE TURNOS E TIME-FRAMES · US14</p>
+      <h1>Configuração de Turnos e Time-frames</h1>
+      <p>Defina os horários globais das refeições e organize as janelas de agendamento FastPass.</p>
+    </div>
+
+    <% if flash[:notice].present? %>
+      <div class="tf-notice tf-notice-success" role="status"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert].present? %>
+      <div class="tf-notice tf-notice-error" role="alert"><%= flash[:alert] %></div>
+    <% end %>
+
+    <section class="tf-section" aria-labelledby="tf-turnos-title">
+      <div class="tf-section-head">
+        <h2 id="tf-turnos-title">♜ Turnos Operacionais Diários <span>(<%= @turnos.length %> <%= @turnos.length == 1 ? "Refeição" : "Refeições" %>)</span></h2>
+        <span class="tf-chip">Configuração global</span>
+      </div>
+
+      <% if @turnos.any? %>
+        <div class="tf-turno-grid">
+          <% @turnos.each do |turno| %>
+            <% selecionado = @turno&.id == turno.id %>
+            <% janelas = turno.time_frames.sort_by { |janela| [janela.inicio, janela.id] } %>
+            <article class="tf-turno-card <%= 'tf-turno-selected' if selecionado %>">
+              <% if selecionado %><span class="tf-selected-ribbon">Turno em edição</span><% end %>
+              <div class="tf-turno-top">
+                <h3>☕ <%= turno.nome %></h3>
+                <span class="tf-state"><%= janelas.empty? ? "Sem janelas" : "Configurado" %></span>
+              </div>
+              <dl class="tf-turno-summary">
+                <div><dt>Janela geral</dt><dd><%= turno.inicio.strftime("%H:%M") %> – <%= turno.fim.strftime("%H:%M") %></dd></div>
+                <div><dt>Preço da refeição</dt><dd><%= number_to_currency(turno.preco, unit: "R$ ", separator: ",", delimiter: ".") %></dd></div>
+                <div><dt>Time-frames</dt><dd><%= janelas.length %> <%= janelas.length == 1 ? "janela" : "janelas" %></dd></div>
+              </dl>
+              <%= link_to selecionado ? "Editando este turno" : "Editar horários", admin_turnos_path(turno_id: turno.id), class: "tf-select-button #{'tf-select-button-active' if selecionado}" %>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="tf-empty">Nenhum turno cadastrado. Use o formulário abaixo para criar o primeiro.</div>
+      <% end %>
+    </section>
+
+    <% if @turno %>
+      <section class="tf-panel" aria-labelledby="tf-janelas-title">
+        <div class="tf-panel-head">
+          <div>
+            <h2 id="tf-janelas-title">◷ Janelas de Agendamento FastPass</h2>
+            <p>Turno selecionado: <strong><%= @turno.nome %></strong> (<%= @turno.inicio.strftime("%H:%M") %> – <%= @turno.fim.strftime("%H:%M") %>)</p>
+          </div>
+          <span class="tf-state tf-state-counter"><%= @janelas.length %> <%= @janelas.length == 1 ? "janela" : "janelas" %></span>
+        </div>
+
+        <%= form_with model: [:admin, @turno], local: true, class: "tf-edit-form" do |form| %>
+          <div class="tf-fields-grid">
+            <div class="tf-field">
+              <%= form.label :nome, "Nome da refeição" %>
+              <%= form.text_field :nome, required: true, maxlength: 80 %>
+            </div>
+            <div class="tf-field">
+              <%= form.label :inicio, "Início do turno" %>
+              <%= form.time_field :inicio, required: true %>
+            </div>
+            <div class="tf-field">
+              <%= form.label :fim, "Fim do turno" %>
+              <%= form.time_field :fim, required: true %>
+            </div>
+            <div class="tf-field">
+              <%= form.label :preco, "Preço (R$)" %>
+              <%= form.number_field :preco, step: "0.01", min: 0, required: true %>
+            </div>
+            <div class="tf-field">
+              <%= label_tag :duracao_intervalo, "Granularidade da janela (min)" %>
+              <%= number_field_tag :duracao_intervalo, @duracao_intervalo, min: 1, max: 120, step: 1, required: true %>
+            </div>
+          </div>
+          <p class="tf-help">A duração define as janelas FastPass. A última janela pode ser menor para respeitar o fim do turno.</p>
+          <p class="tf-help tf-warning">Ao alterar horários ou duração, as janelas são recriadas. Se alguma já tiver inscrições FastPass, a alteração será bloqueada para preservar os cadastros existentes.</p>
+          <div class="tf-actions">
+            <%= link_to "Restaurar campos", admin_turnos_path(turno_id: @turno.id), class: "tf-button tf-button-muted" %>
+            <%= form.submit "Salvar Configuração", class: "tf-button tf-button-primary" %>
+          </div>
+        <% end %>
+
+        <div class="tf-grid-head">
+          <h3>Grade Horária dos Lotes</h3>
+          <span><%= @janelas.empty? ? "Nenhuma janela gerada" : "Intervalos registrados no banco" %></span>
+        </div>
+        <% if @janelas.empty? %>
+          <div class="tf-empty">Este turno ainda não possui janelas FastPass. Salve a configuração acima para gerá-las.</div>
+        <% else %>
+          <div class="tf-window-grid">
+            <% @janelas.each_with_index do |janela, i| %>
+              <div class="tf-window">
+                <strong>Lote <%= format("%02d", i + 1) %></strong>
+                <span><%= janela.inicio.strftime("%H:%M") %> –</span>
+                <span><%= janela.fim.strftime("%H:%M") %></span>
+                <small><span class="tf-dot"></span> Cadastrado</small>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <section class="tf-new-panel" aria-labelledby="tf-create-title">
+      <details class="tf-create-details">
+        <summary id="tf-create-title">＋ Cadastrar novo turno</summary>
+        <div class="tf-create-body">
+          <p>Crie uma refeição global e gere suas janelas de agendamento.</p>
+          <%= form_with scope: :turno, url: admin_turnos_path, method: :post, local: true, class: "tf-create-form" do |form| %>
+            <div class="tf-fields-grid">
+              <div class="tf-field">
+                <%= form.label :nome, "Nome do turno" %>
+                <%= form.text_field :nome, placeholder: "Ex.: Café da Manhã", required: true %>
+              </div>
+              <div class="tf-field">
+                <%= form.label :inicio, "Início" %>
+                <%= form.time_field :inicio, required: true %>
+              </div>
+              <div class="tf-field">
+                <%= form.label :fim, "Fim" %>
+                <%= form.time_field :fim, required: true %>
+              </div>
+              <div class="tf-field">
+                <%= form.label :preco, "Preço (R$)" %>
+                <%= form.number_field :preco, value: "4.50", step: "0.01", min: 0, required: true %>
+              </div>
+              <div class="tf-field">
+                <%= label_tag :nova_duracao_intervalo, "Duração da janela (min)" %>
+                <%= number_field_tag :duracao_intervalo, 15, id: "nova_duracao_intervalo", min: 1, max: 120, step: 1, required: true %>
+              </div>
+            </div>
+            <%= form.submit "Criar turno e gerar janelas", class: "tf-button tf-button-primary" %>
+          <% end %>
+        </div>
+      </details>
+    </section>
+
+    <p class="tf-footer-note">Configuração global para os restaurantes universitários · Operação simulada para fins acadêmicos.</p>
+  </main>
+</div>
