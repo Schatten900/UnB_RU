@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "ponto_configuracao", to: "ponto_configuracao#new", as: :ponto_configuracao
   post "login", to: "autenticacao#create"
   post "ponto_configuracao", to: "ponto_configuracao#create"
+  get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
   delete "logout", to: "autenticacao#destroy", as: :logout
 
   namespace :api do

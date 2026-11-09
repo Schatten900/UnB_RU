@@ -1,0 +1,22 @@
+<section class="terminal-card terminal-history" aria-labelledby="titulo-historico">
+  <div class="terminal-section-title"><h2 id="titulo-historico">◷ <%= titulo %></h2><small>Últimos 20 registros da catraca</small></div>
+  <div class="terminal-table-scroll">
+    <table class="terminal-table">
+      <thead><tr><th>Horário</th><th>Matrícula · Estudante</th><th>Modalidade</th><th>Valor debitado</th><th>Status catraca</th></tr></thead>
+      <tbody>
+        <% @acessos_operador.each do |acesso| %>
+          <tr>
+            <td><%= l acesso.data_hora.in_time_zone("America/Sao_Paulo"), format: "%d/%m %H:%M:%S" %></td>
+            <td><%= acesso.usuario_matricula %> · <%= acesso.usuario.nome %></td>
+            <td><span class="terminal-pill"><%= acesso.inscricao_fastpass_id? ? "FastPass" : "Comum" %></span></td>
+            <td><%= number_to_currency(acesso.valor_debitado, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            <td><%= acesso.status.humanize %></td>
+          </tr>
+        <% end %>
+        <% if @acessos_operador.empty? %>
+          <tr><td colspan="5" class="terminal-empty"><%= @catraca_operador ? "Nenhum acesso registrado nesta catraca." : "Configure um ponto de acesso para consultar os registros." %></td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
