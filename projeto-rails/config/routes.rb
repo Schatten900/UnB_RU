@@ -1,21 +1,22 @@
 Rails.application.routes.draw do
-  # Rotas de Autenticação (apontando para AutenticacaoController)
+  # Health check do Rails
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Rotas de Autenticação
   get 'login', to: 'autenticacao#new', as: :login
   post 'login', to: 'autenticacao#create'
   delete 'logout', to: 'autenticacao#destroy', as: :logout
 
-  # Cadastro
+  # Ponto de configuração e Cadastro web
   get 'cadastro', to: 'cadastros#new', as: :new_cadastro
+  get 'ponto_configuracao', to: 'ponto_configuracao#new', as: :ponto_configuracao
+  post 'ponto_configuracao', to: 'ponto_configuracao#create'
 
-  # Porta do estudante e recarga
-  root 'home#index' 
+  # Páginas principais e operacionais do estudante
+  root 'home#index' # Ou 'cardapio#index' conforme preferência da sprint-2, mantido home#index para atender o HomeController criado
   get 'recarga', to: 'recargas#index', as: :recarga
-
-    # Relatorios global e turnos
   get 'turnos', to: 'turnos#index', as: :turnos
   get 'relatorio_global', to: 'relatorios#global', as: :relatorio_global
-
-  #Fast passes
   get 'fast_pass', to: 'fast_passes#index', as: :fast_pass
 
   # APIs (Endpoints que respondem em JSON consumidos via fetch)
@@ -24,13 +25,14 @@ Rails.application.routes.draw do
     
     resources :recargas, only: [:create] do
       member do
-        post :confirm # Mapeia para /api/recargas/:id/confirm
+        post :confirmar # Mapeia explicitamente para /api/recargas/:id/confirmar
       end
     end
 
     resources :turnos, only: [:index, :show, :create, :update]
     
     get 'relatorios/global_operations', to: 'relatorios#global_operations'
+    get 'relatorios/operacoes', to: 'relatorios#global_operations' # Alias unificado para atender as duas branches
   end
 end
 

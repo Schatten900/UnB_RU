@@ -1,3 +1,4 @@
+# spec/requests/api/cadastros_spec.rb
 require "rails_helper"
 
 RSpec.describe "Cadastro de estudante", type: :request do
@@ -26,17 +27,17 @@ RSpec.describe "Cadastro de estudante", type: :request do
           "nome"      => "Maria Silva",
           "perfil"    => "estudante"
         )
-        # BigDecimal é serializado como string ("0.0") em JSON
         expect(json["usuario"]["saldo"].to_f).to eq(0.0)
       end
 
-      it "persiste o usuário com perfil estudante e saldo zero" do
+      it "persiste o usuário com perfil estudante, saldo zero e senha com hash seguro (BCrypt)" do
         post url, params: valid_params, as: :json
 
         usuario = Usuario.find_by(matricula: "221012345")
         expect(usuario).to be_present
         expect(usuario.nome).to eq("Maria Silva")
         expect(usuario.senha_hash).to be_present
+        expect(usuario.senha_hash).not_to eq("senha-segura") # Garante que foi criptografado com BCrypt
         expect(usuario.perfil).to eq("estudante")
         expect(usuario.saldo).to eq(0)
       end
@@ -69,7 +70,7 @@ RSpec.describe "Cadastro de estudante", type: :request do
       include_examples "matrícula rejeitada", "12345678"     # 8 dígitos
       include_examples "matrícula rejeitada", "2210123456"   # 10 dígitos
       include_examples "matrícula rejeitada", "22101A345"    # contém letra
-      include_examples "matrícula rejeitada", "22101 2345"   # contém espaço
+      include_examples "matrícula rejeitada", "22101 2345"    # contém espaço
       include_examples "matrícula rejeitada", "999123456"    # começa com 999
       include_examples "matrícula rejeitada", "999999999"    # começa com 999
 
@@ -100,7 +101,7 @@ RSpec.describe "Cadastro de estudante", type: :request do
         Usuario.create!(
           matricula: "221012345",
           nome: "Outra Pessoa",
-          senha_hash: "outra-senha",
+          senha_hash: BCrypt::Password.create("outra-senha"),
           perfil: "estudante",
           saldo: 0
         )
@@ -115,7 +116,7 @@ RSpec.describe "Cadastro de estudante", type: :request do
     end
   end
 end
-
-
-# AI: Deepseek wit think and search
+# AI: Gemini
+# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, alongside conflicting github file, assitence with merging both tests
+# AI: Deepseek with think and search
 # Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a Respec test, giving existing spec files to it
