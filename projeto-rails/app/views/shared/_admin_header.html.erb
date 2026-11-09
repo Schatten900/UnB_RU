@@ -21,7 +21,7 @@
 
   <nav class="rg-header-nav" aria-label="Navegação administrativa">
     <%= link_to "Restaurantes e Catracas (US13)", admin_restaurantes_path, class: "rg-nav-link rg-nav-active", aria: { current: "page" } %>
-    <span class="rg-nav-link rg-nav-future" title="Tela ainda não implementada">Turnos e Time-frames (US14)</span>
+    <%= link_to "Turnos e Time-frames (US14)", admin_turnos_path, class: "rg-nav-link" %>
     <span class="rg-nav-link rg-nav-future" title="Tela ainda não implementada">Vagas e Cotas FastPass (US15)</span>
     <%= link_to "Relatório Global (PDF)", api_relatorios_operacoes_path, class: "rg-nav-link", data: { turbo: false } %>
     <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "rg-nav-link" %>

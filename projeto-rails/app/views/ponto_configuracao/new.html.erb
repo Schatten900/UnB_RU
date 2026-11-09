@@ -10,6 +10,9 @@
       <% if usuario_atual&.administrador? %>
         <%= link_to "Gestão de Restaurantes", admin_restaurantes_path %>
       <% end %>
+      <% if usuario_atual&.administrador? %>
+        <%= link_to "Turnos e Time-frames", admin_turnos_path %>
+      <% end %>
       <%= link_to "Início & Carteira", root_path %>
     </nav>
 

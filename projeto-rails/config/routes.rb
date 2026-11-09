@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   delete "logout", to: "autenticacao#destroy", as: :logout
 
   namespace :admin do
+    resources :turnos, only: [:index, :create, :update]
     resources :restaurantes, only: [:index, :create, :update, :destroy]
     resources :catracas, only: [:create, :update, :destroy]
   end
