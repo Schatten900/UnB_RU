@@ -5,15 +5,14 @@ class ApplicationController < ActionController::Base
   private
 
   def current_usuario
-    # Se houver sessão, busca o usuário logado
-    if session[:usuario_matricula].present?
-      @current_usuario ||= Usuario.find_by(matricula: session[:usuario_matricula])
-    else
-      # Fallback seguro para telas e testes web legados se necessário
-      @current_usuario ||= Usuario.first || Usuario.new(nome: "Estudante Teste", saldo: 50.0)
-    end
+    usuario_atual
   end
-  alias_method :usuario_atual, :current_usuario
+
+  def usuario_atual
+    return unless session[:usuario_matricula].present?
+
+    @usuario_atual ||= Usuario.find_by(matricula: session[:usuario_matricula])
+  end
 
   def authenticate_usuario!
     return if session[:usuario_matricula].present? && current_usuario
