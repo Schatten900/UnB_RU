@@ -12,7 +12,6 @@ class Recarga < ApplicationRecord
   enum :status, {
     pendente: "pendente",
     concluida: "concluida",
-    concluida: "confirmada",
     falhou: "falhou"
   }
 
