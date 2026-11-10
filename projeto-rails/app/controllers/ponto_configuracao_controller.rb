@@ -21,7 +21,7 @@ class PontoConfiguracaoController < ApplicationController
             "Restaurante #{restaurante.id} e catraca #{catraca.id} selecionados por funcionário #{usuario_atual.matricula}"
         )
 
-        redirect_to ponto_configuracao_path, notice: "Ponto de acesso configurado com sucesso."
+        redirect_to operator_ponto_configuracao_path, notice: "Ponto de acesso configurado com sucesso."
     end
 
     private

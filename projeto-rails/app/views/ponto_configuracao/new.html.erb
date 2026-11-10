@@ -1,36 +1,5 @@
 <main class="operator-app" data-controller="point-configuration">
-  <header class="topbar">
-    <%= link_to ponto_configuracao_path, class: "brand" do %>
-      <span class="brand-mark" aria-hidden="true">RU</span>
-      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
-    <% end %>
-
-    <nav class="main-nav" aria-label="Navegação principal">
-      <%= link_to "Configuração de Ponto", ponto_configuracao_path, class: "is-current" %>
-
-      <% if session[:catraca_id].present? && session[:restaurante_id].present? %>
-        <%= link_to "Histórico Local", historico_local_path %>
-      <% end %>
-
-      <% if usuario_atual&.administrador? %>
-        <%= link_to "Gestão de Restaurantes", admin_restaurantes_path %>
-      <% end %>
-
-      <% if usuario_atual&.administrador? %>
-        <%= link_to "Turnos e Time-frames", admin_turnos_path %>
-      <% end %>
-
-      <%= link_to "Início & Carteira", root_path %>
-    </nav>
-
-    <div class="operator-menu">
-      <div class="operator-copy">
-        <strong><%= usuario_atual.nome %></strong>
-        <small>Fiscal · SIAPE <%= usuario_atual.matricula %></small>
-      </div>
-      <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
-    </div>
-  </header>
+  <%= render "shared/cabecalho_operador" %>
 
   <div class="page-content">
     <section class="page-heading">
@@ -50,7 +19,7 @@
       </div>
     <% end %>
 
-    <%= form_with url: ponto_configuracao_path, method: :post, local: true, class: "configuration-form" do |form| %>
+    <%= form_with url: operator_ponto_configuracao_path, method: :post, local: true, class: "configuration-form" do |form| %>
       <div class="configuration-columns">
         <div class="configuration-main">
           <section class="selection-panel">

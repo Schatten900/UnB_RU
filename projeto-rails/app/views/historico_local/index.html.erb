@@ -1,28 +1,9 @@
 <main class="operator-app local-history-page">
-  <header class="topbar">
-    <a href="<%= ponto_configuracao_path %>" class="brand" aria-label="RU UnB - Configuração de ponto">
-      <span class="brand-mark" aria-hidden="true">RU</span>
-      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
-    </a>
-
-    <nav class="main-nav" aria-label="Navegação principal">
-      <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
-      <%= link_to "Histórico Local", historico_local_path, class: "is-current", "aria-current": "page" %>
-    </nav>
-
-    <div class="operator-menu">
-      <div class="operator-copy">
-        <strong><%= usuario_atual.nome %></strong>
-        <small>Fiscal - Catraca <%= format("%02d", @catraca.id) %></small>
-      </div>
-      <span class="lh-avatar" aria-hidden="true"><%= usuario_atual.nome.to_s[0].upcase %></span>
-      <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
-    </div>
-  </header>
+  <%= render "shared/cabecalho_operador" %>
 
   <div class="page-content lh-content">
     <nav class="lh-breadcrumbs" aria-label="Caminho da página">
-      <%= link_to "Controle de Catracas", ponto_configuracao_path %>
+      <%= link_to "Controle de Catracas", operator_ponto_configuracao_path %>
       <span aria-hidden="true">/</span>
       <span><%= @catraca.restaurante.nome %></span>
       <span aria-hidden="true">/</span>
@@ -35,7 +16,7 @@
 
     <section class="lh-heading-card" aria-labelledby="historico-local-titulo">
       <div>
-        <p class="eyebrow">Controle de acessos - US12</p>
+        <p class="eyebrow">Controle de acessos</p>
         <h1 id="historico-local-titulo">Histórico Local da Catraca <%= format("%02d", @catraca.id) %></h1>
         <p class="lh-heading-subtitle">Tentativas registradas no ponto selecionado.</p>
       </div>
@@ -68,7 +49,7 @@
           <span><%= @total_registros %> registros encontrados</span>
         </div>
         <div class="lh-toolbar-controls">
-          <form class="lh-filter-form" method="get" action="<%= historico_local_path %>" aria-label="Filtros do historico">
+          <form class="lh-filter-form" method="get" action="<%= operator_historico_local_path %>" aria-label="Filtros do historico">
             <label for="historico_status">Status</label>
             <select name="status" id="historico_status">
               <option value="">Todos os status</option>
@@ -85,9 +66,9 @@
             <button class="lh-filter-submit" type="submit">Filtrar</button>
           </form>
           <div class="lh-export-actions">
-            <%= link_to "Atualizar lista", historico_local_path(status: @status, vinculo: @vinculo), class: "lh-secondary-button" %>
-            <%= link_to "Exportar CSV", exportar_historico_local_path(formato: "csv", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
-            <%= link_to "Exportar PDF", exportar_historico_local_path(formato: "pdf", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
+            <%= link_to "Atualizar lista", operator_historico_local_path(status: @status, vinculo: @vinculo), class: "lh-secondary-button" %>
+            <%= link_to "Exportar CSV", operator_exportar_historico_local_path(formato: "csv", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
+            <%= link_to "Exportar PDF", operator_exportar_historico_local_path(formato: "pdf", status: @status, vinculo: @vinculo), class: "lh-primary-button" %>
           </div>
         </div>
         <p class="lh-toolbar-note">Exibindo <%= @primeiro_registro %> a <%= @ultimo_registro %> de <%= @total_registros %> registros. Exportação inclui todos os registros filtrados.</p>
@@ -130,10 +111,10 @@
         <span>Página <%= @pagina %> de <%= @total_paginas %></span>
         <nav aria-label="Paginação do histórico">
           <% if @pagina > 1 %>
-            <%= link_to 'Anterior', historico_local_path(pagina: @pagina - 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
+            <%= link_to 'Anterior', operator_historico_local_path(pagina: @pagina - 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
           <% end %>
           <% if @pagina < @total_paginas %>
-            <%= link_to 'Próxima', historico_local_path(pagina: @pagina + 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
+            <%= link_to 'Próxima', operator_historico_local_path(pagina: @pagina + 1, status: @status, vinculo: @vinculo), class: 'lh-page-link' %>
           <% end %>
         </nav>
       </footer>

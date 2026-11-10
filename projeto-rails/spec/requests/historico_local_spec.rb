@@ -26,16 +26,16 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
 
   def entrar_como_funcionario
     post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
-    expect(response).to redirect_to(ponto_configuracao_path)
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
   end
 
   def configurar_ponto
     entrar_como_funcionario
-    post ponto_configuracao_path, params: {
+    post operator_ponto_configuracao_path, params: {
       restaurante_id: restaurante.id,
       catraca_id: catraca.id
     }
-    expect(response).to redirect_to(ponto_configuracao_path)
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
   end
 
   def tentativa(usuario:, catraca_alvo: catraca, status:, minutos_atras: 0,
@@ -51,21 +51,21 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
   end
 
   it "exige autenticacao" do
-    get historico_local_path
+    get operator_historico_local_path
     expect(response).to redirect_to(login_path)
   end
 
   it "exige ponto de acesso configurado na sessao" do
     entrar_como_funcionario
 
-    get historico_local_path
-    expect(response).to redirect_to(ponto_configuracao_path)
+    get operator_historico_local_path
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
   end
 
   it "exibe o restaurante e a catraca configurados" do
     configurar_ponto
 
-    get historico_local_path
+    get operator_historico_local_path
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Histórico Local da Catraca")
     expect(response.body).to include("RU Darcy Ribeiro")
@@ -75,7 +75,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
   it "adiciona acesso ao historico no menu da configuracao de ponto" do
     configurar_ponto
 
-    get ponto_configuracao_path
+    get operator_ponto_configuracao_path
     expect(response.body).to include("Histórico Local")
   end
 
@@ -85,7 +85,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
     tentativa(usuario: outro_estudante, status: "bloqueado", minutos_atras: 2)
     tentativa(usuario: terceiro_estudante, catraca_alvo: outra_catraca, status: "pendente")
 
-    get historico_local_path
+    get operator_historico_local_path
     expect(response.body).to include("221012345", "231045229", "Liberado", "Bloqueado")
     expect(response.body).not_to include("251123339")
     expect(response.body.index("231045229")).to be < response.body.index("221012345")
@@ -96,7 +96,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
     tentativa(usuario: estudante, status: "liberado", debito: 4.50)
     tentativa(usuario: outro_estudante, status: "bloqueado", minutos_atras: 1)
 
-    get historico_local_path, params: { status: "bloqueado" }
+    get operator_historico_local_path, params: { status: "bloqueado" }
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("231045229")
     expect(response.body).not_to include("221012345")
@@ -113,7 +113,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
               inscricao_fastpass_id: inscricao.id)
     tentativa(usuario: outro_estudante, status: "bloqueado", minutos_atras: 2)
 
-    get historico_local_path, params: { vinculo: "fastpass" }
+    get operator_historico_local_path, params: { vinculo: "fastpass" }
     expect(response.body).to include("221012345", "FastPass vinculado")
     expect(response.body).not_to include("231045229")
   end
@@ -129,7 +129,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
       status: "liberado", valor_debitado: 20
     )
 
-    get historico_local_path
+    get operator_historico_local_path
     expect(response.body).to include("Passagens Confirmadas", "Tentativas Rejeitadas")
     expect(response.body).to include("R$ 4,50")
   end
@@ -141,7 +141,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
     end
     tentativa(usuario: outro_estudante, status: "bloqueado", minutos_atras: 20)
 
-    get exportar_historico_local_path, params: { formato: "csv", status: "liberado" }
+    get operator_exportar_historico_local_path, params: { formato: "csv", status: "liberado" }
     expect(response).to have_http_status(:ok)
     expect(response.media_type).to eq("text/csv")
     expect(response.headers["Content-Disposition"]).to include("attachment")
@@ -153,7 +153,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
     configurar_ponto
     tentativa(usuario: estudante, status: "liberado", debito: 4.50)
 
-    get exportar_historico_local_path, params: { formato: "pdf" }
+    get operator_exportar_historico_local_path, params: { formato: "pdf" }
     expect(response).to have_http_status(:ok)
     expect(response.media_type).to eq("application/pdf")
     expect(response.body.start_with?("%PDF-")).to be(true)
@@ -165,7 +165,7 @@ RSpec.describe "Historico Local de Acessos (US12)", type: :request do
       tentativa(usuario: estudante, status: "liberado", minutos_atras: i, debito: 4.50)
     end
 
-    get historico_local_path, params: { pagina: 2 }
+    get operator_historico_local_path, params: { pagina: 2 }
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Página 2 de 2")
     expect(response.body).to include("11 a 12 de 12")

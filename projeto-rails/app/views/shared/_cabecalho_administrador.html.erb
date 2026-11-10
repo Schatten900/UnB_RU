@@ -1,0 +1,22 @@
+<header class="admin-header">
+  <%= link_to admin_restaurantes_path, class: "admin-brand", aria: { label: "RU UnB — Administração geral" } do %>
+    <span class="admin-brand-logo"><strong>RU<span>UnB</span></strong><small>DARCY RIBEIRO</small></span>
+    <span class="admin-brand-context"><strong>ADMINISTRAÇÃO GERAL</strong><small>Operações &amp; Configuração</small></span>
+  <% end %>
+  <div class="admin-account">
+    <span><strong><%= usuario_atual.nome %></strong><small>Administração do RU</small></span>
+    <%= button_to logout_path, method: :delete, class: "admin-account-button", title: "Sair", aria: { label: "Sair da conta" } do %>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 20v-2a7 7 0 0 1 14 0v2Z"/></svg>
+    <% end %>
+  </div>
+</header>
+<nav class="admin-nav" aria-label="Navegação da administração">
+  <% [
+    ["Restaurantes e Catracas", admin_restaurantes_path],
+    ["Turnos e Time-frames", admin_turnos_path],
+    ["Vagas e Cotas FastPass", admin_vagas_fastpass_path],
+    ["Relatório Global de Operação", admin_relatorio_global_path]
+  ].each do |nome, caminho| %>
+    <%= link_to nome, caminho, aria: { current: ("page" if current_page?(caminho)) } %>
+  <% end %>
+</nav>

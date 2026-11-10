@@ -1,29 +1,5 @@
 <main class="operator-app home-app">
-  <header class="topbar">
-    <%= link_to root_path, class: "brand" do %>
-      <span class="brand-mark" aria-hidden="true">RU</span>
-      <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
-    <% end %>
-
-    <nav class="main-nav" aria-label="Navegação principal">
-      <%= link_to "Início", root_path %>
-      <%= link_to "Recarga", recarga_path %>
-      <%= link_to "Extrato", "#" %>
-      <%= link_to "FastPass", fast_pass_path, class: "is-current" %>
-    </nav>
-
-    <div class="operator-menu">
-      <% if usuario_atual %>
-        <div class="operator-copy">
-          <strong><%= usuario_atual.nome %></strong>
-          <small>Matrícula: <%= usuario_atual.matricula %></small>
-        </div>
-        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
-      <% else %>
-        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
-      <% end %>
-    </div>
-  </header>
+  <%= render "shared/cabecalho_estudante" %>
 
   <div class="home-content">
     <div style="margin-bottom: 1.5rem;">

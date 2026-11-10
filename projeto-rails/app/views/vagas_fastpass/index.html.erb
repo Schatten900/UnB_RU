@@ -1,0 +1,73 @@
+<main class="fastpass-app" data-controller="fastpass-quotas">
+  <%= render "shared/cabecalho_administrador" %>
+
+  <div class="fastpass-content">
+    <section class="fastpass-heading" aria-labelledby="fastpass-title">
+      <div><p><%= @restaurante&.nome || "Nenhum restaurante cadastrado" %></p><h1 id="fastpass-title">Vagas e Cotas FastPass</h1></div>
+      <div class="fastpass-actions">
+        <button type="button" class="fastpass-reset" data-action="fastpass-quotas#reset"><span aria-hidden="true">↻</span> Redefinir<br> Padrões</button>
+        <button type="button" class="fastpass-apply" disabled title="A aplicação das cotas ao sorteio estará disponível em breve"><span aria-hidden="true">◎</span> Aplicar Cotas ao<br> Próximo Sorteio</button>
+      </div>
+    </section>
+
+    <%= form_with url: admin_vagas_fastpass_path, method: :get, class: "fastpass-restaurant-selector" do |form| %>
+      <%= form.label :restaurante_id, "Restaurante" %>
+      <%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, { selected: @restaurante&.id }, { disabled: @restaurantes.empty? } %>
+      <%= form.submit "Exibir prévia", disabled: @restaurantes.empty? %>
+      <small>Ao trocar de restaurante, os ajustes locais são descartados.</small>
+    <% end %>
+
+    <% if @restaurante %>
+    <% if params[:restaurante_id].present? %>
+      <p class="notice notice-success" role="status">Prévia carregada para <strong><%= @restaurante.nome %></strong>. As cotas abaixo são ilustrativas; ainda não há carregamento de cotas reais por restaurante.</p>
+    <% end %>
+    <div class="fastpass-metrics">
+      <section class="fastpass-metric">
+        <h2>Cota Diária Total de FastPass <span aria-hidden="true">♧</span></h2>
+        <p><strong class="fastpass-blue">781</strong> passes / dia</p>
+        <small><b>100% calibrado</b> para almoço e jantar</small>
+      </section>
+      <section class="fastpass-metric">
+        <h2>Taxa Média de Ocupação <span class="fastpass-green" aria-hidden="true">◔</span></h2>
+        <p><strong class="fastpass-green">88%</strong> demanda estimada</p>
+        <progress value="88" max="100" aria-label="Taxa média de ocupação: 88%">88%</progress>
+      </section>
+      <section class="fastpass-metric">
+        <h2>Capacidade Segura Catraca 04 <span aria-hidden="true">◴</span></h2>
+        <p><strong>40</strong> estudantes / 15 min</p>
+        <small><b aria-hidden="true">⊙</b> Fluxo em 6 catracas ativas (Pisos 1, 2 e 3)</small>
+      </section>
+    </div>
+
+    <section class="fastpass-grid" aria-labelledby="fastpass-grid-title">
+      <h2 id="fastpass-grid-title"><%= @restaurante.nome %>: Grade de Janelas de Almoço</h2>
+      <p class="fastpass-grid-description">Capacidade total do salão: 2000 lugares · 6 catracas ativas no complexo de 3 pisos</p>
+      <div class="fastpass-table-scroll">
+        <table class="fastpass-table">
+          <thead><tr><th scope="col">Janela de horário</th><th scope="col">Cota FastPass</th><th scope="col">Carga por catraca</th><th scope="col">Ajuste manual</th></tr></thead>
+          <tbody>
+            <% [["11:30", "11:45", 35], ["11:45", "12:00", 40], ["12:00", "12:15", 40], ["12:15", "12:30", 35], ["12:30", "12:45", 35], ["12:45", "13:00", 35], ["13:00", "13:15", 30], ["13:15", "13:30", 30]].each do |inicio, fim, cota| %>
+              <tr data-fastpass-quotas-target="row" data-default-quota="<%= cota %>">
+                <th scope="row"><span class="fastpass-clock" aria-hidden="true">◷</span> <%= inicio %> - <%= fim %></th>
+                <td class="fastpass-quota"><span data-quota-label><%= cota %></span> passes</td>
+                <td class="fastpass-load"><span data-load><%= format("%.1f", cota / 4.0) %></span> est./catraca</td>
+                <td>
+                  <div class="fastpass-stepper">
+                    <button type="button" data-action="fastpass-quotas#decrease" aria-label="Diminuir cota de <%= inicio %> a <%= fim %>">−</button>
+                    <output data-quota-value aria-label="Cota de <%= inicio %> a <%= fim %>"><%= cota %></output>
+                    <button type="button" data-action="fastpass-quotas#increase" aria-label="Aumentar cota de <%= inicio %> a <%= fim %>">+</button>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="fastpass-total" role="status">Total ofertado em <%= @restaurante.nome %> <strong><span data-fastpass-quotas-target="total">280</span> passes</strong></div>
+    </section>
+    <p class="fastpass-preview">Prévia com dados ilustrativos do layout. Os ajustes são locais e não alteram o próximo sorteio.</p>
+    <% else %>
+      <p class="fastpass-preview">Cadastre um restaurante para visualizar a grade de cotas.</p>
+    <% end %>
+  </div>
+</main>
