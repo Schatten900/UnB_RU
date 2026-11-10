@@ -54,7 +54,7 @@ RSpec.describe "Api::Recargas", type: :request do
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
-        expect(json["recarga"]["status"]).to eq("confirmada")
+        expect(json["recarga"]["status"]).to eq("concluida")
         expect(json["saldo"].to_f).to eq(105.0)
       end
     end
@@ -113,18 +113,18 @@ RSpec.describe "Api::Recargas", type: :request do
       json = JSON.parse(response.body)
       expect(json["mensagem"]).to eq("Pagamento confirmado")
       expect(json["saldo"].to_f).to eq(55.0)
-      expect(recarga.reload.status).to eq("confirmada")
+      expect(recarga.reload.status).to eq("concluida")
     end
 
     it "não permite confirmar recarga já confirmada" do
-      recarga = criar_recarga(status: "confirmada")
+      recarga = criar_recarga(status: "concluida")
 
       expect {
         post "/api/recargas/#{recarga.id}/confirmar"
       }.not_to change { usuario.reload.saldo }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(recarga.reload.status).to eq("confirmada")
+      expect(recarga.reload.status).to eq("concluida")
     end
 
     it "não permite confirmar recarga de outro usuário" do
