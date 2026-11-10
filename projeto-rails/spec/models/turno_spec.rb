@@ -33,7 +33,7 @@ RSpec.describe Turno, type: :model do
     it "rejeita fim igual ao início" do
       turno = Turno.new(atributos(inicio: "11:00", fim: "11:00"))
       expect(turno).not_to be_valid
-      expect(turno.errors[:fim]).to include("deve ser diferente ao início")
+      expect(turno.errors[:fim]).to include("deve ser diferente do início")
     end
 
     # Teste fora da suíte de testes por enquanto, definir com o time se é um comportamento que se quer manter ou descartar.
