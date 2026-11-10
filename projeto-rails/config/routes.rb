@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Health check do Rails
   get "up" => "rails/health#show", as: :rails_health_check
-  get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
+  get "terminal_validacao", to: redirect(path: "/operator/terminal_validacao"), as: :terminal_validacao
   get "vagas_fastpass", to: redirect(path: "/admin/vagas_fastpass"), as: :vagas_fastpass
   get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
 
@@ -13,7 +13,7 @@ Rails.application.routes.draw do
 
   # Ponto de configuração e Cadastro web
   get 'cadastro', to: 'cadastros#new', as: :new_cadastro
-  get 'ponto_configuracao', to: 'ponto_configuracao#new', as: :ponto_configuracao
+  get 'ponto_configuracao', to: redirect(path: "/operator/ponto_configuracao"), as: :ponto_configuracao
   post 'ponto_configuracao', to: 'ponto_configuracao#create'
 
   # Páginas principais e operacionais do estudante
@@ -24,8 +24,17 @@ Rails.application.routes.draw do
   get 'fast_pass', to: 'fast_passes#index', as: :fast_pass
 
   # APIs (Endpoints que respondem em JSON consumidos via fetch)
-  get "historico_local", to: "historico_local#index", as: :historico_local
-  get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
+  get "historico_local", to: redirect(path: "/operator/historico_local"), as: :historico_local
+  get "historico_local/exportar", to: redirect(path: "/operator/historico_local/exportar"), as: :exportar_historico_local
+
+  get "operator", to: redirect("/operator/ponto_configuracao"), as: :operator_root
+  scope path: "operator", as: "operator" do
+    get "ponto_configuracao", to: "ponto_configuracao#new", as: :ponto_configuracao
+    post "ponto_configuracao", to: "ponto_configuracao#create"
+    get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
+    get "historico_local", to: "historico_local#index", as: :historico_local
+    get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
+  end
   get "admin", to: redirect("/admin/restaurantes"), as: :admin_root
   scope path: "admin", as: "admin" do
     get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass

@@ -8,7 +8,7 @@
     <nav class="main-nav" aria-label="Navegação principal">
       <%= link_to "Início & Carteira", inicio_path, class: "is-current" %>
       <% if usuario_atual&.funcionario? %>
-        <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
+        <%= link_to "Configuração de Ponto", operator_ponto_configuracao_path %>
       <% end %>
     </nav>
 

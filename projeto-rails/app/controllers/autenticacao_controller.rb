@@ -63,7 +63,7 @@ class AutenticacaoController < ApplicationController
         if usuario.administrador?
             admin_restaurantes_path
         elsif usuario.funcionario?
-            ponto_configuracao_path
+            operator_ponto_configuracao_path
         else
             inicio_path
         end

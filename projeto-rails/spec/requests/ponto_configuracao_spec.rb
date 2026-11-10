@@ -17,7 +17,7 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
   end
 
   it "exige funcionario autenticado" do
-    get ponto_configuracao_path
+    get operator_ponto_configuracao_path
 
     expect(response).to redirect_to(login_path)
   end
@@ -28,10 +28,10 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
     allow(Time).to receive(:current).and_return(Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 12, 0))
     post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
 
-    post ponto_configuracao_path,
+    post operator_ponto_configuracao_path,
       params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
 
-    expect(response).to redirect_to(ponto_configuracao_path)
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
     expect(session[:restaurante_id]).to eq(restaurante.id)
     expect(session[:catraca_id]).to eq(catraca.id)
   end
@@ -43,7 +43,7 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
     allow(Time).to receive(:current).and_return(Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 12, 0))
     post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
 
-    post ponto_configuracao_path,
+    post operator_ponto_configuracao_path,
       params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
 
     expect(response).to have_http_status(:unprocessable_content)

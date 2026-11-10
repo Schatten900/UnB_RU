@@ -8,7 +8,7 @@
       <%= link_to nome, caminho, class: ("is-current" if current_page?(caminho)), aria: { current: ("page" if current_page?(caminho)) } %>
     <% end %>
     <% if usuario_atual&.funcionario? %>
-      <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
+      <%= link_to "Configuração de Ponto", operator_ponto_configuracao_path %>
     <% end %>
   </nav>
   <div class="operator-menu">

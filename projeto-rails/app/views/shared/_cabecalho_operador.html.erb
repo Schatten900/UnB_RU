@@ -1,28 +1,23 @@
 <header class="topbar operator-topbar">
-  <%= link_to ponto_configuracao_path, class: "brand" do %>
+  <%= link_to operator_ponto_configuracao_path, class: "brand" do %>
     <span class="brand-mark" aria-hidden="true">RU</span>
     <span class="operator-brand-copy">
       <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
-      <small><%= @restaurante_operador&.nome || "Selecione um ponto de acesso" %></small>
+      <small><%= restaurante_atual&.nome || "Selecione um ponto de acesso" %></small>
     </span>
   <% end %>
   <nav class="main-nav" aria-label="Navegação do operador">
-    <% [["Configuração de Ponto", ponto_configuracao_path], ["Terminal de Validação", terminal_validacao_path]].each do |nome, caminho| %>
+    <% [["Configuração de Ponto", operator_ponto_configuracao_path], ["Terminal de Validação", operator_terminal_validacao_path]].each do |nome, caminho| %>
       <%= link_to nome, caminho, class: (current_page?(caminho) ? "is-current" : nil), aria: { current: (current_page?(caminho) ? "page" : nil) } %>
     <% end %>
     <% if session[:catraca_id].present? && session[:restaurante_id].present? %>
-      <%= link_to "Histórico Local", historico_local_path %>
+      <%= link_to "Histórico Local", operator_historico_local_path, class: ("is-current" if current_page?(operator_historico_local_path)), aria: { current: ("page" if current_page?(operator_historico_local_path)) } %>
     <% else %>
       <button type="button" class="operator-nav-pending" disabled title="Configure um restaurante e uma catraca para acessar o histórico">Histórico Local</button>
     <% end %>
-    <% if usuario_atual&.administrador? %>
-      <%= link_to "Gestão de Restaurantes", admin_restaurantes_path %>
-      <%= link_to "Turnos e Time-frames", admin_turnos_path %>
-    <% end %>
-    <%= link_to "Início & Carteira", inicio_path %>
   </nav>
   <div class="operator-menu">
-    <div class="operator-copy"><strong><%= usuario_atual.nome %></strong><small>Fiscal<%= " · Catraca #{@catraca_operador.id}" if @catraca_operador %></small></div>
+    <div class="operator-copy"><strong><%= usuario_atual.nome %></strong><small>Fiscal<%= " · Catraca #{session[:catraca_id]}" if session[:catraca_id].present? %></small></div>
     <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
   </div>
 </header>

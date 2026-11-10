@@ -15,20 +15,20 @@ RSpec.describe "Terminal de validação", type: :request do
   end
 
   it "protege terminal de acesso sem autenticação" do
-    get terminal_validacao_path
+    get operator_terminal_validacao_path
     expect(response).to redirect_to(login_path)
   end
 
   it "exibe as três abas e o simulador sem alterar dados" do
     autenticar
-    get terminal_validacao_path
+    get operator_terminal_validacao_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Configuração de Ponto", "Terminal de Validação", "Histórico Local")
     expect(response.body).to include('aria-current="page"', "Nenhuma cobrança é realizada", "Aguardando identificação")
 
-    get ponto_configuracao_path
-    expect(response.body).to include(terminal_validacao_path, "Configure um restaurante e uma catraca para acessar o histórico")
+    get operator_ponto_configuracao_path
+    expect(response.body).to include(operator_terminal_validacao_path, "Configure um restaurante e uma catraca para acessar o histórico")
   end
 
   it "mostra somente os acessos da catraca selecionada" do
@@ -40,12 +40,12 @@ RSpec.describe "Terminal de validação", type: :request do
     outro = Usuario.create!(matricula: "231045229", nome: "Estudante oculto", senha: "senha", saldo: 20)
     Acesso.create!(usuario: aluno, turno: turno, catraca: catraca, data_hora: Time.current, status: "liberado")
     Acesso.create!(usuario: outro, turno: turno, catraca: outra, data_hora: Time.current, status: "liberado")
-    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
+    post operator_ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
 
-    get terminal_validacao_path
+    get operator_terminal_validacao_path
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Estudante visível")
     expect(response.body).not_to include("Estudante oculto")
-    expect(response.body).to include(%(href="#{historico_local_path}"))
+    expect(response.body).to include(%(href="#{operator_historico_local_path}"))
   end
 end

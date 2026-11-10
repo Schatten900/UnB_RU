@@ -29,7 +29,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
     end
 
-    assert_redirected_to ponto_configuracao_path
+    assert_redirected_to operator_ponto_configuracao_path
     assert_equal @funcionario.matricula, session[:usuario_matricula]
   end
 
@@ -66,7 +66,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
     end
 
-    assert_redirected_to ponto_configuracao_path
+    assert_redirected_to operator_ponto_configuracao_path
     assert_equal @funcionario.matricula, session[:usuario_matricula]
   end
 
@@ -78,7 +78,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "configuração exige funcionário autenticado" do
-    get ponto_configuracao_path
+    get operator_ponto_configuracao_path
 
     assert_redirected_to login_path
     assert_nil session[:usuario_matricula]
@@ -91,24 +91,24 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
       post login_path, params: { matricula: @funcionario.matricula, senha: "senha-segura" }
     end
 
-    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
-    assert_redirected_to ponto_configuracao_path
+    post operator_ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
+    assert_redirected_to operator_ponto_configuracao_path
     assert_equal restaurante.id, session[:restaurante_id]
     assert_equal catraca.id, session[:catraca_id]
 
-    get ponto_configuracao_path
+    get operator_ponto_configuracao_path
     assert_response :success
     assert_select ".restaurant-option", text: /RU de teste/
     assert_select ".gate-option", text: /Catraca ##{catraca.id}/
 
-    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: "999999" }
+    post operator_ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: "999999" }
     assert_response :unprocessable_content
     assert_equal restaurante.id, session[:restaurante_id]
     assert_equal catraca.id, session[:catraca_id]
 
     outro_restaurante = Restaurante.create!(nome: "RU não relacionado")
     outra_catraca = outro_restaurante.catracas.create!(piso: 2, modo_acesso: "fastpass")
-    post ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: outra_catraca.id }
+    post operator_ponto_configuracao_path, params: { restaurante_id: restaurante.id, catraca_id: outra_catraca.id }
     assert_response :unprocessable_content
   end
 end

@@ -45,7 +45,7 @@ class HistoricoLocalController < ApplicationController
                 type: "application/pdf",
                 disposition: "attachment"
     else
-      redirect_to historico_local_path, alert: "Formato de exportacao invalido."
+      redirect_to operator_historico_local_path, alert: "Formato de exportacao invalido."
     end
   end
 
@@ -54,7 +54,7 @@ class HistoricoLocalController < ApplicationController
   def carregar_catraca_configurada
     # A tela US12 e destinada ao fiscal que opera um ponto configurado.
     unless usuario_atual&.funcionario?
-      redirect_to ponto_configuracao_path, alert: "Historico local disponivel para funcionarios."
+      redirect_to operator_ponto_configuracao_path, alert: "Historico local disponivel para funcionarios."
       return
     end
 
@@ -63,7 +63,7 @@ class HistoricoLocalController < ApplicationController
     )
     return if @catraca
 
-    redirect_to ponto_configuracao_path,
+    redirect_to operator_ponto_configuracao_path,
                 alert: "Configure um restaurante e uma catraca antes de consultar o historico."
   end
 

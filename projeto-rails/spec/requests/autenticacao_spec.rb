@@ -48,11 +48,11 @@ RSpec.describe "Autenticacao", type: :request do
 
     post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
 
-    expect(response).to redirect_to(ponto_configuracao_path)
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
     expect(session[:usuario_matricula]).to eq(funcionario.matricula)
 
     get root_path
-    expect(response).to redirect_to(ponto_configuracao_path)
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
   end
 
   it "autentica administrador e direciona à gestão de restaurantes, mantendo acesso à configuração" do
@@ -66,7 +66,7 @@ RSpec.describe "Autenticacao", type: :request do
     get root_path
     expect(response).to redirect_to(admin_restaurantes_path)
 
-    get ponto_configuracao_path
+    get operator_ponto_configuracao_path
 
     expect(response).to have_http_status(:ok)
   end
