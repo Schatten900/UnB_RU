@@ -1,5 +1,5 @@
 <header class="admin-header">
-  <%= link_to vagas_fastpass_path, class: "admin-brand", aria: { label: "RU UnB — Administração geral" } do %>
+  <%= link_to admin_restaurantes_path, class: "admin-brand", aria: { label: "RU UnB — Administração geral" } do %>
     <span class="admin-brand-logo"><strong>RU<span>UnB</span></strong><small>DARCY RIBEIRO</small></span>
     <span class="admin-brand-context"><strong>ADMINISTRAÇÃO GERAL</strong><small>Operações &amp; Configuração</small></span>
   <% end %>
@@ -11,8 +11,12 @@
   </div>
 </header>
 <nav class="admin-nav" aria-label="Navegação da administração">
-  <button type="button" disabled title="Disponível em breve">Restaurantes e Catracas (US13)</button>
-  <button type="button" disabled title="Disponível em breve">Turnos e Time-frames (US14)</button>
-  <%= link_to "Vagas e Cotas FastPass (US15)", vagas_fastpass_path, aria: { current: "page" } %>
-  <button type="button" disabled title="Disponível em breve">Relatório Global de Operação (US16)</button>
+  <% [
+    ["Restaurantes e Catracas", admin_restaurantes_path],
+    ["Turnos e Time-frames", admin_turnos_path],
+    ["Vagas e Cotas FastPass", admin_vagas_fastpass_path],
+    ["Relatório Global de Operação", admin_relatorio_global_path]
+  ].each do |nome, caminho| %>
+    <%= link_to nome, caminho, aria: { current: ("page" if current_page?(caminho)) } %>
+  <% end %>
 </nav>

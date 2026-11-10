@@ -1,32 +1,5 @@
 <main class="operator-app home-app" style="background: #f8fafc; min-height: 100vh; padding-bottom: 3rem;">
-  <header class="topbar" style="background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
-    <%= link_to inicio_path, class: "brand" do %>
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span class="brand-mark" style="background: #1e3a8a; color: #fff; padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: bold;" aria-hidden="true">RU UnB</span>
-        <span class="brand-copy" style="font-size: 0.8rem; color: #64748b; border-left: 1px solid #cbd5e1; padding-left: 0.75rem;">DARCY RIBEIRO</span>
-      </div>
-    <% end %>
-
-    <div class="operator-menu" style="display: flex; align-items: center; gap: 1rem;">
-      <div class="operator-copy" style="text-align: right;">
-        <strong style="display: block; font-size: 0.9rem; color: #0f172a;">Prof. Fernando Albuquerque</strong>
-        <small style="color: #64748b; font-size: 0.75rem;">Gestão DAC/DUS • SIAPE 1083921</small>
-      </div>
-      <% if usuario_atual %>
-        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button", style: "background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;" %>
-      <% else %>
-        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
-      <% end %>
-    </div>
-  </header>
-
-  <!-- Sub-barra de navegação superior -->
-  <nav class="main-nav" aria-label="Navegação principal" style="background: #fff; padding: 0.75rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 2rem; font-size: 0.9rem;">
-    <%= link_to "Restaurantes e Catracas (US13)", "#", style: "color: #475569; text-decoration: none;" %>
-    <%= link_to "Turnos e Time-frames (US14)", turnos_path, style: "color: #475569; text-decoration: none;" %>
-    <%= link_to "Vagas e Cotas FastPass (US15)", "#", style: "color: #475569; text-decoration: none;" %>
-    <%= link_to "Relatório Global de Operação (US16)", relatorio_global_path, style: "color: #1e3a8a; text-decoration: none; font-weight: bold; border-bottom: 2px solid #1e3a8a; padding-bottom: 0.25rem;" %>
-  </nav>
+  <%= render "shared/cabecalho_administrador" %>
 
   <div class="home-content" style="padding: 2rem;">
     <!-- Cabeçalho Principal -->
@@ -34,7 +7,6 @@
       <div>
         <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.25rem;">
           <span style="font-size: 0.7rem; background: #dbeafe; color: #1e40af; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">Módulo de Auditoria DAC/DUS</span>
-          <span style="font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">Critério de Aceite US16</span>
         </div>
         <h1 style="font-size: 1.8rem; color: #0f172a; margin: 0;">Relatório Global de Operação</h1>
       </div>

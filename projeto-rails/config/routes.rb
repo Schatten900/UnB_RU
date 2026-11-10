@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Health check do Rails
   get "up" => "rails/health#show", as: :rails_health_check
   get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
-  get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass
+  get "vagas_fastpass", to: redirect(path: "/admin/vagas_fastpass"), as: :vagas_fastpass
   get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
 
   # Rotas de Autenticação
@@ -19,13 +19,19 @@ Rails.application.routes.draw do
   # Páginas principais e operacionais do estudante
   get "inicio", to: "cardapio#index", as: :inicio
   get 'recarga', to: 'recargas#index', as: :recarga
-  get 'turnos', to: 'turnos#index', as: :turnos
-  get 'relatorio_global', to: 'relatorios#global', as: :relatorio_global
+  get 'turnos', to: redirect(path: "/admin/turnos"), as: :turnos
+  get 'relatorio_global', to: redirect(path: "/admin/relatorio_global"), as: :relatorio_global
   get 'fast_pass', to: 'fast_passes#index', as: :fast_pass
 
   # APIs (Endpoints que respondem em JSON consumidos via fetch)
   get "historico_local", to: "historico_local#index", as: :historico_local
   get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
+  get "admin", to: redirect("/admin/restaurantes"), as: :admin_root
+  scope path: "admin", as: "admin" do
+    get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass
+    get "relatorio_global", to: "relatorios#global", as: :relatorio_global
+  end
+
   namespace :admin do
     resources :turnos, only: [:index, :create, :update]
     resources :restaurantes, only: [:index, :create, :update, :destroy]

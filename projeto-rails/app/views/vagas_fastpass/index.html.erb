@@ -10,7 +10,7 @@
       </div>
     </section>
 
-    <%= form_with url: vagas_fastpass_path, method: :get, class: "fastpass-restaurant-selector" do |form| %>
+    <%= form_with url: admin_vagas_fastpass_path, method: :get, class: "fastpass-restaurant-selector" do |form| %>
       <%= form.label :restaurante_id, "Restaurante" %>
       <%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, { selected: @restaurante&.id }, { disabled: @restaurantes.empty? } %>
       <%= form.submit "Exibir prévia", disabled: @restaurantes.empty? %>
