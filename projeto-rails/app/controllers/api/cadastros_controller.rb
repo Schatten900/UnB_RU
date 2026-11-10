@@ -1,4 +1,4 @@
-
+#cadastros_controller.rb
 module Api
   class CadastrosController < ApplicationController
     def create

@@ -1,0 +1,140 @@
+<main class="operator-app home-app">
+  <header class="topbar">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
+    <% end %>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <%= link_to "Início", root_path %>
+      <%= link_to "Recarga", recarga_path %>
+      <%= link_to "Extrato", "#" %>
+      <%= link_to "FastPass", fast_pass_path, class: "is-current" %>
+    </nav>
+
+    <div class="operator-menu">
+      <% if usuario_atual %>
+        <div class="operator-copy">
+          <strong><%= usuario_atual.nome %></strong>
+          <small>Matrícula: <%= usuario_atual.matricula %></small>
+        </div>
+        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button" %>
+      <% else %>
+        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="home-content">
+    <div style="margin-bottom: 1.5rem;">
+      <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem;">Início > Acesso Inteligente > FastPass RU Darcy Ribeiro</p>
+      <h1 style="font-size: 1.8rem; color: #0f172a; margin: 0;">Sorteio e Gestão do FastPass</h1>
+    </div>
+
+    <!-- Grid Principal de Sorteios -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start;">
+      
+      <!-- Coluna Esquerda: Passe do Próximo Turno -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <section class="wallet-panel" style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <!-- Topo verde de status -->
+          <div style="background: #16a34a; color: #fff; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 0.9rem;">✔ CONTEMPLADO (Vaga Garantida) • Sorteio nº 884-D</span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">⏱ Válido em 42 min</span>
+          </div>
+
+          <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem;">
+            <div>
+              <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin: 0;">Turno & Refeição</p>
+              <h2 style="font-size: 1.4rem; color: #1e3a8a; margin: 0.25rem 0;">Almoço de Hoje</h2>
+              <p style="font-size: 0.85rem; color: #475569; margin: 0 0 1rem 0;">Cardápio Geral + Opção Vegana</p>
+
+              <div style="font-size: 0.9rem; color: #334155; display: flex; flex-direction: column; gap: 0.3rem;">
+                <div>🏛 <strong>RU 1 - Central Darcy Ribeiro</strong></div>
+                <div>⏰ Janela: <strong>12:00 às 12:15</strong></div>
+                <small style="color: #64748b;">Catraca 04 — Corredor Expresso FastPass (Térreo).</small>
+              </div>
+            </div>
+
+            <!-- QR Code Mockado -->
+            <div style="border: 2px dashed #cbd5e1; padding: 0.75rem; border-radius: 8px; text-align: center; background: #f8fafc;">
+              <div style="width: 110px; height: 110px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #fff; font-family: monospace; font-size: 0.75rem;">QR CODE FASTPASS</div>
+              <small style="display: block; font-size: 0.7rem; color: #64748b; margin-top: 0.4rem;">UNB-FP-2024-9982</small>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <small style="color: #64748b; font-size: 0.8rem;">ℹ Tolerância de 5 min na catraca. Não comparecer sem cancelar gera bloqueio de 24h.</small>
+            <button type="button" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Liberar vaga</button>
+          </div>
+        </section>
+
+        <!-- Ciclo Diário de Refeições -->
+        <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <h3 style="margin-top: 0; font-size: 1.1rem; color: #0f172a; margin-bottom: 1rem;">Ciclo Diário de Refeições (Campus Darcy Ribeiro)</h3>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+              <strong style="display: block; font-size: 0.85rem; color: #64748b;">07:00 - 08:30</strong>
+              <span style="display: block; font-weight: 600; color: #0f172a; margin: 0.25rem 0;">Café da Manhã</span>
+              <small style="color: #94a3b8; font-size: 0.75rem;">Concluído</small>
+            </div>
+            <div style="background: #dcfce7; padding: 1rem; border-radius: 8px; border: 1px solid #bbf7d0; text-align: center;">
+              <strong style="display: block; font-size: 0.85rem; color: #166534;">11:15 - 14:15</strong>
+              <span style="display: block; font-weight: 600; color: #166534; margin: 0.25rem 0;">Almoço</span>
+              <small style="color: #16a34a; font-size: 0.75rem; font-weight: 600;">Passe Ativo</small>
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+              <strong style="display: block; font-size: 0.85rem; color: #64748b;">17:30 - 19:30</strong>
+              <span style="display: block; font-weight: 600; color: #0f172a; margin: 0.25rem 0;">Jantar</span>
+              <small style="color: #2563eb; font-size: 0.75rem;">Inscrição Aberta</small>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Coluna Direita: Inscrição no Sorteio -->
+      <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Inscrição no Sorteio</h3>
+          <span style="background: #1e3a8a; color: #fff; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">17:30 - 19:30</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">Cadastre seu interesse para a fila expressa do jantar. O sorteio será realizado automaticamente.</p>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">1. Escolha a Unidade (Darcy Ribeiro)</label>
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.85rem;">
+              <strong>RU Darcy Ribeiro (Unidade Única • 3 Pisos)</strong>
+              <small style="display: block; color: #16a34a;">⏩ Corredor FastPass: Catraca 04 (Piso 2)</small>
+            </div>
+            <span style="color: #16a34a; font-weight: bold;">✔</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">2. Selecione a Janela Exclusiva Desejada</label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center;">
+            <div style="border: 2px solid #1e3a8a; background: #1e3a8a; color: #fff; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+              <strong>17:45</strong><small style="display: block; font-size: 0.65rem;">às 18:00</small>
+            </div>
+            <div style="border: 1px solid #cbd5e1; background: #f8fafc; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+              <strong>18:00</strong><small style="display: block; font-size: 0.65rem;">às 18:15</small>
+            </div>
+            <div style="border: 1px solid #cbd5e1; background: #f8fafc; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+              <strong>18:15</strong><small style="display: block; font-size: 0.65rem;">às 18:30</small>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">
+          ⏱ Resultado do Sorteio: <strong>16:30</strong> (Exatamente T-60min antes da abertura dos portões).
+        </div>
+
+        <button type="button" onclick="alert('Inscrição no sorteio realizada com sucesso!')" style="width: 100%; padding: 0.85rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Inscrever-se no Sorteio</button>
+      </section>
+
+    </div>
+  </div>
+</main>

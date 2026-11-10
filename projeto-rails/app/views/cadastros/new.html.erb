@@ -1,0 +1,105 @@
+<main class="login-page">
+  <header class="login-topbar">
+    <%= link_to login_path, class: "brand" do %>
+      <span class="brand-mark" aria-hidden="true">RU</span>
+      <span class="brand-copy"><strong>RU UnB</strong><small>Operacional</small></span>
+    <% end %>
+    <span class="login-context">Sistema de operação dos restaurantes universitários</span>
+  </header>
+
+  <section class="login-content">
+    <div class="login-panel">
+      <div class="login-icon" aria-hidden="true">RU</div>
+      <p class="eyebrow">Novo acesso</p>
+      <h1>Cadastro de estudante</h1>
+      <p class="login-description">Informe sua matrícula, nome e senha para criar uma conta no portal.</p>
+
+      <div id="mensagem" role="status" aria-live="polite"></div>
+
+      <form id="cadastro-form" class="login-form" novalidate>
+        <div class="field-group">
+          <div class="field-heading">
+            <label for="matricula">Matrícula do estudante</label>
+            <span>Obrigatório</span>
+          </div>
+          <input type="text" name="matricula" id="matricula"
+                 placeholder="Ex.: 221012345" required maxlength="9"
+                 inputmode="numeric" autocomplete="username" autofocus>
+        </div>
+
+        <div class="field-group">
+          <div class="field-heading">
+            <label for="nome">Nome completo</label>
+            <span>Obrigatório</span>
+          </div>
+          <input type="text" name="nome" id="nome"
+                 placeholder="Digite seu nome completo"
+                 required autocomplete="name">
+        </div>
+
+        <div class="field-group">
+          <div class="field-heading">
+            <label for="senha">Senha de acesso</label>
+            <span>Obrigatório</span>
+          </div>
+          <input type="password" name="senha" id="senha"
+                 placeholder="Digite sua senha" required
+                 autocomplete="new-password">
+        </div>
+
+        <button type="submit" class="primary-button login-submit">Criar conta</button>
+      </form>
+
+      <p class="login-help">
+        Já possui acesso? <%= link_to "Entrar no sistema", login_path %>.
+      </p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const form = document.getElementById("cadastro-form");
+  const msg  = document.getElementById("mensagem");
+  const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content;
+
+  const mostrarErro = (texto) => {
+    msg.className = "notice notice-error";
+    msg.textContent = texto;
+  };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.className = ""; msg.textContent = "";
+
+    const body = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const resp = await fetch("/api/cadastros", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf(),
+          "Accept": "application/json"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify(body)
+      });
+
+      const json = await resp.json();
+
+      if (resp.ok) {
+        msg.className = "notice notice-success";
+        msg.textContent = json.mensagem || "Conta criada com sucesso";
+        setTimeout(() => window.location.href = "<%= login_path %>", 700);
+      } else {
+        mostrarErro(json.erro || (json.erros || []).join(" · ") || "Não foi possível criar a conta.");
+      }
+    } catch (_err) {
+      mostrarErro("Falha de comunicação. Tente novamente.");
+    }
+  });
+})();
+</script>
+<%# AI: Deepseek wit think and search %>
+<%# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a view based on a description of how the view should look like, observations on current levels of integration, and providing it files in .rb from other parts of the project for context %>

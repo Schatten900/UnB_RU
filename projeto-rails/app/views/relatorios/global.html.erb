@@ -1,0 +1,269 @@
+<main class="operator-app home-app" style="background: #f8fafc; min-height: 100vh; padding-bottom: 3rem;">
+  <header class="topbar" style="background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <%= link_to root_path, class: "brand" do %>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="brand-mark" style="background: #1e3a8a; color: #fff; padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: bold;" aria-hidden="true">RU UnB</span>
+        <span class="brand-copy" style="font-size: 0.8rem; color: #64748b; border-left: 1px solid #cbd5e1; padding-left: 0.75rem;">DARCY RIBEIRO</span>
+      </div>
+    <% end %>
+
+    <div class="operator-menu" style="display: flex; align-items: center; gap: 1rem;">
+      <div class="operator-copy" style="text-align: right;">
+        <strong style="display: block; font-size: 0.9rem; color: #0f172a;">Prof. Fernando Albuquerque</strong>
+        <small style="color: #64748b; font-size: 0.75rem;">Gestão DAC/DUS • SIAPE 1083921</small>
+      </div>
+      <% if usuario_atual %>
+        <%= button_to "Sair", logout_path, method: :delete, class: "logout-button", style: "background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;" %>
+      <% else %>
+        <%= link_to "Entrar", login_path, class: "menu-login-link" %>
+      <% end %>
+    </div>
+  </header>
+
+  <!-- Sub-barra de navegação superior -->
+  <nav class="main-nav" aria-label="Navegação principal" style="background: #fff; padding: 0.75rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; gap: 2rem; font-size: 0.9rem;">
+    <%= link_to "Restaurantes e Catracas (US13)", "#", style: "color: #475569; text-decoration: none;" %>
+    <%= link_to "Turnos e Time-frames (US14)", turnos_path, style: "color: #475569; text-decoration: none;" %>
+    <%= link_to "Vagas e Cotas FastPass (US15)", "#", style: "color: #475569; text-decoration: none;" %>
+    <%= link_to "Relatório Global de Operação (US16)", relatorio_global_path, style: "color: #1e3a8a; text-decoration: none; font-weight: bold; border-bottom: 2px solid #1e3a8a; padding-bottom: 0.25rem;" %>
+  </nav>
+
+  <div class="home-content" style="padding: 2rem;">
+    <!-- Cabeçalho Principal -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+      <div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.25rem;">
+          <span style="font-size: 0.7rem; background: #dbeafe; color: #1e40af; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">Módulo de Auditoria DAC/DUS</span>
+          <span style="font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">Critério de Aceite US16</span>
+        </div>
+        <h1 style="font-size: 1.8rem; color: #0f172a; margin: 0;">Relatório Global de Operação</h1>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <%= link_to "Exportar CSV", "#", class: "primary-button", style: "background: #fff; color: #1e3a8a; border: 1px solid #cbd5e1; text-decoration: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600;" %>
+        <%= link_to "Exportar PDF Oficial", api_relatorios_global_operations_path(format: :pdf), class: "primary-button", style: "background: #1e3a8a; color: #fff; text-decoration: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600;" %>
+      </div>
+    </div>
+
+    <!-- Barra de Filtros / Metadados -->
+    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+      <div>
+        <small style="color: #64748b; font-size: 0.75rem; display: block; margin-bottom: 0.2rem;">DATA CONTÁBIL</small>
+        <span style="font-size: 0.9rem; color: #0f172a; font-weight: 500;">📅 Hoje (24/10/2025) - Em Tempo Real</span>
+      </div>
+      <div>
+        <small style="color: #64748b; font-size: 0.75rem; display: block; margin-bottom: 0.2rem;">JANELA DE SERVIÇO (TURNO)</small>
+        <span style="font-size: 0.9rem; color: #0f172a; font-weight: 500;">⏱ Todos os Turnos (Café, Almoço, Jantar)</span>
+      </div>
+      <div>
+        <small style="color: #64748b; font-size: 0.75rem; display: block; margin-bottom: 0.2rem;">UNIDADE GESTORA</small>
+        <span style="font-size: 0.9rem; color: #0f172a; font-weight: 500;">🏛 Campus Darcy Ribeiro</span>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #166534; font-weight: 600;">
+        🟢 Catracas Online: 6/6
+      </div>
+    </div>
+
+    <!-- KPIs Principais -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+      
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <small style="color: #64748b; font-weight: 600; font-size: 0.8rem;">Total de Refeições Servidas</small>
+          <span>🍽</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin: 0 0 0.5rem 0; color: #0f172a;">4.820 <span style="font-size: 0.9rem; font-weight: normal; color: #64748b;">acessos</span></h3>
+        <div style="background: #f0fdf4; color: #166534; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; font-weight: 600;">
+          Validação QR Dinâmico · 100% Digital
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <small style="color: #64748b; font-weight: 600; font-size: 0.8rem;">Arrecadação Global</small>
+          <span>💵</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin: 0 0 0.5rem 0; color: #16a34a;">R$ 21.690,00</h3>
+        <div style="font-size: 0.75rem; color: #64748b;">
+          Tarifa Fixa Universitária: <strong>R$ 4.50 / ref</strong>
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <small style="color: #64748b; font-weight: 600; font-size: 0.8rem;">Acessos via FastPass</small>
+          <span>⚡</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin: 0 0 0.5rem 0; color: #0f172a;">1.150 <span style="font-size: 0.9rem; font-weight: normal; color: #64748b;">validações</span></h3>
+        <div style="font-size: 0.75rem; color: #64748b;">
+          Adesão ao agendamento: <strong style="color: #2563eb;">23,8% da demanda</strong>
+        </div>
+      </div>
+
+      <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+          <small style="color: #64748b; font-weight: 600; font-size: 0.8rem;">Pontualidade FastPass</small>
+          <span>✔</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin: 0 0 0.5rem 0; color: #16a34a;">96,4% <span style="font-size: 0.9rem; font-weight: normal; color: #64748b;">no slot</span></h3>
+        <div style="font-size: 0.75rem; color: #64748b;">
+          Tolerância operacional: ± 10 min
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Grid Inferior: Consolidação, Liquidação e Distribuição -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: flex-start;">
+      
+      <!-- Esquerda: Tabela de Consolidação Operacional dos Restaurantes -->
+      <section style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Consolidação Operacional dos Restaurantes</h3>
+          <span style="font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">Tarifa Aplicada: R$ 4.50</span>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+              <th style="padding-bottom: 0.5rem;">Unidade Darcy Ribeiro</th>
+              <th style="padding-bottom: 0.5rem; text-align: center;">Acessos</th>
+              <th style="padding-bottom: 0.5rem; text-align: center;">FastPass</th>
+              <th style="padding-bottom: 0.5rem; text-align: center;">Pontualidade</th>
+              <th style="padding-bottom: 0.5rem; text-align: right;">Arrecadação Bruta</th>
+            </tr>
+          </thead>
+          <tbody style="color: #334155;">
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 1</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">2.100</td>
+              <td style="text-align: center;">520</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">98%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 9.450,00</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 2</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">720</td>
+              <td style="text-align: center;">170</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">95%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 3.240,00</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 3</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">710</td>
+              <td style="text-align: center;">165</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">96%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 3.195,00</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 4</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">480</td>
+              <td style="text-align: center;">115</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">94%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 2.160,00</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 5</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">460</td>
+              <td style="text-align: center;">105</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">95%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 2.070,00</td>
+            </tr>
+            <tr style="border-bottom: 2px solid #e2e8f0;">
+              <td style="padding: 0.75rem 0;"><strong>Restaurante 6</strong><br><small style="color: #64748b;">Campus Darcy Ribeiro</small></td>
+              <td style="text-align: center;">350</td>
+              <td style="text-align: center;">75</td>
+              <td style="text-align: center;"><span style="background: #dcfce7; color: #166534; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem;">97%</span></td>
+              <td style="text-align: right; font-weight: 600; color: #1e3a8a;">R$ 1.575,00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr style="font-weight: bold; color: #0f172a; background: #f8fafc;">
+              <td style="padding: 0.75rem;">Total Consolidado</td>
+              <td style="text-align: center;">4.820</td>
+              <td style="text-align: center;">1.150</td>
+              <td style="text-align: center;">96,4% méd.</td>
+              <td style="text-align: right; color: #1e3a8a;">R$ 21.690,00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+
+      <!-- Direita: Métodos de Liquidação e Distribuição por Refeição -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Métodos de Liquidação -->
+        <section style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: #0f172a;">Métodos de Liquidação</h3>
+          
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+              <span>PIX Institucional Instantâneo</span>
+              <strong>72% <small style="color: #64748b;">(R$ 15.616,80)</small></strong>
+            </div>
+            <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden;">
+              <div style="width: 72%; height: 100%; background: #16a34a; border-radius: 4px;"></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+              <span>Cartão de Crédito / Débito</span>
+              <strong>28% <small style="color: #64748b;">(R$ 6.073,20)</small></strong>
+            </div>
+            <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden;">
+              <div style="width: 28%; height: 100%; background: #2563eb; border-radius: 4px;"></div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid #f1f5f9; padding-top: 0.75rem; font-size: 0.8rem; color: #475569; display: flex; flex-direction: column; gap: 0.3rem;">
+            <div style="display: flex; justify-content: space-between;"><span>Ticket Médio por Estudante:</span> <strong>R$ 4.50</strong></div>
+            <div style="display: flex; justify-content: space-between;"><span>Transações Validadas:</span> <strong>4.820 operações</strong></div>
+            <div style="display: flex; justify-content: space-between;"><span>Divergências Contábeis:</span> <strong style="color: #16a34a;">0 (Zero)</strong></div>
+          </div>
+        </section>
+
+        <!-- Distribuição por Refeição -->
+        <section style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <h3 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; color: #0f172a;">Distribuição por Refeição</h3>
+          <p style="font-size: 0.75rem; color: #64748b; margin: 0 0 1rem 0;">Volume consolidado nos 3 turnos oficiais da UnB.</p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.6rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <div>
+                <strong>Café da Manhã</strong><br><small style="color: #64748b;">07:00 - 09:00</small>
+              </div>
+              <div style="text-align: right;">
+                <strong>650 refs</strong><br><span style="color: #1e3a8a; font-size: 0.8rem;">R$ 2.925,00</span>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.6rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <div>
+                <strong>Almoço</strong><br><small style="color: #64748b;">11:00 - 14:15</small>
+              </div>
+              <div style="text-align: right;">
+                <strong>2.980 refs</strong><br><span style="color: #1e3a8a; font-size: 0.8rem;">R$ 13.410,00</span>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.6rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <div>
+                <strong>Jantar</strong><br><small style="color: #64748b;">17:30 - 19:45</small>
+              </div>
+              <div style="text-align: right;">
+                <strong>1.190 refs</strong><br><span style="color: #1e3a8a; font-size: 0.8rem;">R$ 5.355,00</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<%# AI: Deepseek wit think and search %>
+<%# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a view based on a description of how the view should look like, observations on current levels of integration, and providing it files in .rb from other parts of the project for context %>
+<%# AI: Gemini %>
+<%# Strategy and prompt: Provided previous context of how the backend is structured, what other views exist and how they connect, AI was asked, in natural language, preserve these comments, and to modify the view to fit provided images %>

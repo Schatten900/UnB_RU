@@ -1,3 +1,4 @@
+# app/controllers/autenticacao_controller.rb
 class AutenticacaoController < ApplicationController
 
     def new

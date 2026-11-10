@@ -1,3 +1,4 @@
+#models/acesso.rb
 class Acesso < ApplicationRecord
   class PermissaoNegada < StandardError; end
 
