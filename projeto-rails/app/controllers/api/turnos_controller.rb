@@ -24,7 +24,7 @@ module Api
       turno = Turno.new(turno_params)
 
       if turno.save
-        Turnos::GerarTimeFrames.new(
+        Turnos::GerarTimeframe.new(
           turno,
           params[:duracao_intervalo]
         ).call
@@ -43,7 +43,7 @@ module Api
       turno = Turno.find(params[:id])
 
       if turno.update(turno_params)
-        Turnos::GerarTimeFrames.new(
+        Turnos::GerarTimeframe.new(
           turno,
           params[:duracao_intervalo]
         ).call
