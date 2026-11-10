@@ -4,6 +4,6 @@ module ExtratoRefeicoesHelper
   end
 
   def pagina_extrato(numero)
-    extrato_refeicoes_path(request.query_parameters.merge("pagina" => numero))
+    student_extrato_refeicoes_path(request.query_parameters.merge("pagina" => numero))
   end
 end

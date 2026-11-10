@@ -28,8 +28,8 @@
     </div>
 
     <section class="statement-filters" aria-labelledby="statement-filters-title">
-      <div class="statement-section-heading"><h2 id="statement-filters-title"><span aria-hidden="true">☷</span> Filtros de auditoria e consulta</h2><%= link_to "↻ Limpar filtros", extrato_refeicoes_path %></div>
-      <%= form_with url: extrato_refeicoes_path, method: :get do |form| %>
+      <div class="statement-section-heading"><h2 id="statement-filters-title"><span aria-hidden="true">☷</span> Filtros de auditoria e consulta</h2><%= link_to "↻ Limpar filtros", student_extrato_refeicoes_path %></div>
+      <%= form_with url: student_extrato_refeicoes_path, method: :get do |form| %>
         <div class="statement-filter-grid">
           <div><%= form.label :periodo, "Período de referência" %><%= form.select :periodo, [["Últimos 30 dias", "30"], ["Mês atual", "mes"], ["Todo o histórico", "todos"]], selected: @periodo %></div>
           <div><%= form.label :evento, "Tipo de refeição / Evento" %><%= form.select :evento, [["Todas as refeições e recargas", ""], ["Recarga de saldo", "recarga"]] + @turnos.map { |turno| [turno.nome, "turno:#{turno.id}"] }, selected: params[:evento] %></div>
@@ -62,7 +62,7 @@
       </div>
       <div class="statement-pagination">
         <p>Exibindo <strong><%= @total.zero? ? 0 : @inicio + 1 %>–<%= @inicio + @lancamentos.size %></strong> de <strong><%= @total %></strong> registros</p>
-        <%= form_with url: extrato_refeicoes_path, method: :get, class: "statement-page-size" do |form| %>
+        <%= form_with url: student_extrato_refeicoes_path, method: :get, class: "statement-page-size" do |form| %>
           <% request.query_parameters.except("pagina", "por_pagina", "commit").each do |chave, valor| %><%= hidden_field_tag chave, valor %><% end %>
           <%= form.label :por_pagina, "Itens por página:" %><%= form.select :por_pagina, [5, 10, 20], selected: @por_pagina %><%= form.submit "Exibir" %>
         <% end %>

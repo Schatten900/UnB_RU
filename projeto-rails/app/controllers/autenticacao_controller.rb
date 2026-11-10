@@ -65,7 +65,7 @@ class AutenticacaoController < ApplicationController
         elsif usuario.funcionario?
             operator_ponto_configuracao_path
         else
-            inicio_path
+            student_inicio_path
         end
     end
 end

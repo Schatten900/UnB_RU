@@ -35,11 +35,11 @@ RSpec.describe "Autenticacao", type: :request do
 
     post login_path, params: { matricula: estudante.matricula, senha: "senha-segura" }
 
-    expect(response).to redirect_to(inicio_path)
+    expect(response).to redirect_to(student_inicio_path)
     expect(session[:usuario_matricula]).to eq(estudante.matricula)
 
     get root_path
-    expect(response).to redirect_to(inicio_path)
+    expect(response).to redirect_to(student_inicio_path)
   end
 
   it "autentica funcionario dentro do turno e direciona a configuracao" do

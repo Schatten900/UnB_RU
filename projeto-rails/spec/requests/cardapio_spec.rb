@@ -18,7 +18,7 @@ RSpec.describe "Cardapio", type: :request do
   end
 
   it "redireciona visitantes do início para o login" do
-    get inicio_path
+    get student_inicio_path
 
     expect(response).to redirect_to(login_path)
   end
@@ -34,7 +34,7 @@ RSpec.describe "Cardapio", type: :request do
     allow(Time).to receive(:current).and_return(zona.local(2026, 10, 30, 12, 0))
     autenticar_estudante
 
-    get inicio_path
+    get student_inicio_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Arroz com legumes", "Omelete de forno", "Feijao com abobora", "Almoco")
@@ -51,7 +51,7 @@ RSpec.describe "Cardapio", type: :request do
     allow(Time).to receive(:current).and_return(zona.local(2026, 10, 30, 12, 0))
     autenticar_estudante
 
-    get inicio_path
+    get student_inicio_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Início &amp; Carteira", "Olá, Pessoa de teste", "Saldo da carteira estudantil", "Cardápio de Almoco", "Arroz com legumes")
@@ -81,7 +81,7 @@ RSpec.describe "Cardapio", type: :request do
     allow(Time).to receive(:current).and_return(zona.local(2026, 10, 30, 12, 0))
     post login_path, params: { matricula: usuario.matricula, senha: "senha-segura" }
 
-    get inicio_path
+    get student_inicio_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Olá, Pessoa de teste", "R$ 18,00", "Seu saldo cobre até 4 refeições")
@@ -91,7 +91,7 @@ RSpec.describe "Cardapio", type: :request do
     allow(Time).to receive(:current).and_return(zona.local(2026, 10, 30, 12, 0))
     autenticar_estudante
 
-    get inicio_path
+    get student_inicio_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Não há cardápio disponível agora")

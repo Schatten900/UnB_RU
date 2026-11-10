@@ -45,7 +45,7 @@ class AutenticacaoControllerTest < ActionDispatch::IntegrationTest
 
     post login_path, params: { matricula: estudante.matricula, senha: "senha-segura" }
 
-    assert_redirected_to inicio_path
+    assert_redirected_to student_inicio_path
     assert_equal estudante.matricula, session[:usuario_matricula]
   end
 

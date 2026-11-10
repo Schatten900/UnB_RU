@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "terminal_validacao", to: redirect(path: "/operator/terminal_validacao"), as: :terminal_validacao
   get "vagas_fastpass", to: redirect(path: "/admin/vagas_fastpass"), as: :vagas_fastpass
-  get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
+  get "extrato_refeicoes", to: redirect(path: "/student/extrato_refeicoes"), as: :extrato_refeicoes
 
   # Rotas de Autenticação
   root "autenticacao#new"
@@ -17,15 +17,23 @@ Rails.application.routes.draw do
   post 'ponto_configuracao', to: 'ponto_configuracao#create'
 
   # Páginas principais e operacionais do estudante
-  get "inicio", to: "cardapio#index", as: :inicio
-  get 'recarga', to: 'recargas#index', as: :recarga
+  get "inicio", to: redirect(path: "/student/inicio"), as: :inicio
+  get 'recarga', to: redirect(path: "/student/recarga"), as: :recarga
   get 'turnos', to: redirect(path: "/admin/turnos"), as: :turnos
   get 'relatorio_global', to: redirect(path: "/admin/relatorio_global"), as: :relatorio_global
-  get 'fast_pass', to: 'fast_passes#index', as: :fast_pass
+  get 'fast_pass', to: redirect(path: "/student/fast_pass"), as: :fast_pass
 
   # APIs (Endpoints que respondem em JSON consumidos via fetch)
   get "historico_local", to: redirect(path: "/operator/historico_local"), as: :historico_local
   get "historico_local/exportar", to: redirect(path: "/operator/historico_local/exportar"), as: :exportar_historico_local
+
+  get "student", to: redirect("/student/inicio"), as: :student_root
+  scope path: "student", as: "student" do
+    get "inicio", to: "cardapio#index", as: :inicio
+    get "recarga", to: "recargas#index", as: :recarga
+    get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
+    get "fast_pass", to: "fast_passes#index", as: :fast_pass
+  end
 
   get "operator", to: redirect("/operator/ponto_configuracao"), as: :operator_root
   scope path: "operator", as: "operator" do

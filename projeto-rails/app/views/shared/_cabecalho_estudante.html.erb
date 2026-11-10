@@ -1,14 +1,16 @@
 <header class="topbar">
-  <%= link_to inicio_path, class: "brand" do %>
+  <%= link_to student_inicio_path, class: "brand" do %>
     <span class="brand-mark" aria-hidden="true">RU</span>
     <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
   <% end %>
   <nav class="main-nav" aria-label="Navegação principal">
-    <% [["Início & Carteira", inicio_path], ["Extrato", extrato_refeicoes_path]].each do |nome, caminho| %>
+    <% [
+      ["Início & Carteira", student_inicio_path],
+      ["Recarga", student_recarga_path],
+      ["Extrato", student_extrato_refeicoes_path],
+      ["FastPass", student_fast_pass_path]
+    ].each do |nome, caminho| %>
       <%= link_to nome, caminho, class: ("is-current" if current_page?(caminho)), aria: { current: ("page" if current_page?(caminho)) } %>
-    <% end %>
-    <% if usuario_atual&.funcionario? %>
-      <%= link_to "Configuração de Ponto", operator_ponto_configuracao_path %>
     <% end %>
   </nav>
   <div class="operator-menu">
