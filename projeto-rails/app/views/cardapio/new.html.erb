@@ -1,12 +1,12 @@
 <main class="operator-app home-app">
   <header class="topbar">
-    <%= link_to root_path, class: "brand" do %>
+    <%= link_to inicio_path, class: "brand" do %>
       <span class="brand-mark" aria-hidden="true">RU</span>
       <span class="brand-copy"><strong>RU UnB Digital</strong><small>Portal do estudante</small></span>
     <% end %>
 
     <nav class="main-nav" aria-label="Navegação principal">
-      <%= link_to "Início & Carteira", root_path, class: "is-current" %>
+      <%= link_to "Início & Carteira", inicio_path, class: "is-current" %>
       <% if usuario_atual&.funcionario? %>
         <%= link_to "Configuração de Ponto", ponto_configuracao_path %>
       <% end %>

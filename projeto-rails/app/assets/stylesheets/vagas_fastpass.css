@@ -1,0 +1,87 @@
+.fastpass-app { min-height: 100vh; background: #fbf9f8; }
+.admin-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 88px; padding: 20px max(24px, calc((100vw - 1120px) / 2)); background: white; }
+.admin-brand { display: flex; align-items: center; gap: 18px; }
+.admin-brand-logo { display: grid; gap: 2px; }
+.admin-brand-logo > strong { color: var(--blue); font-size: 23px; font-weight: 500; letter-spacing: -1px; }
+.admin-brand-logo > strong span { color: #16863c; margin-left: 3px; }
+.admin-brand-logo small { color: #64666b; font-size: 9px; letter-spacing: .5px; }
+.admin-brand-context { display: grid; gap: 3px; border-left: 1px solid #e5e3e2; padding-left: 17px; font-size: 11px; }
+.admin-brand-context strong { color: var(--blue); font-size: 10px; }
+.admin-account { display: flex; align-items: center; gap: 20px; }
+.admin-account > span { display: grid; gap: 4px; text-align: right; font-size: 11px; }
+.admin-account strong { font-weight: 500; }
+.admin-account small { font-size: 10px; color: #464d5b; }
+.admin-account-button { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; color: white; background: var(--blue); cursor: pointer; }
+.admin-account-button svg { width: 18px; height: 18px; }
+.admin-nav { display: flex; align-items: center; gap: 30px; min-height: 44px; padding: 8px max(24px, calc((100vw - 1120px) / 2)); background: #f5f3f2; overflow-x: auto; }
+.admin-nav a, .admin-nav button { flex: 0 0 auto; border: 0; padding: 8px 0; color: #394252; background: transparent; font: inherit; font-size: 11px; white-space: nowrap; }
+.admin-nav [aria-current="page"] { color: var(--blue); font-weight: 700; }
+.admin-nav button:disabled { cursor: not-allowed; }
+.fastpass-content { max-width: 1168px; margin: 0 auto; padding: 30px 24px 60px; }
+.fastpass-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 24px; background: #f5f3f2; border-radius: 12px; }
+.fastpass-heading p { margin: 0 0 5px; color: var(--blue); font-size: 11px; }
+.fastpass-heading h1 { margin: 0; color: var(--blue); font-size: 24px; }
+.fastpass-actions { display: flex; gap: 8px; }
+.fastpass-actions button { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 48px; padding: 8px 16px; border: 0; border-radius: 4px; color: var(--blue); background: #eeecec; font: inherit; font-size: 11px; cursor: pointer; }
+.fastpass-actions button span { font-size: 20px; }
+.fastpass-actions .fastpass-apply { padding: 8px 22px; color: white; background: var(--blue); cursor: not-allowed; }
+.fastpass-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 22px 0 24px; }
+.fastpass-metric { min-width: 0; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 1px 1px #25252505; }
+.fastpass-metric h2 { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 20px; color: #394252; font-size: 12px; font-weight: 400; }
+.fastpass-metric h2 span { color: var(--blue); font-size: 20px; }
+.fastpass-metric p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; margin: 0 0 8px; color: #747987; font-size: 11px; }
+.fastpass-metric p strong { color: #202020; font-size: 34px; line-height: 1; }
+.fastpass-metric small { color: #747987; font-size: 10px; }
+.fastpass-metric small b { color: #16863c; font-weight: 500; }
+.fastpass-metric .fastpass-blue { color: var(--blue); }
+.fastpass-metric .fastpass-green { color: #007a35; }
+.fastpass-metric progress { display: block; width: 100%; height: 7px; margin-top: 16px; border: 0; border-radius: 8px; background: #eeecec; accent-color: #007a35; overflow: hidden; }
+.fastpass-metric progress::-webkit-progress-bar { background: #eeecec; }
+.fastpass-metric progress::-webkit-progress-value { background: #007a35; border-radius: 8px; }
+.fastpass-metric progress::-moz-progress-bar { background: #007a35; border-radius: 8px; }
+.fastpass-grid { padding: 26px 24px 24px; background: white; border-radius: 12px; }
+.fastpass-grid h2 { margin: 0 0 5px; color: var(--blue); font-size: 20px; }
+.fastpass-grid-description { margin: 0 0 24px; color: #747987; font-size: 11px; }
+.fastpass-table-scroll { overflow-x: auto; }
+.fastpass-table { width: 100%; min-width: 600px; border-collapse: collapse; text-align: center; font-size: 12px; }
+.fastpass-table thead { background: #f5f3f2; color: #444c5c; text-transform: uppercase; font-size: 11px; }
+.fastpass-table th { font-weight: 500; }
+.fastpass-table thead th { padding: 10px 12px; }
+.fastpass-table tbody th, .fastpass-table td { padding: 8px 12px; height: 50px; }
+.fastpass-table tbody th { width: 32%; }
+.fastpass-clock { font-size: 18px; vertical-align: middle; color: #394252; }
+.fastpass-quota { color: var(--blue); font-weight: 700; }
+.fastpass-load { color: #747987; }
+.fastpass-stepper { display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px; min-width: 126px; border-radius: 5px; background: #f0eeed; }
+.fastpass-stepper button { width: 27px; height: 27px; border: 0; border-radius: 3px; background: white; color: #64666b; font-size: 19px; cursor: pointer; }
+.fastpass-stepper button:disabled { opacity: .4; cursor: not-allowed; }
+.fastpass-stepper output { min-width: 25px; color: var(--blue); font-weight: 700; }
+.fastpass-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: 16px; margin-top: 18px; padding: 20px 16px; border-radius: 7px; background: #f5f3f2; font-size: 12px; }
+.fastpass-total strong { color: var(--blue); font-size: 20px; }
+.fastpass-preview { margin: 14px 0 0; color: var(--muted); font-size: 11px; }
+.fastpass-restaurant-selector { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 20px 0; font-size: 12px; }
+.fastpass-restaurant-selector label { color: var(--blue); font-weight: 700; }
+.fastpass-restaurant-selector select { max-width: 100%; min-height: 38px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 5px; background: white; color: var(--ink); font: inherit; }
+.fastpass-restaurant-selector input[type="submit"] { min-height: 38px; padding: 8px 16px; border: 0; border-radius: 5px; background: var(--blue); color: white; cursor: pointer; }
+.fastpass-restaurant-selector small { color: var(--muted); }
+.fastpass-app button:focus-visible, .fastpass-app a:focus-visible { outline: 3px solid #83b4f3; outline-offset: 3px; }
+@media (max-width: 800px) {
+  .admin-header { padding: 18px 20px; }
+  .admin-brand-context { display: none; }
+  .admin-nav { padding: 6px 20px; gap: 22px; }
+  .fastpass-metrics { gap: 12px; }
+  .fastpass-metric { padding: 18px; }
+  .fastpass-heading { align-items: flex-start; flex-wrap: wrap; }
+  .fastpass-grid h2 { font-size: 18px; }
+}
+@media (max-width: 560px) {
+  .admin-account { gap: 10px; }
+  .admin-account > span { max-width: 150px; font-size: 10px; }
+  .fastpass-content { padding: 20px 14px 36px; }
+  .fastpass-heading, .fastpass-grid { padding: 20px 16px; }
+  .fastpass-heading h1 { font-size: 21px; }
+  .fastpass-metrics { grid-template-columns: 1fr; }
+  .fastpass-metric h2 { margin-bottom: 14px; }
+  .fastpass-actions { width: 100%; }
+  .fastpass-actions button { flex: 1; padding: 8px; }
+}

@@ -30,7 +30,7 @@ class CardapioControllerTest < ActionDispatch::IntegrationTest
 
     autenticar_estudante
     travel_to BRASILIA.local(2026, 10, 30, 12, 0) do
-      get root_path
+      get inicio_path
     end
 
     assert_response :success
@@ -45,7 +45,7 @@ class CardapioControllerTest < ActionDispatch::IntegrationTest
   test "mostra estado vazio quando não há cardápio para o turno vigente" do
     autenticar_estudante
     travel_to BRASILIA.local(2026, 10, 30, 12, 0) do
-      get root_path
+      get inicio_path
     end
 
     assert_response :success

@@ -1,0 +1,55 @@
+<main class="operator-app" data-controller="validation-terminal">
+  <%= render "shared/cabecalho_operador" %>
+  <div class="page-content terminal-page">
+    <section class="terminal-card terminal-context">
+      <div class="terminal-context-copy"><span class="terminal-icon" aria-hidden="true">◉</span><div>
+        <h1><%= @catraca_operador ? "Catraca #{@catraca_operador.id} · #{@restaurante_operador.nome}" : "Terminal de Validação" %> <span class="terminal-pill terminal-pill-green"><%= @catraca_operador ? "Ponto selecionado" : "Aguardando configuração" %></span></h1>
+        <p class="terminal-muted"><%= @catraca_operador ? "Piso #{@catraca_operador.piso}" : "Configure o restaurante e a catraca para operar" %> · Turno: <%= @turno_operador&.nome || "Não definido" %> <span class="terminal-fare">· Tarifa base: <%= @turno_operador ? number_to_currency(@turno_operador.preco, unit: "R$ ", separator: ",", delimiter: ".") : "Não definida" %></span></p>
+      </div></div>
+      <div class="terminal-clock"><small>Horário de Brasília</small><strong data-validation-terminal-target="clock">--:--:--</strong></div>
+    </section>
+
+    <section class="terminal-card terminal-mode">
+      <div><h2>⇄ Modo Operacional da Catraca</h2><p class="terminal-muted">Prévia de interface · a seleção abaixo altera somente a simulação.</p></div>
+      <div class="terminal-mode-switch" role="group" aria-label="Modo de simulação">
+        <button type="button" data-validation-terminal-target="mode" data-mode="normal" data-action="validation-terminal#changeMode" aria-pressed="true" class="is-selected">Modo Comum</button>
+        <button type="button" data-validation-terminal-target="mode" data-mode="fastpass" data-action="validation-terminal#changeMode" aria-pressed="false">ϟ Modo Exclusivo FastPass</button>
+      </div>
+    </section>
+
+    <div class="terminal-columns">
+      <section class="terminal-card terminal-reader">
+        <div class="terminal-section-title"><h2>▦ Leitura Ótica do QR Code</h2><span class="terminal-pill">100% Digital</span></div>
+        <div class="terminal-scan-area">
+          <svg class="terminal-qr" viewBox="0 0 100 100" role="img" aria-label="Ilustração de QR Code, sem leitura ativa">
+            <rect width="100" height="100" fill="white"/>
+            <g fill="none" stroke="#202124" stroke-width="6"><path d="M8 8h24v24H8zM68 8h24v24H68zM8 68h24v24H8z"/></g>
+            <g fill="#202124"><path d="M15 15h10v10H15zM75 15h10v10H75zM15 75h10v10H15zM42 8h8v16h-8zM52 22h8v18h-8zM40 34h8v12h-8zM8 43h12v12H8zM28 43h9v19h-9zM43 52h14v10H43zM64 43h9v20h-9zM80 43h12v9H80zM42 70h8v22h-8zM54 68h18v8H54zM64 84h14v8H64zM82 64h10v14H82zM84 86h8v6H84z"/></g>
+          </svg>
+          <p data-validation-terminal-target="readerStatus">● Aguardando leitura do QR Code…</p>
+        </div>
+        <div class="terminal-simulator"><h3>Simulador de leituras</h3><p>Dados fictícios. Nenhuma cobrança é realizada.</p>
+          <div class="terminal-simulator-buttons">
+            <button type="button" class="terminal-button-success" data-scenario="ok" data-action="validation-terminal#simulate">✓ Simular OK</button>
+            <button type="button" class="terminal-button-danger" data-scenario="outside" data-action="validation-terminal#simulate">◷ Simular Fora Janela</button>
+            <button type="button" class="terminal-button-warning" data-scenario="balance" data-action="validation-terminal#simulate">Sem Saldo</button>
+            <button type="button" class="terminal-button-primary" data-scenario="normal" data-action="validation-terminal#simulate">Simular Modo Comum</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="terminal-card terminal-result" aria-label="Resultado da validação">
+        <div class="terminal-result-banner" data-validation-terminal-target="banner" role="status" aria-live="polite"><strong data-validation-terminal-target="resultTitle">Aguardando identificação</strong><span data-validation-terminal-target="resultDetail">Selecione um cenário no simulador para visualizar o resultado.</span></div>
+        <div class="terminal-info-grid">
+          <div class="terminal-info"><h3>Identificação do estudante</h3><strong data-validation-terminal-target="student">—</strong><p class="terminal-muted" data-validation-terminal-target="registration">Nenhuma leitura realizada</p></div>
+          <div class="terminal-info"><h3>Débito financeiro</h3><strong data-validation-terminal-target="financial">Aguardando passagem</strong><p class="terminal-muted" data-validation-terminal-target="balance">O saldo só é debitado após confirmar a passagem.</p></div>
+        </div>
+        <div class="terminal-window"><div class="terminal-section-title"><h2>◷ Critério de Horário Exato (FastPass)</h2><span class="terminal-pill">Sem tolerância</span></div>
+          <div class="terminal-time-grid"><div><small>Janela sorteada</small><strong data-validation-terminal-target="window">—</strong></div><div><small>Horário da leitura</small><strong data-validation-terminal-target="readTime">—</strong></div><div><small>Resultado Time-frame</small><strong data-validation-terminal-target="timeResult">Aguardando</strong></div></div>
+        </div>
+        <button type="button" class="terminal-confirm" data-validation-terminal-target="confirm" data-action="validation-terminal#confirmPassage" disabled>Simular confirmação de passagem</button>
+      </section>
+    </div>
+    <%= render "terminal_validacao/acessos", titulo: "Últimas validações registradas" %>
+  </div>
+</main>

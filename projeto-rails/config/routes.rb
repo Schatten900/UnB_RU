@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
   # Health check do Rails
   get "up" => "rails/health#show", as: :rails_health_check
+  get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
+  get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass
+  get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
 
   # Rotas de Autenticação
+  root "autenticacao#new"
   get 'login', to: 'autenticacao#new', as: :login
   post 'login', to: 'autenticacao#create'
   delete 'logout', to: 'autenticacao#destroy', as: :logout
@@ -13,7 +17,7 @@ Rails.application.routes.draw do
   post 'ponto_configuracao', to: 'ponto_configuracao#create'
 
   # Páginas principais e operacionais do estudante
-  root 'cardapio#index' # Ou 'cardapio#index' conforme preferência da sprint-2, mantido home#index para atender o HomeController criado
+  get "inicio", to: "cardapio#index", as: :inicio
   get 'recarga', to: 'recargas#index', as: :recarga
   get 'turnos', to: 'turnos#index', as: :turnos
   get 'relatorio_global', to: 'relatorios#global', as: :relatorio_global
