@@ -57,6 +57,7 @@ Rails.application.routes.draw do
   
   namespace :api do
     resources :cadastros, only: [:create]
+    resources :fast_passes, only: [:create]
     
     resources :recargas, only: [:create] do
       member do

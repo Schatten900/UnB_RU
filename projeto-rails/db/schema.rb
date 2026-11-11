@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_11_015512) do
   create_table "acessos", force: :cascade do |t|
     t.string "usuario_matricula", null: false
     t.integer "catraca_id", null: false
@@ -56,6 +56,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
     t.string "resultado"
     t.string "status_notificacao", null: false
     t.datetime "notificada_em"
+    t.integer "catraca_id"
+    t.index ["catraca_id"], name: "index_inscricoes_fastpass_on_catraca_id"
     t.index ["sorteio_id"], name: "index_inscricoes_fastpass_on_sorteio_id"
     t.index ["time_frame_id"], name: "index_inscricoes_fastpass_on_time_frame_id"
     t.index ["usuario_matricula"], name: "index_inscricoes_fastpass_on_usuario_matricula"
@@ -121,6 +123,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
   add_foreign_key "cardapios_restaurantes", "cardapios"
   add_foreign_key "cardapios_restaurantes", "restaurantes"
   add_foreign_key "catracas", "restaurantes"
+  add_foreign_key "inscricoes_fastpass", "catracas"
   add_foreign_key "inscricoes_fastpass", "sorteios"
   add_foreign_key "inscricoes_fastpass", "time_frames"
   add_foreign_key "inscricoes_fastpass", "usuarios", column: "usuario_matricula", primary_key: "matricula"
