@@ -35,7 +35,7 @@ class TerminalValidacaoController < ApplicationController
 
     render json: {
       sucesso: true,
-      mensagem: mensagem: "Catraca liberada! Passagem confirmada entre #{acesso.inscricao_fastpass.time_frame.inicio.strftime('%H:%M')} e #{acesso.inscricao_fastpass.time_frame.fim.strftime('%H:%M')}.",
+      mensagem: "Catraca liberada! Passagem confirmada entre #{acesso.inscricao_fastpass.time_frame.inicio.strftime('%H:%M')} e #{acesso.inscricao_fastpass.time_frame.fim.strftime('%H:%M')}.",
       horario: acesso.passagem_em.strftime("%H:%M"),
       valor_debitado: acesso.valor_debitado,
       saldo_atual: estudante.reload.saldo
