@@ -1,4 +1,4 @@
-
+#controllers/api/fast_passes_controllers.rb
 module Api
   class FastPassesController < ApplicationController
     before_action :authenticate_usuario!
@@ -10,7 +10,8 @@ module Api
         params[:restaurante_id],
         params[:catraca_id]
       ).call
-
+      
+      
       render json: {
         mensagem: "Inscrição no sorteio realizada com sucesso!",
         inscricao: inscricao,
