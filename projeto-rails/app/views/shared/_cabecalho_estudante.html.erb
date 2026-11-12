@@ -10,7 +10,8 @@
       ["Extrato", student_extrato_refeicoes_path],
       ["FastPass", student_fast_pass_path]
     ].each do |nome, caminho| %>
-      <%= link_to nome, caminho, class: ("is-current" if current_page?(caminho)), aria: { current: ("page" if current_page?(caminho)) } %>
+      <% atual = current_page?(caminho) || (caminho == student_extrato_refeicoes_path && controller_name == "extrato_refeicoes") %>
+      <%= link_to nome, caminho, class: ("is-current" if atual), aria: { current: ("page" if atual) } %>
     <% end %>
   </nav>
   <div class="operator-menu">

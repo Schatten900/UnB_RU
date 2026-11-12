@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     get "inicio", to: "cardapio#index", as: :inicio
     get "recarga", to: "recargas#index", as: :recarga
     get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
+    get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_extrato_refeicoes
+    get "extrato_refeicoes/recibos/:tipo/:id", to: "extrato_refeicoes#recibo", as: :recibo_extrato_refeicoes
     get "fast_pass", to: "fast_passes#index", as: :fast_pass
   end
 

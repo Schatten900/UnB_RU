@@ -1,7 +1,12 @@
 class ExportacaoHistoricoPdfService
-  def self.call(usuario:, mes:, ano:, gerador_pdf: GeradorPdfHistoricoMock,
+  def self.call(usuario:, mes: nil, ano: nil, filtros: nil, gerador_pdf: GeradorPdfHistorico,
                 recargas_model: Recarga, acessos_model: Acesso)
     raise ArgumentError, "Estudante nao informado" if usuario&.matricula.blank?
+
+    if filtros
+      extrato = ExtratoRefeicoesService.call(usuario: usuario, filtros: filtros)
+      return gerador_pdf.call(usuario: usuario, lancamentos: extrato.lancamentos)
+    end
 
     data_inicial = Date.new(Integer(ano), Integer(mes), 1)
     inicio = data_inicial.in_time_zone
@@ -9,10 +14,9 @@ class ExportacaoHistoricoPdfService
     matricula = usuario.matricula
 
     recargas = recargas_model.where(
-      usuario_matricula: matricula, data_hora: inicio...fim
+      usuario_matricula: matricula, data_hora: inicio...fim, status: "concluida"
     )
 
-    # Acesso representa tentativa, mas o historico de refeicoes so inclui passagens.
     registros_acesso = acessos_model.where(
       usuario_matricula: matricula, passagem_em: inicio...fim
     )

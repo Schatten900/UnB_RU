@@ -69,6 +69,16 @@ RSpec.describe ExportacaoHistoricoPdfService, type: :service do
     expect(resultado.tipo_mime).to eq("text/plain")
   end
 
+  it "exclui recargas pendentes e falhas da exportação mensal" do
+    criar_recarga(usuario: estudante, data_hora: "2026-05-01 09:00", valor: 20)
+    pendente = criar_recarga(usuario: estudante, data_hora: "2026-05-02 09:00", valor: 99)
+    pendente.update!(status: "pendente")
+    falha = criar_recarga(usuario: estudante, data_hora: "2026-05-03 09:00", valor: 98)
+    falha.update!(status: "falhou")
+
+    expect(exportar.lancamentos.map { |item| item[:valor] }).to eq([20.to_d])
+  end
+
   it "nao inclui dados de outro estudante" do
     criar_recarga(usuario: estudante, data_hora: "2026-05-02 12:00", valor: 10)
     criar_recarga(usuario: outro_estudante, data_hora: "2026-05-03 12:00", valor: 20)

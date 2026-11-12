@@ -1,69 +1,75 @@
 class ExtratoRefeicoesController < ApplicationController
-  before_action :exigir_usuario
+  before_action :exigir_estudante
+
+  rescue_from ArgumentError do |erro|
+    redirect_to student_extrato_refeicoes_path, alert: erro.message
+  end
 
   def index
-    acessos = usuario_atual.historico_refeicoes.includes(catraca: :restaurante)
-    recargas = usuario_atual.extrato_recargas.concluida
-    agora = Time.current.in_time_zone("America/Sao_Paulo")
-    mes = agora.beginning_of_month..agora.end_of_month
-    @gasto_mes = acessos.where(data_hora: mes).sum(:valor_debitado)
-    @refeicoes_mes = acessos.where(data_hora: mes).where.not(passagem_em: nil).count
-    @recarga_mes = recargas.where(data_hora: mes).sum(:valor)
-    @quantidade_recargas_mes = recargas.where(data_hora: mes).count
-    @turnos = Turno.order(:inicio)
+    extrato = ExtratoRefeicoesService.call(usuario: usuario_atual, filtros: parametros_filtros)
+    @filtros = extrato.filtros
+    @periodo = @filtros.fetch("periodo")
     @restaurantes = Restaurante.order(:nome)
+    @gasto_mes = extrato.resumo.fetch(:gasto_mes)
+    @refeicoes_mes = extrato.resumo.fetch(:refeicoes_mes)
+    @recarga_mes = extrato.resumo.fetch(:recarga_mes)
+    @quantidade_recargas_mes = extrato.resumo.fetch(:quantidade_recargas_mes)
 
-    @periodo = params[:periodo].presence_in(%w[30 mes todos]) || "30"
-    inicio = case @periodo
-    when "30" then (agora - 29.days).beginning_of_day
-    when "mes" then agora.beginning_of_month
-    end
-    if inicio
-      acessos = acessos.where(data_hora: inicio..agora)
-      recargas = recargas.where(data_hora: inicio..agora)
-    end
-
-    registros = acessos.map do |acesso|
-      {
-        id: "acesso-#{acesso.id}", data_hora: acesso.data_hora,
-        tipo: "refeicao", nome: acesso.turno.nome, turno_id: acesso.turno_id,
-        restaurante_id: acesso.catraca.restaurante_id,
-        local: "#{acesso.catraca.restaurante.nome} · Piso #{acesso.catraca.piso}",
-        detalhe: "Catraca #{acesso.catraca_id} · #{acesso.status.humanize}",
-        metodo: acesso.inscricao_fastpass_id ? "fastpass" : "comum",
-        metodo_nome: acesso.inscricao_fastpass_id ? "FastPass" : "Comum",
-        valor: acesso.valor_debitado
-      }
-    end
-    registros.concat(recargas.map do |recarga|
-      {
-        id: "recarga-#{recarga.id}", data_hora: recarga.data_hora,
-        tipo: "recarga", nome: "Recarga de Saldo",
-        local: recarga.pix? ? "Pagamento via PIX" : "Pagamento via cartão",
-        detalhe: "Recarga concluída", metodo: recarga.metodo,
-        metodo_nome: recarga.pix? ? "PIX" : "Cartão de crédito", valor: recarga.valor
-      }
-    end)
-    registros.select! { |item| item[:tipo] == "recarga" } if params[:evento] == "recarga"
-    if params[:evento].to_s.start_with?("turno:")
-      registros.select! { |item| item[:turno_id].to_s == params[:evento].delete_prefix("turno:") }
-    end
-    if params[:restaurante_id].present?
-      registros.select! { |item| item[:restaurante_id].to_s == params[:restaurante_id] }
-    end
-    registros.select! { |item| item[:metodo] == params[:metodo] } if params[:metodo].present?
-    registros.sort_by! { |item| [item[:data_hora], item[:id]] }.reverse!
-    @total = registros.size
-    @por_pagina = params[:por_pagina].to_i.presence_in([5, 10, 20]) || 5
+    @total = extrato.lancamentos.size
+    @por_pagina = tamanho_pagina
     @paginas = [(@total.to_f / @por_pagina).ceil, 1].max
     @pagina = params[:pagina].to_i.clamp(1, @paginas)
     @inicio = (@pagina - 1) * @por_pagina
-    @lancamentos = registros.slice(@inicio, @por_pagina) || []
+    @lancamentos = extrato.lancamentos.slice(@inicio, @por_pagina) || []
+  end
+
+  def exportar
+    documento = ExportacaoHistoricoPdfService.call(usuario: usuario_atual, filtros: parametros_filtros)
+    send_data documento.conteudo, filename: documento.nome_arquivo,
+              type: documento.tipo_mime, disposition: "attachment"
+  end
+
+  def recibo
+    @lancamento = case params[:tipo]
+    when "refeicao"
+      acesso = usuario_atual.historico_refeicoes.includes(catraca: :restaurante).find(params[:id])
+      ExtratoRefeicoesService.lancamento_refeicao(acesso)
+    when "recarga"
+      recarga = usuario_atual.extrato_recargas.concluida.find(params[:id])
+      ExtratoRefeicoesService.lancamento_recarga(recarga)
+    else
+      raise ActiveRecord::RecordNotFound
+    end
+    @filtros = ExtratoRefeicoesService.normalizar_filtros(parametros_filtros)
+    @pagina = [params[:pagina].to_i, 1].max
+    @por_pagina = tamanho_pagina
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        documento = GeradorPdfHistorico.call(
+          usuario: usuario_atual, lancamentos: [@lancamento], titulo: "Comprovante de lançamento"
+        )
+        send_data documento.conteudo,
+                  filename: "comprovante_#{@lancamento[:tipo]}_#{@lancamento[:registro_id]}.pdf",
+                  type: documento.tipo_mime, disposition: "attachment"
+      end
+    end
   end
 
   private
 
-  def exigir_usuario
-    redirect_to login_path unless usuario_atual
+  def exigir_estudante
+    return if usuario_atual&.estudante?
+
+    redirect_to login_path, alert: "Acesso restrito a estudantes."
+  end
+
+  def parametros_filtros
+    params.permit(*ExtratoRefeicoesService::FILTROS).to_h
+  end
+
+  def tamanho_pagina
+    params[:por_pagina].to_i.presence_in([5, 10, 20]) || 5
   end
 end
