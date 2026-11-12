@@ -4,7 +4,7 @@
     <section class="statement-heading" aria-labelledby="statement-title">
       <div><p class="eyebrow">Portal do Restaurante Universitário</p><h1 id="statement-title">Extrato e Histórico de Refeições</h1><p class="welcome-details">Matrícula: <strong><%= usuario_atual.matricula %></strong></p></div>
       <div class="statement-actions">
-        <button type="button" disabled title="Exportação PDF disponível em breve"><span aria-hidden="true">▣</span> Exportar PDF</button>
+        <%= link_to "▣ Exportar PDF", student_exportar_historico_path(request.query_parameters.slice("periodo", "mes_referencia", "evento", "restaurante_id", "metodo")), data: { turbo: false } %>
         <button type="button" disabled title="Impressão disponível em breve"><span aria-hidden="true">▤</span> Imprimir</button>
       </div>
     </section>
@@ -32,11 +32,12 @@
       <%= form_with url: student_extrato_refeicoes_path, method: :get do |form| %>
         <div class="statement-filter-grid">
           <div><%= form.label :periodo, "Período de referência" %><%= form.select :periodo, [["Últimos 30 dias", "30"], ["Mês atual", "mes"], ["Todo o histórico", "todos"]], selected: @periodo %></div>
+          <div><%= form.label :mes_referencia, "Mês específico (opcional)" %><%= form.month_field :mes_referencia, value: params[:mes_referencia] %></div>
           <div><%= form.label :evento, "Tipo de refeição / Evento" %><%= form.select :evento, [["Todas as refeições e recargas", ""], ["Recarga de saldo", "recarga"]] + @turnos.map { |turno| [turno.nome, "turno:#{turno.id}"] }, selected: params[:evento] %></div>
           <div><%= form.label :restaurante_id, "Restaurante" %><%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, { include_blank: "Todos os restaurantes", selected: params[:restaurante_id] } %></div>
           <div><%= form.label :metodo, "Forma de acesso / pagamento" %><%= form.select :metodo, [["Todos os métodos", ""], ["Comum", "comum"], ["FastPass", "fastpass"], ["PIX", "pix"], ["Cartão de crédito", "cartao_credito"]], selected: params[:metodo] %></div>
         </div>
-        <div class="statement-filter-submit"><small>Os indicadores acima representam o mês atual. Filtrar por restaurante exibe apenas refeições.</small><%= form.submit "Aplicar filtros" %></div>
+        <div class="statement-filter-submit"><small>Os indicadores acima representam o mês atual. O mês específico tem prioridade sobre o período. Filtrar por restaurante exibe apenas refeições.</small><%= form.submit "Aplicar filtros" %></div>
       <% end %>
     </section>
 

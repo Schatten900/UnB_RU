@@ -4,11 +4,18 @@ class ConfirmacaoPassagemFastpassService
   class SaldoInsuficiente < StandardError; end
 
   def self.call(resultado:, agora: Time.current)
-    raise PassagemNaoAutorizada unless resultado&.autorizado? && resultado.acesso
-    raise PassagemJaConfirmada if resultado.confirmado?
+    raise PassagemNaoAutorizada unless resultado&.acesso
 
-    unless resultado.acesso.confirmar_passagem!(agora: agora)
-      raise SaldoInsuficiente
+    resultado.acesso.with_lock do
+      raise PassagemJaConfirmada if resultado.confirmado? || resultado.acesso.passagem_em.present?
+      unless resultado.autorizado? && resultado.acesso.status == "pendente" &&
+             resultado.acesso.inscricao_fastpass_id.present?
+        raise PassagemNaoAutorizada
+      end
+
+      unless resultado.acesso.confirmar_passagem!(agora: agora)
+        raise SaldoInsuficiente
+      end
     end
 
     resultado.confirmado = true

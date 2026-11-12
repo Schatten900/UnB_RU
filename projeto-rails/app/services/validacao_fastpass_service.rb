@@ -26,7 +26,7 @@ class ValidacaoFastpassService
     end
 
     valor = BigDecimal(turno.preco.to_s)
-    raise ArgumentError, "Preco da refeicao deve ser positivo" unless valor.positive?
+    raise ArgumentError, "Preco da refeicao nao pode ser negativo" if valor.negative?
 
     motivo = motivo_bloqueio(usuario, inscricao, time_frame, valor, agora)
     if motivo.nil? && !liberador.liberar(catraca_id: catraca.id)
