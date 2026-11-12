@@ -20,6 +20,7 @@ class InscricaoFastpass < ApplicationRecord
   validates :time_frame, presence: { message: "precisa ser escolhido" }
   validate :usuario_deve_ser_estudante
   validate :inscricao_unica_por_turno
+  has_one :acesso, dependent: :restrict_with_error
 
   private
 

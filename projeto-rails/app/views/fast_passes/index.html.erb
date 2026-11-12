@@ -93,11 +93,13 @@
             </small>
 
             <button
-              type="button"
-              onclick="alert('Funcionalidade de liberação ainda não implementada.')"
-              style="background: #fee2e2; color: #991b1b; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">
-              Liberar vaga
-            </button>
+            type="button"
+            id="btn-liberar-passagem"
+            data-catraca-id="<%= @inscricao_atual&.catraca_id %>"
+            <%= "disabled" unless @inscricao_atual&.catraca %>
+            style="background: #16a34a; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">
+            Liberar vaga
+          </button>
           </div>
         </section>
 
@@ -384,6 +386,64 @@
       btn.style.opacity = "1";
     }
   }
+  async function liberarPassagem() {
+  const btn = document.getElementById("btn-liberar-passagem");
+
+  const catracaId = btn.dataset.catracaId;
+
+  if (!catracaId) {
+    alert("Seu FastPass não possui uma catraca atribuída.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Validando passagem...";
+  btn.style.opacity = "0.7";
+
+  const csrfToken =
+    document.querySelector("meta[name='csrf-token']")?.content;
+
+  try {
+    const response = await fetch(
+      "/api/fast_passes/liberar_passagem",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          catraca_id: catracaId
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.sucesso) {
+      alert(data.mensagem);
+      window.location.reload();
+    } else {
+      alert(data.erro || "Não foi possível liberar a passagem.");
+    }
+
+  } catch (error) {
+    console.error("Erro ao liberar passagem:", error);
+    alert("Erro de comunicação com o servidor.");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Liberar vaga";
+    btn.style.opacity = "1";
+  }
+}
+
+document
+  .getElementById("btn-liberar-passagem")
+  ?.addEventListener("click", liberarPassagem);
+
 </script>
+<%# app/view/fast_passes/index.html.erb %>  
 <%# AI: Gemini %>
 <%# Strategy and prompt: Asked about integration of fast pass on natural language, provided model files, described work, provided service, controller files %>
+<%# AI: ChatGPT Web %>
+<%# Strategy and prompt: Asked help with fixing and integrating fastpass simulation button %>

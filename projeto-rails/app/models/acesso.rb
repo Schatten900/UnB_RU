@@ -5,6 +5,7 @@ class Acesso < ApplicationRecord
   belongs_to :usuario, foreign_key: :usuario_matricula, primary_key: :matricula
   belongs_to :turno
   belongs_to :catraca
+  belongs_to :inscricao_fastpass, optional: true
 
   def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil)
     # Validar com o time aqui se iremos utilizar a ideia das matriculas que começar com 9999 

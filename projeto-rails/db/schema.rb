@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_11_11_015512) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_12_192415) do
   create_table "acessos", force: :cascade do |t|
     t.string "usuario_matricula", null: false
     t.integer "catraca_id", null: false
@@ -83,6 +83,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_11_015512) do
 
   create_table "restaurantes", force: :cascade do |t|
     t.string "nome", null: false
+    t.decimal "faturamento", precision: 10, scale: 2, default: "0.0", null: false
   end
 
   create_table "sorteios", force: :cascade do |t|
