@@ -53,6 +53,24 @@ RSpec.describe Acesso, type: :model do
   end
 
   describe "#confirmar_passagem!" do
+    it "não debita novamente ao confirmar usando outra instância do mesmo acesso" do
+      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+      segunda_instancia = described_class.find(acesso.id)
+
+      expect(acesso.confirmar_passagem!).to be(true)
+      expect(segunda_instancia.confirmar_passagem!).to be(false)
+      expect(acesso.usuario.reload.saldo).to eq(11.to_d)
+    end
+
+    it "não confirma uma tentativa bloqueada" do
+      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+      acesso.update!(status: "bloqueado")
+
+      expect(acesso.confirmar_passagem!).to be(false)
+      expect(acesso.reload.passagem_em).to be_nil
+      expect(acesso.usuario.reload.saldo).to eq(15.5.to_d)
+    end
+
     [
       ["221012345", "15.50", "11.00"],
       ["231045229", "45.00", "40.50"]

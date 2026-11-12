@@ -79,7 +79,6 @@ class ValidacaoFastpassService
 
     horario >= inicio || horario < fim
   end
-  private_class_method :dentro_da_janela?
 
   def self.segundos(horario)
     horario.hour * 3600 + horario.min * 60 + horario.sec

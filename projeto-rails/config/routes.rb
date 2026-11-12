@@ -40,6 +40,12 @@ Rails.application.routes.draw do
     get "ponto_configuracao", to: "ponto_configuracao#new", as: :ponto_configuracao
     post "ponto_configuracao", to: "ponto_configuracao#create"
     get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
+    post "terminal_validacao/processar_leitura", to: "terminal_validacao#processar_leitura", as: :processar_leitura
+    post "terminal_validacao/simular_ok", to: "terminal_validacao#simular_ok", as: :simular_ok
+    post "terminal_validacao/simular_fora_janela", to: "terminal_validacao#simular_fora_janela", as: :simular_fora_janela
+    post "terminal_validacao/simular_sem_saldo", to: "terminal_validacao#simular_sem_saldo", as: :simular_sem_saldo
+    post "terminal_validacao/simular_modo_comum", to: "terminal_validacao#simular_modo_comum", as: :simular_modo_comum
+    post "terminal_validacao/confirmar_passagem", to: "terminal_validacao#confirmar_passagem", as: :confirmar_passagem
     get "historico_local", to: "historico_local#index", as: :historico_local
     get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
   end

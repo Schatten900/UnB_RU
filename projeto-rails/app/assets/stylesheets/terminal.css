@@ -56,6 +56,14 @@
 .terminal-table td { padding: 15px 12px; border-bottom: 1px solid #f5f3f3; }
 .terminal-table .terminal-empty { text-align: center; color: var(--muted); padding: 35px 12px; }
 .terminal-page button:focus-visible, .operator-topbar a:focus-visible { outline: 3px solid #71abff; outline-offset: 3px; }
+.terminal-identification { display: grid; gap: 6px; margin: 12px 0; }
+.terminal-identification label { color: var(--ink); font-size: 11px; font-weight: 600; }
+.terminal-identification input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--ink); font: inherit; font-size: 11px; }
+.terminal-identification input:focus-visible { outline: 3px solid #71abff; outline-offset: 2px; }
+.terminal-identification-controls { display: flex; align-items: stretch; gap: 8px; }
+.terminal-identification-controls input { flex: 1; min-width: 0; }
+.terminal-read-button { flex: 0 0 auto; padding: 10px 12px; border: 0; border-radius: 6px; background: var(--blue); color: white; font: inherit; font-size: 11px; cursor: pointer; }
+.terminal-read-button:disabled { opacity: .6; cursor: wait; }
 @media (max-width: 900px) {
   .operator-topbar { flex-wrap: wrap; gap: 14px; }
   .operator-topbar .main-nav { order: 3; flex-basis: 100%; overflow-x: auto; }
@@ -64,6 +72,7 @@
   .terminal-columns { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
+  .terminal-identification-controls { flex-direction: column; }
   .terminal-page { padding: 16px 12px; }
   .terminal-card { padding: 14px; }
   .terminal-context { align-items: flex-start; flex-direction: column; }
