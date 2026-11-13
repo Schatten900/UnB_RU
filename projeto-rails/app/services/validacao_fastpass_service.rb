@@ -29,6 +29,12 @@ class ValidacaoFastpassService
     raise ArgumentError, "Preco da refeicao deve ser positivo" unless valor.positive?
 
     motivo = motivo_bloqueio(usuario, inscricao, time_frame, valor, agora)
+    if motivo.nil? && inscricao.catraca_id.present? && inscricao.catraca_id != catraca.id
+      motivo = :catraca_incorreta
+    end
+    if motivo.nil? && Acesso.where(inscricao_fastpass_id: inscricao.id).where.not(passagem_em: nil).exists?
+      motivo = :fastpass_utilizado
+    end
     if motivo.nil? && !liberador.liberar(catraca_id: catraca.id)
       motivo = :falha_liberacao
     end

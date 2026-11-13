@@ -2,7 +2,14 @@
 class NotificarFastPassJob < ApplicationJob
   queue_as :default
 
-  def perform
+  def perform(sorteio_id = nil)
+    if sorteio_id
+      sorteio = Sorteio.find(sorteio_id)
+      return unless sorteio.status == "concluido"
+
+      notificar(InscricaoFastpass.where(sorteio_id: sorteio.id))
+      return
+    end
     horario_alvo = Time.current + 1.hour
     data_alvo = horario_alvo.to_date
     hora_alvo = horario_alvo.strftime("%H:%M")
@@ -24,21 +31,25 @@ class NotificarFastPassJob < ApplicationJob
         time_frame_id: time_frame_ids
       )
 
-      inscricoes.each do |inscricao|
-        next unless inscricao.status_notificacao == "pendente"
-        next if inscricao.resultado.blank?
+      notificar(inscricoes)
+    end
+  end
 
-        begin
-          # O serviço cria a notificação e atualiza a inscrição.
+  private
+
+  def notificar(inscricoes)
+    inscricoes.each do |inscricao|
+      begin
+        inscricao.with_lock do
+          next unless inscricao.status_notificacao == "pendente"
+          next if inscricao.resultado.blank?
+
           NotificacaoService.call(inscricao: inscricao)
-
-        rescue StandardError => e
-          inscricao.update!(status_notificacao: "falhou")
-
-          Rails.logger.error(
-            "Erro ao notificar inscrição #{inscricao.id}: #{e.message}"
-          )
         end
+      rescue StandardError => e
+        inscricao.update!(status_notificacao: "falhou")
+
+        Rails.logger.error("Erro ao notificar inscrição #{inscricao.id}: #{e.message}")
       end
     end
   end

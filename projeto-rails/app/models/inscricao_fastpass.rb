@@ -7,6 +7,7 @@ class InscricaoFastpass < ApplicationRecord
 
 	belongs_to :sorteio
 	belongs_to :time_frame
+  belongs_to :catraca, optional: true
 	belongs_to :usuario,
 		foreign_key: :usuario_matricula,
 		primary_key: :matricula

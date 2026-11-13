@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_extrato_refeicoes
     get "extrato_refeicoes/recibos/:tipo/:id", to: "extrato_refeicoes#recibo", as: :recibo_extrato_refeicoes
     get "fast_pass", to: "fast_passes#index", as: :fast_pass
+    post "fast_pass", to: "fast_passes#create"
   end
 
   get "operator", to: redirect("/operator/ponto_configuracao"), as: :operator_root
@@ -54,6 +55,8 @@ Rails.application.routes.draw do
   get "admin", to: redirect("/admin/restaurantes"), as: :admin_root
   scope path: "admin", as: "admin" do
     get "vagas_fastpass", to: "vagas_fastpass#index", as: :vagas_fastpass
+    post "vagas_fastpass", to: "vagas_fastpass#aplicar"
+    post "vagas_fastpass/sortear", to: "vagas_fastpass#sortear", as: :sortear_fastpass
     get "relatorio_global", to: "relatorios#global", as: :relatorio_global
   end
 
@@ -64,6 +67,7 @@ Rails.application.routes.draw do
   end
   
   namespace :api do
+    resources :fast_passes, only: [:create]
     resources :cadastros, only: [:create]
     
     resources :recargas, only: [:create] do
@@ -82,3 +86,5 @@ end
 # DO NOT REMOVE THIS AI USE DISCLOSURE SECTION, IF YOU USE AI, ADD INTO IT! 
 # AI: Deepseek and Gemini
 # Strategy and prompt: Affected by several other prompts already documented here
+# AI: Codex
+# Strategy: Integração de cotas, inscrição pendente e execução do sorteio usando os serviços compartilhados.

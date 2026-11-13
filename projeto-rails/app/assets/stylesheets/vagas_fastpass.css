@@ -24,24 +24,15 @@
 .fastpass-actions { display: flex; gap: 8px; }
 .fastpass-actions button { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 48px; padding: 8px 16px; border: 0; border-radius: 4px; color: var(--blue); background: #eeecec; font: inherit; font-size: 11px; cursor: pointer; }
 .fastpass-actions button span { font-size: 20px; }
-.fastpass-actions .fastpass-apply { padding: 8px 22px; color: white; background: var(--blue); cursor: not-allowed; }
-.fastpass-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 22px 0 24px; }
+.fastpass-actions .fastpass-apply { padding: 8px 22px; color: white; background: var(--blue); cursor: pointer; }
+.fastpass-daily { display: grid; gap: 12px; margin: 22px 0; }
+.fastpass-daily input { max-width: 220px; padding: 10px; font: inherit; }
+.fastpass-stepper input { width: 65px; border: 0; background: white; padding: 5px; color: var(--blue); text-align: center; font: inherit; }
 .fastpass-metric { min-width: 0; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 1px 1px #25252505; }
-.fastpass-metric h2 { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 20px; color: #394252; font-size: 12px; font-weight: 400; }
-.fastpass-metric h2 span { color: var(--blue); font-size: 20px; }
 .fastpass-metric p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; margin: 0 0 8px; color: #747987; font-size: 11px; }
-.fastpass-metric p strong { color: #202020; font-size: 34px; line-height: 1; }
 .fastpass-metric small { color: #747987; font-size: 10px; }
-.fastpass-metric small b { color: #16863c; font-weight: 500; }
-.fastpass-metric .fastpass-blue { color: var(--blue); }
-.fastpass-metric .fastpass-green { color: #007a35; }
-.fastpass-metric progress { display: block; width: 100%; height: 7px; margin-top: 16px; border: 0; border-radius: 8px; background: #eeecec; accent-color: #007a35; overflow: hidden; }
-.fastpass-metric progress::-webkit-progress-bar { background: #eeecec; }
-.fastpass-metric progress::-webkit-progress-value { background: #007a35; border-radius: 8px; }
-.fastpass-metric progress::-moz-progress-bar { background: #007a35; border-radius: 8px; }
 .fastpass-grid { padding: 26px 24px 24px; background: white; border-radius: 12px; }
 .fastpass-grid h2 { margin: 0 0 5px; color: var(--blue); font-size: 20px; }
-.fastpass-grid-description { margin: 0 0 24px; color: #747987; font-size: 11px; }
 .fastpass-table-scroll { overflow-x: auto; }
 .fastpass-table { width: 100%; min-width: 600px; border-collapse: collapse; text-align: center; font-size: 12px; }
 .fastpass-table thead { background: #f5f3f2; color: #444c5c; text-transform: uppercase; font-size: 11px; }
@@ -51,11 +42,9 @@
 .fastpass-table tbody th { width: 32%; }
 .fastpass-clock { font-size: 18px; vertical-align: middle; color: #394252; }
 .fastpass-quota { color: var(--blue); font-weight: 700; }
-.fastpass-load { color: #747987; }
 .fastpass-stepper { display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px; min-width: 126px; border-radius: 5px; background: #f0eeed; }
 .fastpass-stepper button { width: 27px; height: 27px; border: 0; border-radius: 3px; background: white; color: #64666b; font-size: 19px; cursor: pointer; }
 .fastpass-stepper button:disabled { opacity: .4; cursor: not-allowed; }
-.fastpass-stepper output { min-width: 25px; color: var(--blue); font-weight: 700; }
 .fastpass-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: 16px; margin-top: 18px; padding: 20px 16px; border-radius: 7px; background: #f5f3f2; font-size: 12px; }
 .fastpass-total strong { color: var(--blue); font-size: 20px; }
 .fastpass-preview { margin: 14px 0 0; color: var(--muted); font-size: 11px; }
@@ -69,7 +58,6 @@
   .admin-header { padding: 18px 20px; }
   .admin-brand-context { display: none; }
   .admin-nav { padding: 6px 20px; gap: 22px; }
-  .fastpass-metrics { gap: 12px; }
   .fastpass-metric { padding: 18px; }
   .fastpass-heading { align-items: flex-start; flex-wrap: wrap; }
   .fastpass-grid h2 { font-size: 18px; }
@@ -80,8 +68,6 @@
   .fastpass-content { padding: 20px 14px 36px; }
   .fastpass-heading, .fastpass-grid { padding: 20px 16px; }
   .fastpass-heading h1 { font-size: 21px; }
-  .fastpass-metrics { grid-template-columns: 1fr; }
-  .fastpass-metric h2 { margin-bottom: 14px; }
   .fastpass-actions { width: 100%; }
   .fastpass-actions button { flex: 1; padding: 8px; }
 }

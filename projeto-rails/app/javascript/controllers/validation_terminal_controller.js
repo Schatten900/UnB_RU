@@ -130,7 +130,9 @@ export default class extends Controller {
       autorizado: "Leitura registrada. Aguardando confirmação da passagem.",
       fora_da_janela: "Leitura fora da janela sorteada. Tentativa bloqueada e registrada.",
       saldo_insuficiente: "Saldo insuficiente. Tentativa bloqueada e registrada.",
-      sem_fastpass: "Estudante sem FastPass válido para esta data e turno. Tentativa bloqueada e registrada."
+      sem_fastpass: "Estudante sem FastPass válido para esta data e turno. Tentativa bloqueada e registrada.",
+      catraca_incorreta: "Este FastPass foi atribuído a outra catraca. Tentativa bloqueada e registrada.",
+      fastpass_utilizado: "Este FastPass já foi utilizado. Tentativa bloqueada e registrada."
     }
     this.resultDetailTarget.textContent = data.confirmado ? "Passagem registrada e saldo do estudante atualizado." : detalhes[data.motivo] || "Leitura registrada."
     this.studentTarget.textContent = data.estudante.nome

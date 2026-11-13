@@ -56,6 +56,16 @@ RSpec.describe ValidacaoFastpassService, type: :service do
     expect(liberador.comandos).to be_empty
   end
 
+  it "bloqueia vencedor que tenta usar uma catraca diferente da atribuída" do
+    outra = restaurante.catracas.create!(piso: 2, modo_acesso: "fastpass")
+    inscricao.update!(catraca: outra)
+    resultado = validar
+    expect(resultado.autorizado?).to be(false)
+    expect(resultado.motivo).to eq(:catraca_incorreta)
+    expect(liberador.comandos).to be_empty
+    expect(estudante.reload.saldo).to eq(15.5.to_d)
+  end
+
   it "bloqueia quando o saldo e insuficiente" do
     estudante.update!(saldo: "3.50")
 

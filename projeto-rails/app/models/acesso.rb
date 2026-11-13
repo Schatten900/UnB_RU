@@ -34,7 +34,21 @@ class Acesso < ApplicationRecord
   end
 
   def confirmar_passagem!(agora: Time.current)
-    self.class.transaction do
+    if inscricao_fastpass_id
+      InscricaoFastpass.find(inscricao_fastpass_id).with_lock do
+        next false if self.class.where(inscricao_fastpass_id: inscricao_fastpass_id).where.not(passagem_em: nil).exists?
+
+        confirmar_passagem_pendente!(agora: agora)
+      end
+    else
+      confirmar_passagem_pendente!(agora: agora)
+    end
+  end
+
+  private
+
+  def confirmar_passagem_pendente!(agora:)
+    self.class.transaction(requires_new: true) do
       reservados = self.class.where(id: id, status: "pendente", passagem_em: nil)
                              .update_all(passagem_em: agora)
       next false if reservados.zero?
