@@ -86,3 +86,6 @@ class ValidacaoFastpassService
   end
   private_class_method :segundos
 end
+
+# AI: Gemini
+# Prompt: Modified with Gemini through natural language conversation about fast pass, general idea, models, existing controllers were passed, and then the AI was asked to modify it.

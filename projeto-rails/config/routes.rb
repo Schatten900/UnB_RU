@@ -1,3 +1,4 @@
+#app/config/routes.rb
 Rails.application.routes.draw do
   # Health check do Rails
   get "up" => "rails/health#show", as: :rails_health_check
@@ -43,6 +44,7 @@ Rails.application.routes.draw do
     get "terminal_validacao", to: "terminal_validacao#index", as: :terminal_validacao
     get "historico_local", to: "historico_local#index", as: :historico_local
     get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
+    post "terminal_validacao/liberar_passagem", to: "terminal_validacao#liberar_passagem", as: :liberar_passagem
   end
   get "admin", to: redirect("/admin/restaurantes"), as: :admin_root
   scope path: "admin", as: "admin" do
@@ -61,6 +63,11 @@ Rails.application.routes.draw do
     post "fastpass/acessos/:id/confirmar", to: "fastpass#confirmar"
 
     resources :cadastros, only: [:create]
+    resources :fast_passes, only: [:create] do
+    collection do
+      post :liberar_passagem
+    end
+  end
     
     resources :recargas, only: [:create] do
       member do

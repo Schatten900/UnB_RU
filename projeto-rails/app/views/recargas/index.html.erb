@@ -2,7 +2,7 @@
   <%= render "shared/cabecalho_estudante" %>
 
   <div class="home-content">
-    <section class="home-welcome" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,00,0,0.05); margin-bottom: 2rem;">
+    <section class="home-welcome" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 2rem;">
       <div style="display: flex; align-items: center; gap: 1rem;">
         <div style="background: #1e3a8a; color: #fff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">
           <%= usuario_atual&.nome&.split&.map(&:first)&.join&.upcase || "RU" %>
@@ -14,7 +14,7 @@
       </div>
       <div class="ru-status" style="background: #f8fafc; padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid #e2e8f0;">
         <small style="display: block; color: #64748b; font-size: 0.75rem;">Saldo atual</small>
-        <strong style="color: #16a34a; font-size: 1.2rem;"><%= number_to_currency(usuario_atual&.saldo || 0, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+        <strong id="saldo-exibicao" style="color: #16a34a; font-size: 1.2rem;"><%= number_to_currency(usuario_atual&.saldo || 0, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
       </div>
     </section>
 
@@ -36,19 +36,21 @@
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-            <div class="pacote-card" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; cursor: pointer; background: #fff;" onclick="selecionarPacote(2, 9.00)">
+            <!-- Card Pacote 2 Refeições -->
+            <div id="card-pacote-2" class="pacote-card" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; cursor: pointer; background: #fff;" onclick="mudarPacote(2, 9.00, '2 refeições')">
               <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b;">
                 <span>2 Refeições</span>
-                <input type="radio" name="pacote" checked>
+                <input type="radio" name="pacote" id="radio-pacote-2">
               </div>
               <div style="font-size: 1.25rem; font-weight: bold; color: #1e3a8a; margin: 0.25rem 0;">R$ 9,00</div>
               <small style="font-size: 0.75rem; color: #64748b;">R$ 4.50 / un</small>
             </div>
 
-            <div class="pacote-card" style="border: 2px solid #1e3a8a; border-radius: 8px; padding: 1rem; cursor: pointer; background: #f8fafc;" onclick="selecionarPacote(5, 22.50)">
+            <!-- Card Pacote 5 Refeições (Inicialmente Selecionado) -->
+            <div id="card-pacote-5" class="pacote-card" style="border: 2px solid #1e3a8a; border-radius: 8px; padding: 1rem; cursor: pointer; background: #f8fafc;" onclick="mudarPacote(5, 22.50, '5 refeições')">
               <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #1e3a8a; font-weight: 600;">
                 <span>5 Refeições</span>
-                <input type="radio" name="pacote" checked>
+                <input type="radio" name="pacote" id="radio-pacote-5" checked>
               </div>
               <div style="font-size: 1.25rem; font-weight: bold; color: #1e3a8a; margin: 0.25rem 0;">R$ 22,50</div>
               <small style="font-size: 0.75rem; color: #64748b;">1 semana</small>
@@ -64,22 +66,29 @@
           </div>
 
           <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-            <button type="button" style="flex: 1; padding: 0.75rem; border: 2px solid #1e3a8a; background: #f8fafc; border-radius: 8px; font-weight: 600; color: #1e3a8a;">PIX Instantâneo</button>
-            <button type="button" style="flex: 1; padding: 0.75rem; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; color: #64748b;">Cartão de Crédito</button>
+            <button type="button" id="btn-metodo-pix" onclick="mudarMetodo('pix')" style="flex: 1; padding: 0.75rem; border: 2px solid #1e3a8a; background: #f8fafc; border-radius: 8px; font-weight: 600; color: #1e3a8a; cursor: pointer;">PIX Instantâneo</button>
+            <button type="button" id="btn-metodo-cartao" onclick="mudarMetodo('cartao_credito')" style="flex: 1; padding: 0.75rem; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; color: #64748b; cursor: pointer;">Cartão de Crédito</button>
           </div>
 
-          <!-- Caixa PIX Mockada com unidade Darcy Ribeiro -->
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; display: flex; gap: 1.5rem; align-items: center;">
-            <div style="background: #fff; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center;">
-              <!-- Placeholder visual QR Code -->
-              <div style="width: 90px; height: 90px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.7rem; font-family: monospace;">QR PIX</div>
+          <!-- Área Dinâmica: Caixa PIX Mockada ou Aviso de Cartão Fictício -->
+          <div id="area-conteudo-metodo">
+            <!-- Bloco PIX -->
+            <div id="bloco-pix" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; display: flex; gap: 1.5rem; align-items: center;">
+              <div style="background: #fff; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center;">
+                <div style="width: 90px; height: 90px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.7rem; font-family: monospace;">QR PIX</div>
+              </div>
+              <div style="flex: 1;">
+                <span style="background: #dcfce7; color: #166534; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px;">INSTANTÂNEO</span>
+                <h4 style="margin: 0.3rem 0; font-size: 0.95rem; color: #0f172a;">Aponte o app do seu banco</h4>
+                <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0;">Unidade Única: <strong>RU Darcy Ribeiro</strong></p>
+                <input type="text" readonly value="00020126580014br.gov.bcb.pix0136ru-recarrega-darcy-948831@unb.br" style="width: 100%; font-size: 0.7rem; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #475569;" id="pix-code">
+                <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); alert('Chave Pix copiada!');" style="margin-top: 0.5rem; background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Copiar Código Pix</button>
+              </div>
             </div>
-            <div style="flex: 1;">
-              <span style="background: #dcfce7; color: #166534; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px;">INSTANTÂNEO</span>
-              <h4 style="margin: 0.3rem 0; font-size: 0.95rem; color: #0f172a;">Aponte o app do seu banco</h4>
-              <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0;">Unidade Única: <strong>RU Darcy Ribeiro</strong></p>
-              <input type="text" readonly value="00020126580014br.gov.bcb.pix0136ru-recarrega-darcy-948831@unb.br" style="width: 100%; font-size: 0.7rem; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #475569;" id="pix-code">
-              <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); alert('Chave Pix copiada!');" style="margin-top: 0.5rem; background: #1e3a8a; color: #fff; border: none; padding: 0.4rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Copiar Código Pix</button>
+
+            <!-- Bloco Cartão (Oculto por padrão) -->
+            <div id="bloco-cartao" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; text-align: center;">
+              <p style="margin: 0; color: #475569; font-size: 0.9rem; font-weight: 500;">Cartão de crédito fictício, este sistema não opera transações reais.</p>
             </div>
           </div>
         </section>
@@ -91,9 +100,9 @@
         <h3 style="margin-top: 0; font-size: 1.1rem; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">Resumo da Recarga</h3>
         
         <div style="font-size: 0.9rem; color: #475569; display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
-          <div style="display: flex; justify-content: span;"><span>Refeições:</span> <strong>5 refeições</strong></div>
-          <div style="display: flex; justify-content: span;"><span>Tarifa unitária:</span> <strong>R$ 4,50 / un</strong></div>
-          <div style="display: flex; justify-content: span;"><span>Pagamento:</span> <strong>PIX Instantâneo</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Refeições:</span> <strong id="resumo-qtd">5 refeições</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Tarifa unitária:</span> <strong>R$ 4,50 / un</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Pagamento:</span> <strong id="resumo-metodo">PIX Instantâneo</strong></div>
           <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; color: #64748b;">
             Unidade: <strong>RU Darcy Ribeiro</strong>
           </div>
@@ -101,16 +110,162 @@
 
         <div style="margin-bottom: 1.25rem;">
           <small style="color: #64748b; font-size: 0.75rem;">TOTAL</small>
-          <div style="font-size: 1.8rem; font-weight: bold; color: #1e3a8a;">R$ 22,50</div>
+          <div id="resumo-total" style="font-size: 1.8rem; font-weight: bold; color: #1e3a8a;">R$ 22,50</div>
         </div>
 
-        <form id="recarga-form">
-          <button type="submit" class="primary-button login-submit" style="width: 100%; padding: 0.85rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Confirmar Recarga</button>
+        <form id="recarga-form" data-turbo="false" onsubmit="event.preventDefault(); executarRecarga();">
+          <button type="submit" id="btn-confirmar" class="primary-button login-submit" style="width: 100%; padding: 0.85rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Confirmar Recarga</button>
         </form>
       </section>
 
     </div>
   </div>
 </main>
+
+<script>
+  let dadosRecarga = {
+    quantidade: 5,
+    valor: 22.50,
+    descricaoQtd: "5 refeições",
+    metodo: "pix"
+  };
+
+  function mudarPacote(qtd, valor, descricao) {
+    dadosRecarga.quantidade = qtd;
+    dadosRecarga.valor = valor;
+    dadosRecarga.descricaoQtd = descricao;
+
+    const card2 = document.getElementById("card-pacote-2");
+    const card5 = document.getElementById("card-pacote-5");
+    const radio2 = document.getElementById("radio-pacote-2");
+    const radio5 = document.getElementById("radio-pacote-5");
+
+    if (qtd === 2) {
+      card2.style.border = "2px solid #1e3a8a";
+      card2.style.background = "#f8fafc";
+      radio2.checked = true;
+
+      card5.style.border = "1px solid #cbd5e1";
+      card5.style.background = "#fff";
+      radio5.checked = false;
+    } else {
+      card5.style.border = "2px solid #1e3a8a";
+      card5.style.background = "#f8fafc";
+      radio5.checked = true;
+
+      card2.style.border = "1px solid #cbd5e1";
+      card2.style.background = "#fff";
+      radio2.checked = false;
+    }
+
+    document.getElementById("resumo-qtd").innerText = descricao;
+    document.getElementById("resumo-total").innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+  }
+
+  function mudarMetodo(metodo) {
+    dadosRecarga.metodo = metodo;
+
+    const btnPix = document.getElementById("btn-metodo-pix");
+    const btnCartao = document.getElementById("btn-metodo-cartao");
+    const blocoPix = document.getElementById("bloco-pix");
+    const blocoCartao = document.getElementById("bloco-cartao");
+    const resumoMetodo = document.getElementById("resumo-metodo");
+
+    if (metodo === "pix") {
+      btnPix.style.border = "2px solid #1e3a8a";
+      btnPix.style.background = "#f8fafc";
+      btnPix.style.fontWeight = "600";
+      btnPix.style.color = "#1e3a8a";
+
+      btnCartao.style.border = "1px solid #cbd5e1";
+      btnCartao.style.background = "#fff";
+      btnCartao.style.fontWeight = "normal";
+      btnCartao.style.color = "#64748b";
+
+      blocoPix.style.display = "flex";
+      blocoCartao.style.display = "none";
+      resumoMetodo.innerText = "PIX Instantâneo";
+    } else {
+      btnCartao.style.border = "2px solid #1e3a8a";
+      btnCartao.style.background = "#f8fafc";
+      btnCartao.style.fontWeight = "600";
+      btnCartao.style.color = "#1e3a8a";
+
+      btnPix.style.border = "1px solid #cbd5e1";
+      btnPix.style.background = "#fff";
+      btnPix.style.fontWeight = "normal";
+      btnPix.style.color = "#64748b";
+
+      blocoCartao.style.display = "block";
+      blocoPix.style.display = "none";
+      resumoMetodo.innerText = "Cartão de Crédito";
+    }
+  }
+
+async function executarRecarga() {
+    const btnConfirmar = document.getElementById("btn-confirmar");
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerText = "Processando pagamento...";
+    btnConfirmar.style.opacity = "0.7";
+
+    const csrfToken = document.querySelector("meta[name='csrf-token']")?.content;
+
+    try {
+      // 1. Criar recarga como pendente
+      const responseCriacao = await fetch("/api/recargas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          valor: dadosRecarga.valor,
+          metodo: dadosRecarga.metodo
+        })
+      });
+
+      const dataCriacao = await responseCriacao.json();
+
+      if (!responseCriacao.ok) {
+        throw new Error(dataCriacao.erro || "Erro ao iniciar a recarga.");
+      }
+
+      const recargaId = dataCriacao.recarga.id;
+
+      // 2. Aguardar 3 segundos (simulação de gateway / aprovação)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 3. Confirmar a recarga no backend
+      const responseConfirmacao = await fetch(`/api/recargas/${recargaId}/confirmar`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        }
+      });
+
+      const dataConfirmacao = await responseConfirmacao.json();
+
+      if (responseConfirmacao.ok) {
+        // Converte explicitamente para número para evitar o erro do toFixed
+        const saldoAtualizado = Number(dataConfirmacao.saldo || 0);
+        document.getElementById("saldo-exibicao").innerText = `R$ ${saldoAtualizado.toFixed(2).replace('.', ',')}`;
+        alert("Recarga realizada e confirmada com sucesso!");
+      } else {
+        throw new Error(dataConfirmacao.erro || "Erro ao confirmar a recarga.");
+      }
+
+    } catch (error) {
+      console.error("Erro:", error);
+      alert(error.message || "Erro de conexão com o servidor.");
+    } finally {
+      btnConfirmar.disabled = false;
+      btnConfirmar.innerText = "Confirmar Recarga";
+      btnConfirmar.style.opacity = "1";
+    }
+  }
+</script>
 <%# AI: Deepseek wit think and search %>
 <%# Strategy and prompt: The prompt was crafted by simply asking the AI, in natural language, to provide a view based on a description of how the view should look like, observations on current levels of integration, and providing it files in .rb from other parts of the project for context %>
+<%# AI: Gemini %>
+<%# Strategy and prompt: Provided recarga conroller and service + this one on context, informed problems on natural language and discussed the desired solution %>
