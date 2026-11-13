@@ -1,3 +1,4 @@
+#app/services/recargas/criar_recarga
 
 module Recargas
   class CriarRecarga
@@ -13,8 +14,6 @@ module Recargas
       raise ArgumentError unless
         %w[pix cartao_credito].include?(@metodo)
 
-      recarga = nil
-
       @usuario.with_lock do
         recarga = @usuario.recargas.create!(
           valor: @valor,
@@ -27,16 +26,13 @@ module Recargas
           recarga.update!(
             codigo_pix: "PIX-MOCK-#{recarga.id}-#{SecureRandom.hex(4)}"
           )
-        else
-          recarga.update!(status: :concluida)
-
-          @usuario.increment!(:saldo, @valor)
         end
-      end
 
-      recarga
+        recarga
+      end
     end
   end
 end
+
 #AI: GPT desktop, no think
 #Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb

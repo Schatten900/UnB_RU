@@ -8,8 +8,7 @@ class ConfirmacaoPassagemFastpassService
 
     resultado.acesso.with_lock do
       raise PassagemJaConfirmada if resultado.confirmado? || resultado.acesso.passagem_em.present?
-      unless resultado.autorizado? && resultado.acesso.status == "pendente" &&
-             resultado.acesso.inscricao_fastpass_id.present?
+      unless resultado.autorizado? && resultado.acesso.status == "pendente"
         raise PassagemNaoAutorizada
       end
 

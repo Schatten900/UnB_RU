@@ -1,4 +1,9 @@
-<main class="operator-app" data-controller="validation-terminal">
+<main class="operator-app" data-controller="validation-terminal"
+      data-validation-terminal-ok-url-value="<%= operator_simular_ok_path %>"
+      data-validation-terminal-outside-url-value="<%= operator_simular_fora_janela_path %>"
+      data-validation-terminal-balance-url-value="<%= operator_simular_sem_saldo_path %>"
+      data-validation-terminal-normal-url-value="<%= operator_simular_modo_comum_path %>"
+      data-validation-terminal-confirm-url-value="<%= operator_confirmar_passagem_path %>">
   <%= render "shared/cabecalho_operador" %>
   <div class="page-content terminal-page">
     <section class="terminal-card terminal-context">
@@ -28,18 +33,32 @@
           </svg>
           <p data-validation-terminal-target="readerStatus">● Aguardando leitura do QR Code…</p>
         </div>
-        <div class="terminal-simulator"><h3>Simulador de leituras</h3><p>Dados fictícios. Nenhuma cobrança é realizada.</p>
+        <div class="terminal-simulator"><h3>Simulador de leituras</h3>
+          <%= form_with url: operator_processar_leitura_path, method: :post,
+                        class: "terminal-identification",
+                        data: { turbo: false, action: "submit->validation-terminal#processReading" } do |form| %>
+            <%= form.label :matricula, "Identificação recebida na leitura (matrícula)", for: "terminal-matricula" %>
+            <div class="terminal-identification-controls">
+              <%= form.text_field :matricula, id: "terminal-matricula", inputmode: "numeric", maxlength: 9,
+                                  required: true, placeholder: "Digite a matrícula para processar",
+                                  autocomplete: "off", aria: { describedby: "terminal-leitura-ajuda" },
+                                  data: { validation_terminal_target: "identification", action: "input->validation-terminal#clearReading" } %>
+              <%= form.button "Processar leitura", type: "submit", class: "terminal-read-button",
+                              data: { validation_terminal_target: "readButton" } %>
+            </div>
+          <% end %>
+          <p id="terminal-leitura-ajuda">Digite a matrícula e processe a leitura para consultar a situação do estudante. A passagem autorizada deve ser confirmada manualmente. Os botões de simulação abaixo permitem seleção automática quando a matrícula está vazia.</p>
           <div class="terminal-simulator-buttons">
-            <button type="button" class="terminal-button-success" data-scenario="ok" data-action="validation-terminal#simulate">✓ Simular OK</button>
-            <button type="button" class="terminal-button-danger" data-scenario="outside" data-action="validation-terminal#simulate">◷ Simular Fora Janela</button>
-            <button type="button" class="terminal-button-warning" data-scenario="balance" data-action="validation-terminal#simulate">Sem Saldo</button>
-            <button type="button" class="terminal-button-primary" data-scenario="normal" data-action="validation-terminal#simulate">Simular Modo Comum</button>
+            <button type="button" class="terminal-button-success" data-validation-terminal-target="simulation" data-scenario="ok" data-action="validation-terminal#simulate">✓ Simular OK</button>
+            <button type="button" class="terminal-button-danger" data-validation-terminal-target="simulation" data-scenario="outside" data-action="validation-terminal#simulate">◷ Simular Fora Janela</button>
+            <button type="button" class="terminal-button-warning" data-validation-terminal-target="simulation" data-scenario="balance" data-action="validation-terminal#simulate">Sem Saldo</button>
+            <button type="button" class="terminal-button-primary" data-validation-terminal-target="simulation" data-scenario="normal" data-action="validation-terminal#simulate">Simular Modo Comum</button>
           </div>
         </div>
       </section>
 
       <section class="terminal-card terminal-result" aria-label="Resultado da validação">
-        <div class="terminal-result-banner" data-validation-terminal-target="banner" role="status" aria-live="polite"><strong data-validation-terminal-target="resultTitle">Aguardando identificação</strong><span data-validation-terminal-target="resultDetail">Selecione um cenário no simulador para visualizar o resultado.</span></div>
+        <div class="terminal-result-banner" data-validation-terminal-target="banner" role="status" aria-live="polite"><strong data-validation-terminal-target="resultTitle">Aguardando identificação</strong><span data-validation-terminal-target="resultDetail">Informe uma matrícula e processe a leitura, ou utilize um dos cenários de simulação.</span></div>
         <div class="terminal-info-grid">
           <div class="terminal-info"><h3>Identificação do estudante</h3><strong data-validation-terminal-target="student">—</strong><p class="terminal-muted" data-validation-terminal-target="registration">Nenhuma leitura realizada</p></div>
           <div class="terminal-info"><h3>Débito financeiro</h3><strong data-validation-terminal-target="financial">Aguardando passagem</strong><p class="terminal-muted" data-validation-terminal-target="balance">O saldo só é debitado após confirmar a passagem.</p></div>
@@ -47,9 +66,11 @@
         <div class="terminal-window"><div class="terminal-section-title"><h2>◷ Critério de Horário Exato (FastPass)</h2><span class="terminal-pill">Sem tolerância</span></div>
           <div class="terminal-time-grid"><div><small>Janela sorteada</small><strong data-validation-terminal-target="window">—</strong></div><div><small>Horário da leitura</small><strong data-validation-terminal-target="readTime">—</strong></div><div><small>Resultado Time-frame</small><strong data-validation-terminal-target="timeResult">Aguardando</strong></div></div>
         </div>
-        <button type="button" class="terminal-confirm" data-validation-terminal-target="confirm" data-action="validation-terminal#confirmPassage" disabled>Simular confirmação de passagem</button>
+        <button type="button" class="terminal-confirm" data-validation-terminal-target="confirm" data-action="validation-terminal#confirmPassage" disabled>Confirmar passagem</button>
       </section>
     </div>
-    <%= render "terminal_validacao/acessos", titulo: "Últimas validações registradas" %>
+    <div data-validation-terminal-target="records">
+      <%= render "terminal_validacao/acessos", titulo: "Últimas validações registradas" %>
+    </div>
   </div>
 </main>

@@ -1,7 +1,6 @@
 #models/usuario.rb
 require "bcrypt"
 
-require "bcrypt"
 
 class Usuario < ApplicationRecord
   self.primary_key = :matricula

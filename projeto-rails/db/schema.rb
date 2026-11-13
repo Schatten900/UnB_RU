@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_14_000000) do
   create_table "acessos", force: :cascade do |t|
     t.string "usuario_matricula", null: false
     t.integer "catraca_id", null: false
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
     t.decimal "valor_debitado", precision: 10, scale: 2, default: "0.0", null: false
     t.index ["catraca_id"], name: "index_acessos_on_catraca_id"
     t.index ["inscricao_fastpass_id"], name: "index_acessos_on_inscricao_fastpass_id"
+    t.index ["inscricao_fastpass_id"], name: "index_acessos_unique_inscricao_fastpass", unique: true, where: "inscricao_fastpass_id IS NOT NULL AND passagem_em IS NOT NULL"
     t.index ["turno_id"], name: "index_acessos_on_turno_id"
     t.index ["usuario_matricula"], name: "index_acessos_on_usuario_matricula"
   end
@@ -56,6 +57,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
     t.string "resultado"
     t.string "status_notificacao", null: false
     t.datetime "notificada_em"
+    t.integer "catraca_id"
+    t.index ["catraca_id"], name: "index_inscricoes_fastpass_on_catraca_id"
     t.index ["sorteio_id"], name: "index_inscricoes_fastpass_on_sorteio_id"
     t.index ["time_frame_id"], name: "index_inscricoes_fastpass_on_time_frame_id"
     t.index ["usuario_matricula"], name: "index_inscricoes_fastpass_on_usuario_matricula"
@@ -81,11 +84,13 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
 
   create_table "restaurantes", force: :cascade do |t|
     t.string "nome", null: false
+    t.decimal "faturamento", precision: 10, scale: 2, default: "0.0", null: false
   end
 
   create_table "sorteios", force: :cascade do |t|
     t.date "data", null: false
     t.string "status", null: false
+    t.json "cotas", default: {}, null: false
   end
 
   create_table "time_frames", force: :cascade do |t|
@@ -121,6 +126,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_03_120000) do
   add_foreign_key "cardapios_restaurantes", "cardapios"
   add_foreign_key "cardapios_restaurantes", "restaurantes"
   add_foreign_key "catracas", "restaurantes"
+  add_foreign_key "inscricoes_fastpass", "catracas"
   add_foreign_key "inscricoes_fastpass", "sorteios"
   add_foreign_key "inscricoes_fastpass", "time_frames"
   add_foreign_key "inscricoes_fastpass", "usuarios", column: "usuario_matricula", primary_key: "matricula"

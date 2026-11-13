@@ -8,8 +8,8 @@ gem "whenever", require: false
 
 # Prawn for PDF
 gem "prawn"
-
-gem 'bcrypt', '~> 3.1.7'
+# Duplicated
+# gem 'bcrypt', '~> 3.1.7'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"

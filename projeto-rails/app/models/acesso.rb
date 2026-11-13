@@ -5,10 +5,9 @@ class Acesso < ApplicationRecord
   belongs_to :usuario, foreign_key: :usuario_matricula, primary_key: :matricula
   belongs_to :turno
   belongs_to :catraca
+  belongs_to :inscricao_fastpass, optional: true
 
-  def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil)
-    # Validar com o time aqui se iremos utilizar a ideia das matriculas que começar com 9999 
-    # Ou se podemos assumir só perfil=administrador.  
+  def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil) 
     unless ator&.perfil == "administrador"
       raise PermissaoNegada, "Você não tem permissão para consultar o relatório global"
     end
@@ -36,17 +35,37 @@ class Acesso < ApplicationRecord
   end
 
   def confirmar_passagem!(agora: Time.current)
-    self.class.transaction do
+    if inscricao_fastpass_id
+      InscricaoFastpass.find(inscricao_fastpass_id).with_lock do
+        next false if self.class.where(inscricao_fastpass_id: inscricao_fastpass_id).where.not(passagem_em: nil).exists?
+
+        confirmar_passagem_pendente!(agora: agora)
+      end
+    else
+      confirmar_passagem_pendente!(agora: agora)
+    end
+  end
+
+  private
+
+  def confirmar_passagem_pendente!(agora:)
+    self.class.transaction(requires_new: true) do
+      reservados = self.class.where(id: id, status: "pendente", passagem_em: nil)
+                             .update_all(passagem_em: agora)
+      next false if reservados.zero?
+
       preco = turno.preco
       debitos = Usuario.where(matricula: usuario_matricula)
                        .where("saldo >= ?", preco)
                        .update_all(["saldo = saldo - ?", preco])
 
-      next false if debitos.zero?
+      raise ActiveRecord::Rollback if debitos.zero?
 
       update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
+      Restaurante.where(id: catraca.restaurante_id)
+                 .update_all(["faturamento = faturamento + ?", preco])
       usuario.reload
       true
-    end
+    end || false
   end
 end

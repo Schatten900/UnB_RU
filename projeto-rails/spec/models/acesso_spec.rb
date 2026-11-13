@@ -53,6 +53,41 @@ RSpec.describe Acesso, type: :model do
   end
 
   describe "#confirmar_passagem!" do
+    it "confirma uma única passagem para o mesmo FastPass mesmo com duas leituras pendentes" do
+      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+      inscricao = InscricaoFastpass.create!(usuario: acesso.usuario,
+        sorteio: Sorteio.create!(data: Date.current, status: "concluido"),
+        time_frame: turno.time_frames.create!(inicio: "12:00", fim: "12:15"),
+        catraca: acesso.catraca, resultado: "ganhou")
+      acesso.update!(inscricao_fastpass_id: inscricao.id)
+      outra_leitura = acesso.dup
+      outra_leitura.save!
+
+      expect(acesso.confirmar_passagem!).to be(true)
+      expect(outra_leitura.confirmar_passagem!).to be(false)
+      expect(acesso.usuario.reload.saldo).to eq(11.to_d)
+      expect(outra_leitura.reload.passagem_em).to be_nil
+      expect(acesso.catraca.restaurante.reload.faturamento).to eq(4.5)
+    end
+
+    it "não debita novamente ao confirmar usando outra instância do mesmo acesso" do
+      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+      segunda_instancia = described_class.find(acesso.id)
+
+      expect(acesso.confirmar_passagem!).to be(true)
+      expect(segunda_instancia.confirmar_passagem!).to be(false)
+      expect(acesso.usuario.reload.saldo).to eq(11.to_d)
+    end
+
+    it "não confirma uma tentativa bloqueada" do
+      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+      acesso.update!(status: "bloqueado")
+
+      expect(acesso.confirmar_passagem!).to be(false)
+      expect(acesso.reload.passagem_em).to be_nil
+      expect(acesso.usuario.reload.saldo).to eq(15.5.to_d)
+    end
+
     [
       ["221012345", "15.50", "11.00"],
       ["231045229", "45.00", "40.50"]
