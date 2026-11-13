@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     get "inicio", to: "cardapio#index", as: :inicio
     get "recarga", to: "recargas#index", as: :recarga
     get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
+    get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_historico
     get "fast_pass", to: "fast_passes#index", as: :fast_pass
   end
 
@@ -56,6 +57,9 @@ Rails.application.routes.draw do
   end
   
   namespace :api do
+    post "fastpass/validacoes", to: "fastpass#create"
+    post "fastpass/acessos/:id/confirmar", to: "fastpass#confirmar"
+
     resources :cadastros, only: [:create]
     
     resources :recargas, only: [:create] do
@@ -74,3 +78,5 @@ end
 # DO NOT REMOVE THIS AI USE DISCLOSURE SECTION, IF YOU USE AI, ADD INTO IT! 
 # AI: Deepseek and Gemini
 # Strategy and prompt: Affected by several other prompts already documented here
+
+# IA: OpenAI Codex. Estratégia: integração das issues #11 e #16 com RSpec.
