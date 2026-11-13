@@ -8,7 +8,7 @@
           <tr>
             <td><%= l acesso.data_hora.in_time_zone("America/Sao_Paulo"), format: "%d/%m %H:%M:%S" %></td>
             <td><%= acesso.usuario_matricula %> · <%= acesso.usuario.nome %></td>
-            <td><span class="terminal-pill"><%= acesso.inscricao_fastpass_id? ? "FastPass" : "Comum" %></span></td>
+            <td><span class="terminal-pill"><%= acesso.inscricao_fastpass_id? ? "FastPass" : "Sem vínculo FastPass" %></span></td>
             <td><%= number_to_currency(acesso.valor_debitado, unit: "R$ ", separator: ",", delimiter: ".") %></td>
             <td><%= acesso.status.humanize %></td>
           </tr>

@@ -1,39 +1,41 @@
-#controllers/fast_passes_controller.rb
+# app/controllers/fast_passes_controller.rb
 class FastPassesController < ApplicationController
-  before_action :authenticate_usuario!
+  before_action :exigir_estudante
 
   def index
-    @usuario = current_usuario
-    @sorteio_ativo = Sorteio.where(status: "aberto").order(id: :desc).first || Sorteio.create(data: Date.current, status: "aberto")
-    
-    # Garante de forma forçada que será um Array (nunca nil)
-    @turnos = Turno.includes(:time_frames).order(:inicio).to_a || []
-    
-    turno_id_param = params[:turno_id] || @turnos.first&.id
-    @turno_selecionado = @turnos.find { |t| t.id.to_s == turno_id_param.to_s } || @turnos.first
-
-    @time_frames = @turno_selecionado ? @turno_selecionado.time_frames.order(:inicio) : []
-
-    @inscricao_atual = InscricaoFastpass
-            .includes(:time_frame, :sorteio, catraca: :restaurante)
-        .where(
-        usuario_matricula: @usuario.matricula,
-        resultado: InscricaoFastpass::RESULTADO_GANHOU
-    )
-        .order(id: :desc)
-        .first
-    @restaurantes = Restaurante.includes(:catracas).order(:nome)
-
-
-    @restaurante_selecionado =
-        @inscricao_atual&.catraca&.restaurante ||
-        @restaurantes.first
-
-
-    @catracas = @restaurante_selecionado ?
-        @restaurante_selecionado.catracas.where(modo_acesso: "fastpass") : []
+    @sorteios = Sorteio.where("data >= ?", Date.current).order(:data, :id)
+    @sorteio = if params[:sorteio_id].present?
+      @sorteios.find(params[:sorteio_id])
+    else
+      @sorteios.where(status: "aberto").first || @sorteios.first
     end
-end
+    @restaurantes = Restaurante.where(id: @sorteio&.cotas&.keys || []).order(:nome)
+    @restaurante = if params[:restaurante_id].present?
+      @restaurantes.find(params[:restaurante_id])
+    else
+      @restaurantes.first
+    end
+    @cotas = @sorteio && @restaurante ? @sorteio.cotas_do_restaurante(@restaurante) : {}
+    @janelas = TimeFrame.includes(:turno).where(id: @cotas.select { |_, quantidade| quantidade.positive? }.keys).order(:inicio, :id)
+    @catracas = @restaurante ? @restaurante.catracas.where(modo_acesso: "fastpass").order(:id) : []
+    @inscricoes = InscricaoFastpass.includes(:time_frame, :sorteio, catraca: :restaurante)
+      .where(usuario_matricula: current_usuario.matricula, sorteio_id: @sorteio&.id).order(:id)
+  end
 
-# AI: Gemini and chatgpt
-# Prompt: Created with Gemini through natural language conversation about fast pass, general idea, models, existing controllers were passed, and then the AI was asked to modify it.
+  def create
+    FastPasses::CriarInscricaoService.new(current_usuario, params[:time_frame_id],
+      params[:restaurante_id], params[:catraca_id], sorteio_id: params[:sorteio_id]).call
+    redirect_to student_fast_pass_path(sorteio_id: params[:sorteio_id], restaurante_id: params[:restaurante_id]),
+      notice: "Inscrição realizada. Aguarde o resultado do sorteio."
+  rescue ArgumentError, ActiveRecord::RecordInvalid => erro
+    redirect_to student_fast_pass_path(sorteio_id: params[:sorteio_id], restaurante_id: params[:restaurante_id]), alert: erro.message
+  end
+
+  private
+
+  def exigir_estudante
+    return if current_usuario&.estudante?
+
+    redirect_to login_path, alert: "Acesso restrito a estudantes."
+  end
+end

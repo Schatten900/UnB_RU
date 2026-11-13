@@ -1,449 +1,57 @@
-
-<main class="operator-app home-app">
+<main class="operator-app home-app student-fastpass">
   <%= render "shared/cabecalho_estudante" %>
-
-  <%# Restaurante associado ao passe atual ou primeira opção disponível %>
-  <% restaurante_atual = @inscricao_atual&.catraca&.restaurante || @restaurante_selecionado %>
-
   <div class="home-content">
-    <div style="margin-bottom: 1.5rem;">
-      <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem;">
-        Início > Acesso Inteligente > FastPass
-      </p>
-      <h1 style="font-size: 1.8rem; color: #0f172a; margin: 0;">
-        Sorteio e Gestão do FastPass
-      </h1>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start;">
-
-      <%# COLUNA ESQUERDA: PASSE ATUAL E TURNOS %>
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-
-        <%# Cartão do passe atual %>
-        <section class="wallet-panel" style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-
-          <div style="background: #16a34a; color: #fff; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 600; font-size: 0.9rem;">
-              <%= @inscricao_atual ?
-                "✔ CONTEMPLADO (Vaga Garantida) • Sorteio nº #{@inscricao_atual.sorteio_id}-D" :
-                "⏳ AGUARDANDO SORTEIO OU INSCRIÇÃO" %>
-            </span>
-
-            <span style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">
-              ⏱ Status Ativo
-            </span>
-          </div>
-
-          <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
-            <div>
-              <p style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin: 0;">
-                Turno & Refeição
-              </p>
-
-              <h2 style="font-size: 1.4rem; color: #1e3a8a; margin: 0.25rem 0;">
-                <%= @inscricao_atual&.time_frame&.turno&.nome || "Nenhum passe ativo" %>
-              </h2>
-
-              <p style="font-size: 0.85rem; color: #475569; margin: 0 0 1rem 0;">
-                Cardápio Geral + Opção Vegana
-              </p>
-
-              <div style="font-size: 0.9rem; color: #334155; display: flex; flex-direction: column; gap: 0.3rem;">
-
-                <% if @inscricao_atual&.catraca %>
-                  <div>
-                    🏛 <strong><%= @inscricao_atual.catraca.restaurante.nome %></strong>
-                  </div>
-
-                  <small style="color: #64748b;">
-                    Catraca <%= @inscricao_atual.catraca_id %>
-                    — Piso <%= @inscricao_atual.catraca.piso %>
-                  </small>
-                <% else %>
-                  <div>🏛 Nenhum restaurante associado ao passe.</div>
-                <% end %>
-
-                <div>
-                  ⏰ Janela:
-                  <strong>
-                    <%= @inscricao_atual ?
-                      "#{@inscricao_atual.time_frame.inicio.strftime('%H:%M')} às #{@inscricao_atual.time_frame.fim.strftime('%H:%M')}" :
-                      "--:-- às --:--" %>
-                  </strong>
-                </div>
-              </div>
-            </div>
-
-            <%# QR Code ilustrativo %>
-            <div style="border: 2px dashed #cbd5e1; padding: 0.75rem; border-radius: 8px; text-align: center; background: #f8fafc;">
-              <div style="width: 110px; height: 110px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #fff; font-family: monospace; font-size: 0.75rem;">
-                QR CODE FASTPASS
-              </div>
-
-              <small style="display: block; font-size: 0.7rem; color: #64748b; margin-top: 0.4rem;">
-                <%= @inscricao_atual ? "UNB-FP-#{@inscricao_atual.id}" : "SEM-PASSE" %>
-              </small>
-            </div>
-          </div>
-
-          <div style="background: #f8fafc; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-            <small style="color: #64748b; font-size: 0.8rem;">
-              ℹ Tolerância de 5 min na catraca. Não comparecer sem cancelar gera bloqueio de 24h.
-            </small>
-
-            <button
-            type="button"
-            id="btn-liberar-passagem"
-            data-catraca-id="<%= @inscricao_atual&.catraca_id %>"
-            <%= "disabled" unless @inscricao_atual&.catraca %>
-            style="background: #16a34a; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">
-            Liberar vaga
-          </button>
-          </div>
+    <h1>Sorteio e Gestão do FastPass</h1>
+    <% if flash[:notice] || flash[:alert] %><p role="status"><%= flash[:notice] || flash[:alert] %></p><% end %>
+    <%= form_with url: student_fast_pass_path, method: :get, class: "student-fastpass-selector" do |form| %>
+      <%= form.label :sorteio_id, "Sorteio" %>
+      <%= form.select :sorteio_id, @sorteios.map { |s| ["#{s.data.strftime('%d/%m/%Y')} · #{s.status.humanize} · nº #{s.id}", s.id] }, selected: @sorteio&.id %>
+      <%= form.submit "Selecionar sorteio", disabled: @sorteios.empty? %>
+    <% end %>
+    <% if @sorteio %>
+      <div class="student-fastpass-panels">
+        <section class="wallet-panel student-fastpass-panel">
+          <h2>Minhas inscrições · <%= @sorteio.data.strftime("%d/%m/%Y") %></h2>
+          <% if @inscricoes.empty? %><p>Você ainda não está inscrito neste sorteio.</p><% end %>
+          <% @inscricoes.each do |inscricao| %>
+            <article class="student-fastpass-entry">
+              <h3><%= inscricao.time_frame.turno.nome %></h3>
+              <strong><%= { nil => "Aguardando sorteio", "ganhou" => "Contemplado", "nao_ganhou" => "Não contemplado" }.fetch(inscricao.resultado) %></strong>
+              <p><%= inscricao.catraca&.restaurante&.nome || "Restaurante não atribuído" %></p>
+              <p>Janela: <%= inscricao.time_frame.inicio.strftime("%H:%M") %> às <%= inscricao.time_frame.fim.strftime("%H:%M") %></p>
+              <% if inscricao.catraca %><p>Catraca <%= inscricao.catraca.id %> · Piso <%= inscricao.catraca.piso %></p><% end %>
+              <% if inscricao.resultado == "ganhou" %><small>A passagem é validada no terminal, dentro da janela e com saldo suficiente.</small><% end %>
+            </article>
+          <% end %>
         </section>
-
-        <%# Seleção de turno %>
-        <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-          <h3 style="margin-top: 0; font-size: 1.1rem; color: #0f172a; margin-bottom: 1rem;">
-            Ciclo Diário de Refeições
-          </h3>
-
-          <div style="display: grid; grid-template-columns: repeat(<%= [Array(@turnos).length, 1].max %>, 1fr); gap: 1rem;">
-            <% @turnos.each do |turno| %>
-              <% selecionado = @turno_selecionado&.id == turno.id %>
-
-              <div
-                onclick="window.location.href='<%= student_fast_pass_path(turno_id: turno.id) %>'"
-                style="background: <%= selecionado ? '#dcfce7' : '#f8fafc' %>; padding: 1rem; border-radius: 8px; border: <%= selecionado ? '2px solid #16a34a' : '1px solid #e2e8f0' %>; text-align: center; cursor: pointer; transition: all 0.2s;">
-
-                <strong style="display: block; font-size: 0.85rem; color: <%= selecionado ? '#166534' : '#64748b' %>;">
-                  <%= turno.inicio.strftime("%H:%M") %> - <%= turno.fim.strftime("%H:%M") %>
-                </strong>
-
-                <span style="display: block; font-weight: 600; color: <%= selecionado ? '#166534' : '#0f172a' %>; margin: 0.25rem 0;">
-                  <%= turno.nome %>
-                </span>
-
-                <small style="color: <%= selecionado ? '#16a34a' : '#2563eb' %>; font-size: 0.75rem; font-weight: <%= selecionado ? '600' : 'normal' %>;">
-                  <%= selecionado ? "Turno Selecionado" : "Clique para selecionar" %>
-                </small>
-              </div>
+        <section class="wallet-panel student-fastpass-panel">
+          <h2>Inscrição no Sorteio</h2>
+          <p>A inscrição registra seu interesse. A contemplação depende do resultado do sorteio.</p>
+          <%= form_with url: student_fast_pass_path, method: :get, class: "student-fastpass-form" do |form| %>
+            <%= form.hidden_field :sorteio_id, value: @sorteio.id, id: "selecao-sorteio-id" %>
+            <%= form.label :restaurante_id, "Restaurante" %>
+            <%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, selected: @restaurante&.id %>
+            <%= form.submit "Exibir janelas", disabled: @restaurantes.empty? %>
+          <% end %>
+          <% if @sorteio.status == "aberto" && @restaurante && @janelas.any? && @catracas.any? %>
+            <%= form_with url: student_fast_pass_path, method: :post, class: "student-fastpass-form", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :sorteio_id, value: @sorteio.id, id: "inscricao-sorteio-id" %>
+              <%= form.hidden_field :restaurante_id, value: @restaurante.id, id: "inscricao-restaurante-id" %>
+              <%= form.label :time_frame_id, "Janela desejada" %>
+              <%= form.select :time_frame_id, @janelas.map { |j| ["#{j.turno.nome} · #{j.inicio.strftime('%H:%M')} às #{j.fim.strftime('%H:%M')} · #{@cotas[j.id.to_s]} vagas", j.id] } %>
+              <%= form.label :catraca_id, "Catraca FastPass" %>
+              <%= form.select :catraca_id, @catracas.map { |c| ["Catraca #{c.id} · Piso #{c.piso}", c.id] } %>
+              <%= form.submit "Inscrever-se no Sorteio" %>
             <% end %>
-          </div>
+          <% elsif @sorteio.status != "aberto" %>
+            <p>Inscrições encerradas. Consulte seu resultado ao lado.</p>
+          <% else %>
+            <p>Não há janelas com vagas e catracas FastPass disponíveis neste restaurante.</p>
+          <% end %>
         </section>
       </div>
-
-      <%# COLUNA DIREITA: INSCRIÇÃO %>
-      <section class="wallet-panel" style="background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">
-            Inscrição no Sorteio
-          </h3>
-
-          <span style="background: #1e3a8a; color: #fff; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
-            <%= @turno_selecionado ?
-              "#{@turno_selecionado.inicio.strftime('%H:%M')} - #{@turno_selecionado.fim.strftime('%H:%M')}" :
-              "Geral" %>
-          </span>
-        </div>
-
-        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">
-          Cadastre seu interesse para a fila expressa de
-          <strong><%= @turno_selecionado&.nome || "refeição" %></strong>.
-          O sorteio será realizado automaticamente.
-        </p>
-
-        <%# 1. Seleção do restaurante %>
-        <div style="margin-bottom: 1rem;">
-          <label
-            for="restaurante-select"
-            style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">
-            1. Escolha o restaurante
-          </label>
-
-          <select
-            id="restaurante-select"
-            style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-
-            <option value="">Selecione um restaurante</option>
-
-            <% @restaurantes.each do |restaurante| %>
-              <% catracas_fastpass = restaurante.catracas.where(modo_acesso: "fastpass") %>
-
-              <option
-                value="<%= restaurante.id %>"
-                data-catracas="<%= catracas_fastpass.map { |c| { id: c.id, piso: c.piso } }.to_json %>"
-                <%= "selected" if restaurante_atual&.id == restaurante.id %>>
-                <%= restaurante.nome %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-
-        <%# 2. Seleção da catraca %>
-        <div style="margin-bottom: 1.25rem;">
-          <label
-            for="catraca-select"
-            style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">
-            2. Escolha a catraca FastPass
-          </label>
-
-          <select
-            id="catraca-select"
-            data-selected-catraca="<%= @inscricao_atual&.catraca_id %>"
-            disabled
-            style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-
-            <option value="">Selecione primeiro um restaurante</option>
-          </select>
-        </div>
-
-        <%# 3. Seleção da janela %>
-        <div style="margin-bottom: 1.25rem;">
-          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;">
-            3. Selecione a janela exclusiva desejada
-            (<%= @turno_selecionado&.nome %>)
-          </label>
-
-          <% if @time_frames.any? %>
-            <div
-              style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center;"
-              id="janelas-grid">
-
-              <% @time_frames.each_with_index do |tf, index| %>
-                <div
-                  class="janela-opcao <%= 'selecionada' if index == 0 %>"
-                  data-id="<%= tf.id %>"
-                  onclick="selecionarJanela(this, '<%= tf.id %>')"
-                  style="border: <%= index == 0 ? '2px solid #1e3a8a' : '1px solid #cbd5e1' %>; background: <%= index == 0 ? '#1e3a8a' : '#f8fafc' %>; color: <%= index == 0 ? '#fff' : '#0f172a' %>; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
-
-                  <strong><%= tf.inicio.strftime("%H:%M") %></strong>
-                  <small style="display: block; font-size: 0.65rem;">
-                    às <%= tf.fim.strftime("%H:%M") %>
-                  </small>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <p style="font-size: 0.8rem; color: #94a3b8; font-style: italic;">
-              Nenhuma janela configurada para este turno.
-            </p>
-          <% end %>
-        </div>
-
-        <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem;">
-          ⏱ Resultado do Sorteio:
-          <strong>T-60min</strong> antes da abertura do turno.
-        </div>
-
-        <button
-          type="button"
-          id="btn-inscrever"
-          onclick="inscreverNoSorteio()"
-          style="width: 100%; padding: 0.85rem; background: #1e3a8a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-          Inscrever-se no Sorteio
-        </button>
-      </section>
-    </div>
+    <% else %>
+      <p>Nenhum sorteio disponível. Aguarde a configuração das cotas pela administração.</p>
+    <% end %>
   </div>
 </main>
-
-<script>
-  let timeFrameSelecionadoId =
-    document.querySelector(".janela-opcao")?.dataset.id || null;
-
-  const restauranteSelect = document.getElementById("restaurante-select");
-  const catracaSelect = document.getElementById("catraca-select");
-
-  // Atualiza as catracas conforme o restaurante escolhido.
-  function atualizarCatracas() {
-    const opcao = restauranteSelect.selectedOptions[0];
-
-    catracaSelect.innerHTML = "";
-    catracaSelect.disabled = true;
-
-    if (!restauranteSelect.value || !opcao) {
-      catracaSelect.add(
-        new Option("Selecione primeiro um restaurante", "")
-      );
-      return;
-    }
-
-    const catracas = JSON.parse(opcao.dataset.catracas || "[]");
-
-    if (catracas.length === 0) {
-      catracaSelect.add(
-        new Option("Nenhuma catraca FastPass cadastrada", "")
-      );
-      return;
-    }
-
-    catracaSelect.add(new Option("Selecione uma catraca", ""));
-
-    const catracaAtual = catracaSelect.dataset.selectedCatraca;
-
-    catracas.forEach((catraca) => {
-      const option = new Option(
-        `Catraca ${catraca.id} — Piso ${catraca.piso}`,
-        catraca.id
-      );
-
-      if (String(catraca.id) === String(catracaAtual)) {
-        option.selected = true;
-      }
-
-      catracaSelect.add(option);
-    });
-
-    catracaSelect.disabled = false;
-  }
-
-  restauranteSelect.addEventListener("change", function () {
-    // Ao trocar de restaurante, não mantém a catraca anterior.
-    catracaSelect.dataset.selectedCatraca = "";
-    atualizarCatracas();
-  });
-
-  // Inicializa as catracas do restaurante selecionado.
-  atualizarCatracas();
-
-  function selecionarJanela(elemento, id) {
-    timeFrameSelecionadoId = id;
-
-    document.querySelectorAll(".janela-opcao").forEach((el) => {
-      el.style.border = "1px solid #cbd5e1";
-      el.style.background = "#f8fafc";
-      el.style.color = "#0f172a";
-    });
-
-    elemento.style.border = "2px solid #1e3a8a";
-    elemento.style.background = "#1e3a8a";
-    elemento.style.color = "#fff";
-  }
-
-  async function inscreverNoSorteio() {
-    const restauranteId = restauranteSelect.value;
-    const catracaId = catracaSelect.value;
-
-    if (!restauranteId) {
-      alert("Por favor, selecione um restaurante.");
-      return;
-    }
-
-    if (!catracaId) {
-      alert("Por favor, selecione uma catraca FastPass.");
-      return;
-    }
-
-    if (!timeFrameSelecionadoId) {
-      alert("Por favor, selecione uma janela horária.");
-      return;
-    }
-
-    const btn = document.getElementById("btn-inscrever");
-
-    btn.disabled = true;
-    btn.innerText = "Processando inscrição...";
-    btn.style.opacity = "0.7";
-
-    const csrfToken =
-      document.querySelector("meta[name='csrf-token']")?.content;
-
-    try {
-      const response = await fetch("/api/fast_passes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken
-        },
-        body: JSON.stringify({
-          time_frame_id: timeFrameSelecionadoId,
-          restaurante_id: restauranteId,
-          catraca_id: catracaId
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Inscrição no sorteio realizada com sucesso!");
-        window.location.reload();
-      } else {
-        alert(data.erro || "Erro ao realizar inscrição.");
-
-        btn.disabled = false;
-        btn.innerText = "Inscrever-se no Sorteio";
-        btn.style.opacity = "1";
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro de conexão com o servidor.");
-
-      btn.disabled = false;
-      btn.innerText = "Inscrever-se no Sorteio";
-      btn.style.opacity = "1";
-    }
-  }
-  async function liberarPassagem() {
-  const btn = document.getElementById("btn-liberar-passagem");
-
-  const catracaId = btn.dataset.catracaId;
-
-  if (!catracaId) {
-    alert("Seu FastPass não possui uma catraca atribuída.");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerText = "Validando passagem...";
-  btn.style.opacity = "0.7";
-
-  const csrfToken =
-    document.querySelector("meta[name='csrf-token']")?.content;
-
-  try {
-    const response = await fetch(
-      "/api/fast_passes/liberar_passagem",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken
-        },
-        body: JSON.stringify({
-          catraca_id: catracaId
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok && data.sucesso) {
-      alert(data.mensagem);
-      window.location.reload();
-    } else {
-      alert(data.erro || "Não foi possível liberar a passagem.");
-    }
-
-  } catch (error) {
-    console.error("Erro ao liberar passagem:", error);
-    alert("Erro de comunicação com o servidor.");
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "Liberar vaga";
-    btn.style.opacity = "1";
-  }
-}
-
-document
-  .getElementById("btn-liberar-passagem")
-  ?.addEventListener("click", liberarPassagem);
-
-</script>
-<%# app/view/fast_passes/index.html.erb %>  
-<%# AI: Gemini %>
-<%# Strategy and prompt: Asked about integration of fast pass on natural language, provided model files, described work, provided service, controller files %>
-<%# AI: ChatGPT Web %>
-<%# Strategy and prompt: Asked help with fixing and integrating fastpass simulation button %>

@@ -1,4 +1,3 @@
-
 class AddCatracaToInscricoesFastpass < ActiveRecord::Migration[7.0]
   def change
     add_reference :inscricoes_fastpass,
@@ -8,5 +7,5 @@ class AddCatracaToInscricoesFastpass < ActiveRecord::Migration[7.0]
                   index: true
   end
 end
-# AI: ChatGPT web 
+# AI: ChatGPT web
 # Prompt: Modified by prompt on fixing fastpass

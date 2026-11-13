@@ -29,6 +29,12 @@ class ValidacaoFastpassService
     raise ArgumentError, "Preco da refeicao nao pode ser negativo" if valor.negative?
 
     motivo = motivo_bloqueio(usuario, inscricao, time_frame, valor, agora)
+    if motivo.nil? && inscricao.catraca_id.present? && inscricao.catraca_id != catraca.id
+      motivo = :catraca_incorreta
+    end
+    if motivo.nil? && Acesso.where(inscricao_fastpass_id: inscricao.id).where.not(passagem_em: nil).exists?
+      motivo = :fastpass_utilizado
+    end
     if motivo.nil? && !liberador.liberar(catraca_id: catraca.id)
       motivo = :falha_liberacao
     end
@@ -79,7 +85,6 @@ class ValidacaoFastpassService
 
     horario >= inicio || horario < fim
   end
-  private_class_method :dentro_da_janela?
 
   def self.segundos(horario)
     horario.hour * 3600 + horario.min * 60 + horario.sec

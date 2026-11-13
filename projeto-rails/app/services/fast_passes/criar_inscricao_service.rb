@@ -1,66 +1,35 @@
-#app/services/criar_inscricao_service.rb
-
 module FastPasses
   class CriarInscricaoService
-    def initialize(usuario, time_frame_id, restaurante_id, catraca_id)
+    def initialize(usuario, time_frame_id, restaurante_id, catraca_id, sorteio_id:)
       @usuario = usuario
       @time_frame_id = time_frame_id
       @restaurante_id = restaurante_id
       @catraca_id = catraca_id
+      @sorteio_id = sorteio_id
     end
 
     def call
-      # Busca o horário selecionado
-      time_frame = TimeFrame.find_by(id: @time_frame_id)
-      raise ArgumentError, "Janela / Time-frame não encontrada" unless time_frame
+      raise ArgumentError, "Inscrição permitida somente para estudantes." unless @usuario&.estudante?
+      sorteio = Sorteio.find_by(id: @sorteio_id)
+      raise ArgumentError, "Selecione um sorteio configurado." unless sorteio
 
-      # Busca o restaurante
-      restaurante = Restaurante.find_by(id: @restaurante_id)
-      raise ArgumentError, "Restaurante não encontrado" unless restaurante
-
-      # Busca a catraca e verifica se pertence ao restaurante
-      catraca = Catraca.find_by(
-        id: @catraca_id,
-        restaurante_id: restaurante.id,
-        modo_acesso: "fastpass"
-      )
-
-      raise ArgumentError, "Catraca FastPass inválida para este restaurante" unless catraca
-
-      # Busca ou cria o sorteio de hoje
-      sorteio = Sorteio.find_or_create_by!(data: Date.current) do |s|
-        s.status = "aberto"
-      end
-
-      @usuario.with_lock do
-        # Verifica se já existe inscrição para o mesmo turno
-        existente = InscricaoFastpass
-          .joins(:time_frame)
-          .where(
-            usuario_matricula: @usuario.matricula,
-            sorteio_id: sorteio.id
-          )
-          .where(time_frames: { turno_id: time_frame.turno_id })
-          .exists?
-
-        if existente
-          raise ArgumentError,
-            "Você já possui uma inscrição para um horário neste mesmo turno de refeição."
+      sorteio.with_lock do
+        unless sorteio.status == "aberto" && sorteio.data >= Date.current
+          raise ArgumentError, "Este sorteio não está aberto para inscrições."
         end
+        janela = TimeFrame.find_by(id: @time_frame_id)
+        restaurante = Restaurante.find_by(id: @restaurante_id)
+        raise ArgumentError, "Janela ou restaurante não encontrado." unless janela && restaurante
+        cota = sorteio.cotas_do_restaurante(restaurante).fetch(janela.id.to_s, 0)
+        raise ArgumentError, "Esta janela não possui vagas configuradas neste restaurante." unless cota.positive?
+        catraca = restaurante.catracas.find_by(id: @catraca_id, modo_acesso: "fastpass")
+        raise ArgumentError, "Catraca FastPass inválida para este restaurante." unless catraca
 
-        # Cria a inscrição
-        InscricaoFastpass.create!(
-          usuario: @usuario,
-          sorteio: sorteio,
-          time_frame: time_frame,
-          catraca: catraca,
-          resultado: InscricaoFastpass::RESULTADO_GANHOU,
-          status_notificacao: "entregue",
-          notificada_em: Time.current
-        )
+        # O sorteio é bloqueado também na execução e na edição das cotas.
+        # Assim, uma inscrição não entra depois de a seleção ter sido concluída.
+        InscricaoFastpass.create!(usuario: @usuario, sorteio: sorteio, time_frame: janela,
+          catraca: catraca, resultado: nil, status_notificacao: "pendente", notificada_em: nil)
       end
     end
   end
 end
-#AI: GPT desktop web
-#Strategy: Aided on fixing the naming convention problem of files and integrating to new user 

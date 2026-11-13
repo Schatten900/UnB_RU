@@ -3,26 +3,19 @@ module Api
     before_action :authenticate_usuario!
 
     def create
-      inscricao = ::FastPasses::CriarInscricaoService.new(
-        current_usuario,
-        params[:time_frame_id],
-        params[:restaurante_id],
-        params[:catraca_id]
-      ).call
+      unless current_usuario.estudante?
+        return render json: { erro: "Inscrição permitida somente para estudantes." }, status: :forbidden
+      end
 
-      render json: {
-        mensagem: "Inscrição no sorteio realizada com sucesso!",
-        inscricao: inscricao,
-        time_frame: inscricao.time_frame,
-        restaurante: inscricao.catraca.restaurante,
-        catraca: inscricao.catraca
-      }, status: :created
-
-    rescue ArgumentError, ActiveRecord::RecordInvalid => e
-      render json: { erro: e.message }, status: :unprocessable_entity
+      inscricao = ::FastPasses::CriarInscricaoService.new(current_usuario,
+        params[:time_frame_id], params[:restaurante_id], params[:catraca_id],
+        sorteio_id: params[:sorteio_id]).call
+      render json: { mensagem: "Inscrição realizada. Aguarde o resultado do sorteio.",
+        inscricao: inscricao, time_frame: inscricao.time_frame,
+        restaurante: inscricao.catraca.restaurante, catraca: inscricao.catraca }, status: :created
+    rescue ArgumentError, ActiveRecord::RecordInvalid => erro
+      render json: { erro: erro.message }, status: :unprocessable_content
     end
-
-    # NOVA AÇÃO: LIBERAÇÃO DO FASTPASS
     def liberar_passagem
       acesso = ::FastPasses::ConfirmarPassagemService.new(
         current_usuario,
@@ -44,6 +37,3 @@ module Api
     end
   end
 end
-
-# AI: Gemini and chatgpt
-# Prompt: Modified with Gemini through natural language conversation about fast pass, general idea, models, existing controllers were passed, and then the AI was asked to modify it.

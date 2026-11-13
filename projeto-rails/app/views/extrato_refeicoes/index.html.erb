@@ -4,11 +4,15 @@
     <section class="statement-heading" aria-labelledby="statement-title">
       <div><p class="eyebrow">Portal do Restaurante Universitário</p><h1 id="statement-title">Extrato e Histórico de Refeições</h1><p class="welcome-details">Matrícula: <strong><%= usuario_atual.matricula %></strong></p></div>
       <div class="statement-actions">
-        <%= link_to "▣ Exportar PDF", student_exportar_historico_path(request.query_parameters.slice("periodo", "mes_referencia", "evento", "restaurante_id", "metodo")), data: { turbo: false } %>
-        <button type="button" disabled title="Impressão disponível em breve"><span aria-hidden="true">▤</span> Imprimir</button>
+        <%= link_to student_exportar_extrato_refeicoes_path(@filtros), data: { turbo: false } do %>
+          <span aria-hidden="true">▣</span> Exportar PDF
+        <% end %>
       </div>
     </section>
 
+    <% if flash[:alert] %>
+      <div class="notice notice-error" role="alert"><%= flash[:alert] %></div>
+    <% end %>
     <div class="statement-metrics">
       <section class="statement-metric">
         <h2>Total gasto no mês <span class="statement-icon-red" aria-hidden="true">▣</span></h2>
@@ -32,12 +36,11 @@
       <%= form_with url: student_extrato_refeicoes_path, method: :get do |form| %>
         <div class="statement-filter-grid">
           <div><%= form.label :periodo, "Período de referência" %><%= form.select :periodo, [["Últimos 30 dias", "30"], ["Mês atual", "mes"], ["Todo o histórico", "todos"]], selected: @periodo %></div>
-          <div><%= form.label :mes_referencia, "Mês específico (opcional)" %><%= form.month_field :mes_referencia, value: params[:mes_referencia] %></div>
-          <div><%= form.label :evento, "Tipo de refeição / Evento" %><%= form.select :evento, [["Todas as refeições e recargas", ""], ["Recarga de saldo", "recarga"]] + @turnos.map { |turno| [turno.nome, "turno:#{turno.id}"] }, selected: params[:evento] %></div>
-          <div><%= form.label :restaurante_id, "Restaurante" %><%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, { include_blank: "Todos os restaurantes", selected: params[:restaurante_id] } %></div>
-          <div><%= form.label :metodo, "Forma de acesso / pagamento" %><%= form.select :metodo, [["Todos os métodos", ""], ["Comum", "comum"], ["FastPass", "fastpass"], ["PIX", "pix"], ["Cartão de crédito", "cartao_credito"]], selected: params[:metodo] %></div>
+          <div><%= form.label :evento, "Refeição" %><%= form.select :evento, [["Café da Manhã", "cafe_da_manha"], ["Almoço", "almoco"], ["Jantar", "jantar"]], { include_blank: "Selecione a refeição", selected: @filtros["evento"] } %></div>
+          <div><%= form.label :restaurante_id, "Restaurante" %><%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, { include_blank: "Todos os restaurantes", selected: @filtros["restaurante_id"] } %></div>
+          <div><%= form.label :metodo, "Forma de acesso / pagamento" %><%= form.select :metodo, [["Todos os métodos", ""], ["Comum", "comum"], ["FastPass", "fastpass"], ["PIX", "pix"], ["Cartão de crédito", "cartao_credito"]], selected: @filtros["metodo"] %></div>
         </div>
-        <div class="statement-filter-submit"><small>Os indicadores acima representam o mês atual. O mês específico tem prioridade sobre o período. Filtrar por restaurante exibe apenas refeições.</small><%= form.submit "Aplicar filtros" %></div>
+        <div class="statement-filter-submit"><small>Os indicadores acima representam o mês atual. Filtrar por restaurante exibe apenas refeições.</small><%= form.submit "Aplicar filtros" %></div>
       <% end %>
     </section>
 
@@ -45,7 +48,7 @@
       <div class="statement-records-heading"><h2 id="statement-records-title">Lançamentos Contábeis e Registros de Catraca <span><%= @total %> totais</span></h2><small>Registros da sua conta</small></div>
       <div class="statement-table-scroll">
         <table class="statement-table">
-          <thead><tr><th scope="col">Data e hora</th><th scope="col">Refeição / Evento</th><th scope="col">Restaurante / Origem</th><th scope="col">Método de acesso</th><th scope="col">Valor</th><th scope="col">Comprovante</th></tr></thead>
+          <thead><tr><th scope="col">Data e hora</th><th scope="col">Refeição</th><th scope="col">Restaurante / Origem</th><th scope="col">Método de acesso</th><th scope="col">Valor</th><th scope="col">Comprovante</th></tr></thead>
           <tbody>
             <% @lancamentos.each do |item| %>
               <tr class="<%= 'statement-credit-row' if item[:tipo] == 'recarga' %>">
@@ -54,7 +57,7 @@
                 <td><strong><%= item[:local] %></strong><small><%= item[:detalhe] %></small></td>
                 <td><span class="statement-method"><%= item[:metodo_nome] %></span></td>
                 <td class="statement-amount <%= item[:tipo] == 'recarga' ? 'statement-green' : 'statement-red' %>"><%= item[:tipo] == "recarga" ? "+" : "−" %> <%= moeda_extrato(item[:valor]) %></td>
-                <td><button type="button" class="statement-receipt" disabled title="Comprovantes disponíveis em breve">▣ Ver recibo</button></td>
+                <td><%= link_to "▣ Ver recibo", recibo_extrato_path(item), class: "statement-receipt" %></td>
               </tr>
             <% end %>
             <% if @lancamentos.empty? %><tr><td colspan="6" class="statement-empty">Nenhum lançamento encontrado para os filtros selecionados.</td></tr><% end %>
@@ -64,7 +67,7 @@
       <div class="statement-pagination">
         <p>Exibindo <strong><%= @total.zero? ? 0 : @inicio + 1 %>–<%= @inicio + @lancamentos.size %></strong> de <strong><%= @total %></strong> registros</p>
         <%= form_with url: student_extrato_refeicoes_path, method: :get, class: "statement-page-size" do |form| %>
-          <% request.query_parameters.except("pagina", "por_pagina", "commit").each do |chave, valor| %><%= hidden_field_tag chave, valor %><% end %>
+          <% @filtros.each do |chave, valor| %><%= hidden_field_tag chave, valor %><% end %>
           <%= form.label :por_pagina, "Itens por página:" %><%= form.select :por_pagina, [5, 10, 20], selected: @por_pagina %><%= form.submit "Exibir" %>
         <% end %>
         <nav aria-label="Paginação do extrato">

@@ -8,10 +8,10 @@ class InscricaoFastpass < ApplicationRecord
 
 	belongs_to :sorteio
 	belongs_to :time_frame
+  belongs_to :catraca, optional: true
 	belongs_to :usuario,
 		foreign_key: :usuario_matricula,
 		primary_key: :matricula
-  belongs_to :catraca, optional: true #Added by chatGPT when dealing with fastpasses 500 bug
 
 	validates :resultado, inclusion: { in: RESULTADOS }, allow_nil: true
 
@@ -20,7 +20,7 @@ class InscricaoFastpass < ApplicationRecord
   validates :time_frame, presence: { message: "precisa ser escolhido" }
   validate :usuario_deve_ser_estudante
   validate :inscricao_unica_por_turno
-  has_one :acesso, dependent: :restrict_with_error
+  has_many :acessos, dependent: :restrict_with_error
 
   private
 
