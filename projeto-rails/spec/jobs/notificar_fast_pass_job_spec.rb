@@ -2,8 +2,7 @@ require "rails_helper"
 
 RSpec.describe NotificarFastPassJob, type: :job do
   it "notifica inscricao pendente de sorteio para turno que comeca em uma hora" do
-    zona = Time.find_zone!("America/Sao_Paulo")
-    agora = zona.local(2026, 10, 30, 11, 0)
+    agora = Time.utc(2026, 10, 30, 14, 0)
     allow(Time).to receive(:current).and_return(agora)
     usuario = Usuario.create!(
       matricula: "221012345",

@@ -1,9 +1,12 @@
 
 class NotificarFastPassJob < ApplicationJob
+  FUSO_HORARIO = "America/Sao_Paulo"
+
   queue_as :default
 
-  def perform
-    horario_alvo = Time.current + 1.hour
+  def perform(agora = Time.current)
+    horario_local = agora.in_time_zone(FUSO_HORARIO)
+    horario_alvo = horario_local + 1.hour
     data_alvo = horario_alvo.to_date
     hora_alvo = horario_alvo.strftime("%H:%M")
 

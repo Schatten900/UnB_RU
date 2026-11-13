@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   get "student", to: redirect("/student/inicio"), as: :student_root
   scope path: "student", as: "student" do
     get "inicio", to: "cardapio#index", as: :inicio
+    get "notificacoes", to: "notificacoes#index", as: :notificacoes
     get "recarga", to: "recargas#index", as: :recarga
     get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
     get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_historico

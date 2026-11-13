@@ -1,24 +1,20 @@
-# README
+# Projeto Rails
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Agendamento das notificações FastPass
 
-Things you may want to cover:
+O cron deve ser instalado no host que executa a aplicação, com o ambiente e o
+acesso ao banco configurados:
 
-* Ruby version
+```
+cd projeto-rails
+RAILS_ENV=production bundle exec whenever --update-crontab projeto-rails
+```
 
-* System dependencies
+A agenda chama `NotificarFastPassJob` a cada minuto. Para removê-la:
 
-* Configuration
+```
+bundle exec whenever --clear-crontab projeto-rails
+```
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+O serviço `cron` do host precisa estar ativo. Para outro ambiente, substitua
+`production` pelo valor correspondente de `RAILS_ENV`.
