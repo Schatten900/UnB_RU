@@ -5,6 +5,7 @@ class Acesso < ApplicationRecord
   belongs_to :usuario, foreign_key: :usuario_matricula, primary_key: :matricula
   belongs_to :turno
   belongs_to :catraca
+  belongs_to :inscricao_fastpass, optional: true
 
   def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil) 
     unless ator&.perfil == "administrador"
@@ -61,6 +62,8 @@ class Acesso < ApplicationRecord
       raise ActiveRecord::Rollback if debitos.zero?
 
       update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
+      Restaurante.where(id: catraca.restaurante_id)
+                 .update_all(["faturamento = faturamento + ?", preco])
       usuario.reload
       true
     end || false

@@ -2,7 +2,11 @@ class ExtratoRefeicoesController < ApplicationController
   before_action :exigir_estudante
 
   rescue_from ArgumentError do |erro|
-    redirect_to student_extrato_refeicoes_path, alert: erro.message
+    if action_name == "exportar" || params[:mes_referencia].present?
+      render plain: "Filtro inválido: #{erro.message}", status: :bad_request
+    else
+      redirect_to student_extrato_refeicoes_path, alert: erro.message
+    end
   end
 
   def index
@@ -62,7 +66,11 @@ class ExtratoRefeicoesController < ApplicationController
   def exigir_estudante
     return if usuario_atual&.estudante?
 
-    redirect_to login_path, alert: "Acesso restrito a estudantes."
+    if usuario_atual && action_name == "exportar"
+      head :forbidden
+    else
+      redirect_to login_path, alert: "Acesso restrito a estudantes."
+    end
   end
 
   def parametros_filtros

@@ -1,5 +1,5 @@
 class ExtratoRefeicoesService
-  FILTROS = %w[periodo evento restaurante_id metodo].freeze
+  FILTROS = %w[periodo mes_referencia evento restaurante_id metodo].freeze
   METODOS = %w[comum fastpass pix cartao_credito].freeze
   REFEICOES = {
     "cafe_da_manha" => %w[cafe_da_manha],
@@ -27,7 +27,12 @@ class ExtratoRefeicoesService
     when "30" then (agora - 29.days).beginning_of_day
     when "mes" then agora.beginning_of_month
     end
-    if inicio
+    if filtros["mes_referencia"]
+      referencia = Date.strptime(filtros["mes_referencia"], "%Y-%m")
+      intervalo = referencia.in_time_zone("America/Sao_Paulo")...referencia.next_month.in_time_zone("America/Sao_Paulo")
+      acessos = acessos.where(passagem_em: intervalo)
+      recargas = recargas.where(data_hora: intervalo)
+    elsif inicio
       acessos = acessos.where(passagem_em: inicio..agora)
       recargas = recargas.where(data_hora: inicio..agora)
     end
@@ -95,6 +100,13 @@ class ExtratoRefeicoesService
   def self.normalizar_filtros(filtros)
     dados = filtros.to_h.stringify_keys.slice(*FILTROS).transform_values { |valor| valor.to_s.strip }.reject { |_, valor| valor.blank? }
     dados["periodo"] = dados["periodo"].presence_in(%w[30 mes todos]) || "30"
+    if dados["mes_referencia"]
+      referencia = dados["mes_referencia"]
+      unless /\A\d{4}-(?:0[1-9]|1[0-2])\z/.match?(referencia)
+        raise ArgumentError, "Mês inválido. Use AAAA-MM."
+      end
+      Date.strptime(referencia, "%Y-%m")
+    end
     if dados["evento"].present? && !REFEICOES.key?(dados["evento"]) && !%w[recarga refeicao].include?(dados["evento"]) && !/\Aturno:[1-9]\d*\z/.match?(dados["evento"])
       raise ArgumentError, "Selecione uma refeição válida."
     end

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     get "recarga", to: "recargas#index", as: :recarga
     get "extrato_refeicoes", to: "extrato_refeicoes#index", as: :extrato_refeicoes
     get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_extrato_refeicoes
+    get "extrato_refeicoes/exportar", to: "extrato_refeicoes#exportar", as: :exportar_historico
     get "extrato_refeicoes/recibos/:tipo/:id", to: "extrato_refeicoes#recibo", as: :recibo_extrato_refeicoes
     get "fast_pass", to: "fast_passes#index", as: :fast_pass
     post "fast_pass", to: "fast_passes#create"
@@ -48,6 +49,7 @@ Rails.application.routes.draw do
     post "terminal_validacao/simular_fora_janela", to: "terminal_validacao#simular_fora_janela", as: :simular_fora_janela
     post "terminal_validacao/simular_sem_saldo", to: "terminal_validacao#simular_sem_saldo", as: :simular_sem_saldo
     post "terminal_validacao/simular_modo_comum", to: "terminal_validacao#simular_modo_comum", as: :simular_modo_comum
+    post "terminal_validacao/liberar_passagem", to: "terminal_validacao#liberar_passagem", as: :liberar_passagem
     post "terminal_validacao/confirmar_passagem", to: "terminal_validacao#confirmar_passagem", as: :confirmar_passagem
     get "historico_local", to: "historico_local#index", as: :historico_local
     get "historico_local/exportar", to: "historico_local#exportar", as: :exportar_historico_local
@@ -67,7 +69,11 @@ Rails.application.routes.draw do
   end
   
   namespace :api do
-    resources :fast_passes, only: [:create]
+    post "fastpass/validacoes", to: "fastpass#create"
+    post "fastpass/acessos/:id/confirmar", to: "fastpass#confirmar"
+    resources :fast_passes, only: [:create] do
+      collection { post :liberar_passagem }
+    end
     resources :cadastros, only: [:create]
     
     resources :recargas, only: [:create] do

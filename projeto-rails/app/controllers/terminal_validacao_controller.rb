@@ -16,6 +16,56 @@ class TerminalValidacaoController < ApplicationController
 
   def index; end
 
+  def liberar_passagem
+    unless @catraca_operador
+      return render json: {
+        erro: "Nenhuma catraca está configurada para este terminal."
+      }, status: :unprocessable_entity
+    end
+
+    matricula = params[:usuario_matricula]
+
+    if matricula.blank?
+      return render json: {
+        erro: "Matrícula do estudante não informada."
+      }, status: :unprocessable_entity
+    end
+
+    estudante = Usuario.find_by(matricula: matricula)
+
+    unless estudante
+      return render json: {
+        erro: "Estudante não encontrado."
+      }, status: :not_found
+    end
+
+    acesso = FastPasses::ConfirmarPassagemService.new(
+      estudante,
+      @catraca_operador.id
+    ).call
+
+    render json: {
+      sucesso: true,
+      mensagem: "Catraca liberada! Passagem confirmada entre #{acesso.inscricao_fastpass.time_frame.inicio.strftime('%H:%M')} e #{acesso.inscricao_fastpass.time_frame.fim.strftime('%H:%M')}.",
+      horario: acesso.passagem_em.strftime("%H:%M"),
+      valor_debitado: acesso.valor_debitado,
+      saldo_atual: estudante.reload.saldo
+    }, status: :ok
+
+  rescue FastPasses::ConfirmarPassagemService::PassagemNegada => e
+    render json: {
+      sucesso: false,
+      erro: e.message
+    }, status: :unprocessable_entity
+
+  rescue ActiveRecord::RecordNotUnique
+    render json: {
+      sucesso: false,
+      erro: "Este FastPass já foi utilizado."
+    }, status: :unprocessable_entity
+  end
+
+
   def processar_leitura
     raise ArgumentError, "Informe a matrícula recebida na leitura." if params[:matricula].to_s.strip.blank?
 

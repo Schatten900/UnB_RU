@@ -26,7 +26,7 @@ class ValidacaoFastpassService
     end
 
     valor = BigDecimal(turno.preco.to_s)
-    raise ArgumentError, "Preco da refeicao deve ser positivo" unless valor.positive?
+    raise ArgumentError, "Preco da refeicao nao pode ser negativo" if valor.negative?
 
     motivo = motivo_bloqueio(usuario, inscricao, time_frame, valor, agora)
     if motivo.nil? && inscricao.catraca_id.present? && inscricao.catraca_id != catraca.id
@@ -91,3 +91,6 @@ class ValidacaoFastpassService
   end
   private_class_method :segundos
 end
+
+# AI: Gemini
+# Prompt: Modified with Gemini through natural language conversation about fast pass, general idea, models, existing controllers were passed, and then the AI was asked to modify it.

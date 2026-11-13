@@ -67,6 +67,7 @@ RSpec.describe Acesso, type: :model do
       expect(outra_leitura.confirmar_passagem!).to be(false)
       expect(acesso.usuario.reload.saldo).to eq(11.to_d)
       expect(outra_leitura.reload.passagem_em).to be_nil
+      expect(acesso.catraca.restaurante.reload.faturamento).to eq(4.5)
     end
 
     it "não debita novamente ao confirmar usando outra instância do mesmo acesso" do

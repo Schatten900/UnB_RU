@@ -4,8 +4,8 @@ module Api
     def create
       matricula = params[:matricula].to_s
 
-      unless matricula.match?(/\A\d{9}\z/) &&
-             !matricula.start_with?("999")
+      unless matricula.match?(/\A\d{9}\z/)# &&
+         #    !matricula.start_with?("999")
         return render json: {
           erro: "Você deve fornecer um número de estudante válido"
         }, status: :unprocessable_entity

@@ -16,5 +16,24 @@ module Api
     rescue ArgumentError, ActiveRecord::RecordInvalid => erro
       render json: { erro: erro.message }, status: :unprocessable_content
     end
+    def liberar_passagem
+      acesso = ::FastPasses::ConfirmarPassagemService.new(
+        current_usuario,
+        params[:catraca_id]
+      ).call
+
+      time_frame = acesso.inscricao_fastpass.time_frame
+
+      render json: {
+        sucesso: true,
+        mensagem: "Catraca liberada! Passagem confirmada para o horário entre #{time_frame.inicio.strftime('%H:%M')} e #{time_frame.fim.strftime('%H:%M')}.",
+        acesso: acesso
+      }, status: :ok
+
+    rescue ::FastPasses::ConfirmarPassagemService::PassagemNegada,
+           ActiveRecord::RecordInvalid,
+           ActiveRecord::RecordNotFound => e
+      render json: { erro: e.message }, status: :unprocessable_entity
+    end
   end
 end
