@@ -1,16 +1,20 @@
 
 class NotificarFastPassJob < ApplicationJob
+  FUSO_HORARIO = "America/Sao_Paulo"
+
   queue_as :default
 
-  def perform(sorteio_id = nil)
+  def perform(sorteio_id = nil, agora: Time.current)
     if sorteio_id
       sorteio = Sorteio.find(sorteio_id)
       return unless sorteio.status == "concluido"
 
-      notificar(InscricaoFastpass.where(sorteio_id: sorteio.id))
+      notificar(sorteio.inscricoes_fastpass)
       return
     end
-    horario_alvo = Time.current + 1.hour
+
+    horario_local = agora.in_time_zone(FUSO_HORARIO)
+    horario_alvo = horario_local + 1.hour
     data_alvo = horario_alvo.to_date
     hora_alvo = horario_alvo.strftime("%H:%M")
 
@@ -22,7 +26,7 @@ class NotificarFastPassJob < ApplicationJob
     sorteio = Sorteio.find_by(data: data_alvo)
     return unless sorteio
 
-    # Para cada turno verifica as incricoes pendentes
+    # Para cada turno, verifica as inscrições pendentes.
     turnos.each do |turno|
       time_frame_ids = TimeFrame.where(turno_id: turno.id).select(:id)
 

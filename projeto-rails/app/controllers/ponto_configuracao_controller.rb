@@ -1,5 +1,8 @@
 class PontoConfiguracaoController < ApplicationController
     before_action :exigir_funcionario
+    rescue_from ActiveRecord::ConnectionNotEstablished,
+                ActiveRecord::ConnectionTimeoutError,
+                with: :render_indisponibilidade
 
     def new
         carregar_restaurantes
@@ -25,6 +28,11 @@ class PontoConfiguracaoController < ApplicationController
     end
 
     private
+
+    def render_indisponibilidade(exception)
+        Rails.logger.error("Falha de conexão ao configurar ponto de acesso: #{exception.message}")
+        render :indisponivel, status: :service_unavailable
+    end
 
     def carregar_restaurantes
         @restaurantes = Restaurante.includes(:catracas).order(:id)

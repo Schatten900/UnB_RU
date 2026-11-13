@@ -49,4 +49,19 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
     expect(response).to have_http_status(:unprocessable_content)
     expect(session[:catraca_id]).to be_nil
   end
+
+  it "informa indisponibilidade sem salvar a configuracao na sessao" do
+    allow(Time).to receive(:current).and_return(Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 12, 0))
+    post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
+    allow(PontoConfiguracaoService).to receive(:call)
+      .and_raise(ActiveRecord::ConnectionNotEstablished)
+
+    post operator_ponto_configuracao_path,
+      params: { restaurante_id: 1, catraca_id: 1 }
+
+    expect(response).to have_http_status(:service_unavailable)
+    expect(response.body).to include("O serviço está indisponível no momento")
+    expect(session[:restaurante_id]).to be_nil
+    expect(session[:catraca_id]).to be_nil
+  end
 end
