@@ -5,18 +5,16 @@
 | Campo | Informação |
 |---|---|
 | Projeto | UnB RU |
-| Sprint entregue | Sprint 1 |
-| Período da entrega 1 | 09/10/2026 a 16/10/2026 |
-| Período da entrega 2 | 16/10/2026 a 23/10/2026 |
+| Sprint entregue | Sprint 2 |
 
 ## 2. Integrantes
 
 | Nome | Matrícula | Papel |
 |---|---|---|
-| Arthur Menezes Botelho | 231003362 | Scrum Master |
-| Bruno Henrique Duarte | 221022239 | Desenvolvedor |
-| Carlos Cauã Rocha | 231034304 | Desenvolvedor     |
-| Vitor Carlos Fernandes | 190142332 | Product Owner |
+| Arthur Menezes Botelho | 231003362 | Desenvolvedor |
+| Bruno Henrique Duarte | 221022239 | Scrum Master |
+| Carlos Cauã Rocha | 231034304 | Product Owner     |
+| Vitor Carlos Fernandes | 190142332 | Desenvolvedor |
 
 ## 3. Divisão das Issues
 
@@ -112,7 +110,7 @@
     **Regras de negócio**
 
     - Todo estudante participante do sorteio deve possuir um resultado associado (ganhou ou não ganhou).
-    - As notificações devem ser enviadas quando faltar uma hora para o turno do estudante.
+    - As notificaçõesões devem ser enviadas quando faltar uma hora para o turno do estudante.
     - Estudantes contemplados devem receber uma notificação informando a obtenção do FastPass.
     - Estudantes não contemplados devem receber uma notificação informando que não foram sorteados.
     - O conteúdo da notificação deve refletir corretamente o resultado do sorteio.
@@ -203,4 +201,6 @@ Durante a sprint, ferramentas de Inteligência Artificial podem ser utilizadas c
 
 | Ferramenta de IA | Parte do projeto | Estratégia de utilização |
 |---|---|---|
-| GitHub Copilot | Edições gerais de arquivos | O GitHub Copilot foi utilizado dentro do VS Code, auxiliando no autocomplete e na formatação de arquivos de forma geral, acelerando o processo de escrita e edição sem substituir o trabalho do desenvolvedor |
+| GitHub Copilot | Edições gerais de arquivos | O GitHub Copilot foi utilizado dentro do VS Code, auxiliando no autocomplete e na formatação de arquivos de forma geral, acelerando o processo de escrita e edição sem substituir o trabalho do desenvolvedor. |
+| Gemini | Solução de dúvidas sobre Ruby/Rails | A interface de chat do Gemini foi utilizada para solucionar dúvidas pontuais sobre partes do código ou do setup, acelerando o processo de desenvolvimento. |
+| Chat GPT | Revisão de código, produção de testes, implementação de componentes | O Chat GPT foi utilizado pela interface web. Ele auxiliou com a revisão de código, apontando problemas de integração presentes. Também foi utilizado para gerar testes RSpec para os componentes produzidos, auxiliando a encontrar erros no desenvolvimento. Além disso, foi utilizado também para a implementação de alguns dos componentes, principalmente relacionados as telas, para acelerar o desenvolvimento do trabalho e melhorar sua qualidade. No entanto, o processo não foi delegado inteiramente para a IA: toda saída do modelo foi avaliada por um humano e frequentemente modificada ou reescrita antes da sua entrega final. |
