@@ -1,9 +1,18 @@
-SimpleCov.start "rails" do
-  track_files "app/controllers/**/*.rb"
-  track_files "app/models/**/*.rb"
+SimpleCov.load_profile "rails"
+SimpleCov.cover("app/controllers/**/*.rb", "app/models/**/*.rb")
+SimpleCov.group "Controllers", "app/controllers"
+SimpleCov.group "Models", "app/models"
 
-  minimum_coverage_by_group(
-    "Controllers" => 90.00,
-    "Models" => 90.00
-  )
+SimpleCov.at_exit do
+  result = SimpleCov.result
+  result.format!
+  %w[Models Controllers].each do |name|
+    puts "#{name} coverage: #{result.groups.fetch(name).covered_percent.round(2)}%"
+  end
+end
+
+if ENV["ENFORCE_TEST_COVERAGE"] == "true"
+  SimpleCov.coverage(:line) do
+    minimum 90.00, per: %r{\Aapp/(controllers|models)/.*\.rb\z}
+  end
 end

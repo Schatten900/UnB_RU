@@ -11,7 +11,7 @@ defaults:
 
 jobs:
   complexity:
-    name: ABC Score e RubyCritic
+    name: ABC Score
     runs-on: ubuntu-latest
 
     steps:
@@ -26,28 +26,13 @@ jobs:
       - name: Verify dependencies
         run: |
           bundle check
-          bundle exec rubycritic --version
           bundle exec rubocop --version
 
-      - name: Generate RubyCritic report
-        run: |
-          bundle exec rubycritic app \
-            --format html \
-            --path tmp/rubycritic \
-            --no-browser
-
-      - name: Check ABC Score
+      - name: Check ABC Score 
         run: |
           bundle exec rubocop app \
             --only Metrics/AbcSize \
             --format simple
-
-      - name: Upload RubyCritic report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rubycritic-report
-          path: projeto-rails/tmp/rubycritic/
 
   coverage:
     name: Test Coverage
