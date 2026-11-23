@@ -1,0 +1,57 @@
+<main class="operator-app home-app student-fastpass">
+  <%= render "shared/cabecalho_estudante" %>
+  <div class="home-content">
+    <h1>Sorteio e Gestão do FastPass</h1>
+    <% if flash[:notice] || flash[:alert] %><p role="status"><%= flash[:notice] || flash[:alert] %></p><% end %>
+    <%= form_with url: student_fast_pass_path, method: :get, class: "student-fastpass-selector" do |form| %>
+      <%= form.label :sorteio_id, "Sorteio" %>
+      <%= form.select :sorteio_id, @sorteios.map { |s| ["#{s.data.strftime('%d/%m/%Y')} · #{s.status.humanize} · nº #{s.id}", s.id] }, selected: @sorteio&.id %>
+      <%= form.submit "Selecionar sorteio", disabled: @sorteios.empty? %>
+    <% end %>
+    <% if @sorteio %>
+      <div class="student-fastpass-panels">
+        <section class="wallet-panel student-fastpass-panel">
+          <h2>Minhas inscrições · <%= @sorteio.data.strftime("%d/%m/%Y") %></h2>
+          <% if @inscricoes.empty? %><p>Você ainda não está inscrito neste sorteio.</p><% end %>
+          <% @inscricoes.each do |inscricao| %>
+            <article class="student-fastpass-entry">
+              <h3><%= inscricao.time_frame.turno.nome %></h3>
+              <strong><%= { nil => "Aguardando sorteio", "ganhou" => "Contemplado", "nao_ganhou" => "Não contemplado" }.fetch(inscricao.resultado) %></strong>
+              <p><%= inscricao.catraca&.restaurante&.nome || "Restaurante não atribuído" %></p>
+              <p>Janela: <%= inscricao.time_frame.inicio.strftime("%H:%M") %> às <%= inscricao.time_frame.fim.strftime("%H:%M") %></p>
+              <% if inscricao.catraca %><p>Catraca <%= inscricao.catraca.id %> · Piso <%= inscricao.catraca.piso %></p><% end %>
+              <% if inscricao.resultado == "ganhou" %><small>A passagem é validada no terminal, dentro da janela e com saldo suficiente.</small><% end %>
+            </article>
+          <% end %>
+        </section>
+        <section class="wallet-panel student-fastpass-panel">
+          <h2>Inscrição no Sorteio</h2>
+          <p>A inscrição registra seu interesse. A contemplação depende do resultado do sorteio.</p>
+          <%= form_with url: student_fast_pass_path, method: :get, class: "student-fastpass-form" do |form| %>
+            <%= form.hidden_field :sorteio_id, value: @sorteio.id, id: "selecao-sorteio-id" %>
+            <%= form.label :restaurante_id, "Restaurante" %>
+            <%= form.collection_select :restaurante_id, @restaurantes, :id, :nome, selected: @restaurante&.id %>
+            <%= form.submit "Exibir janelas", disabled: @restaurantes.empty? %>
+          <% end %>
+          <% if @sorteio.status == "aberto" && @restaurante && @janelas.any? && @catracas.any? %>
+            <%= form_with url: student_fast_pass_path, method: :post, class: "student-fastpass-form", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :sorteio_id, value: @sorteio.id, id: "inscricao-sorteio-id" %>
+              <%= form.hidden_field :restaurante_id, value: @restaurante.id, id: "inscricao-restaurante-id" %>
+              <%= form.label :time_frame_id, "Janela desejada" %>
+              <%= form.select :time_frame_id, @janelas.map { |j| ["#{j.turno.nome} · #{j.inicio.strftime('%H:%M')} às #{j.fim.strftime('%H:%M')} · #{@cotas[j.id.to_s]} vagas", j.id] } %>
+              <%= form.label :catraca_id, "Catraca FastPass" %>
+              <%= form.select :catraca_id, @catracas.map { |c| ["Catraca #{c.id} · Piso #{c.piso}", c.id] } %>
+              <%= form.submit "Inscrever-se no Sorteio" %>
+            <% end %>
+          <% elsif @sorteio.status != "aberto" %>
+            <p>Inscrições encerradas. Consulte seu resultado ao lado.</p>
+          <% else %>
+            <p>Não há janelas com vagas e catracas FastPass disponíveis neste restaurante.</p>
+          <% end %>
+        </section>
+      </div>
+    <% else %>
+      <p>Nenhum sorteio disponível. Aguarde a configuração das cotas pela administração.</p>
+    <% end %>
+  </div>
+</main>

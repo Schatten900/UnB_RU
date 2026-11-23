@@ -1,0 +1,27 @@
+<main class="operator-app home-app statement-app">
+  <%= render "shared/cabecalho_estudante" %>
+  <div class="statement-content">
+    <section class="statement-heading">
+      <div><p class="eyebrow">Extrato de refeições</p><h1>Comprovante de lançamento</h1></div>
+      <div class="statement-actions">
+        <%= link_to "Voltar ao extrato", student_extrato_refeicoes_path(parametros_retorno_extrato) %>
+        <%= link_to "Baixar PDF", student_recibo_extrato_refeicoes_path(
+          parametros_retorno_extrato.merge(tipo: @lancamento[:tipo], id: @lancamento[:registro_id], format: :pdf)
+        ), data: { turbo: false } %>
+      </div>
+    </section>
+    <section class="statement-receipt-panel">
+      <h2><%= @lancamento[:nome] %></h2>
+      <dl>
+        <div><dt>Estudante</dt><dd><%= usuario_atual.nome %></dd></div>
+        <div><dt>Matrícula</dt><dd><%= usuario_atual.matricula %></dd></div>
+        <div><dt>Identificação do lançamento</dt><dd><%= @lancamento[:id] %></dd></div>
+        <div><dt>Data e hora</dt><dd><%= @lancamento[:data_hora].in_time_zone("America/Sao_Paulo").strftime("%d/%m/%Y, %H:%M:%S") %> (Brasília)</dd></div>
+        <div><dt>Restaurante / Origem</dt><dd><%= @lancamento[:local] %></dd></div>
+        <div><dt>Situação</dt><dd><%= @lancamento[:detalhe] %></dd></div>
+        <div><dt>Método</dt><dd><%= @lancamento[:metodo_nome] %></dd></div>
+        <div><dt><%= @lancamento[:tipo] == "recarga" ? "Valor creditado" : "Valor debitado" %></dt><dd><%= moeda_extrato(@lancamento[:valor]) %></dd></div>
+      </dl>
+    </section>
+  </div>
+</main>

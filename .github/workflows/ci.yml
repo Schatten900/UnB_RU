@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  rspec:
+    name: RSpec
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: projeto-rails
+
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configurar Ruby e instalar gems
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: projeto-rails
+          bundler-cache: true
+
+      - name: Preparar banco de testes
+        run: bundle exec rails db:prepare
+
+      - name: Executar RSpec
+        run: bundle exec rspec

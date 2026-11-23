@@ -1,0 +1,134 @@
+/* US13: estilos isolados para nao interferir nas telas dos colegas. */
+.rg-admin-page {
+  min-height: 100vh;
+  background: #faf8f7;
+  color: #26303b;
+  font-family: "Trebuchet MS", "Aptos", sans-serif;
+}
+.rg-admin-page * { box-sizing: border-box; }
+.rg-admin-page button, .rg-admin-page input, .rg-admin-page select { font: inherit; }
+.rg-admin-page a { text-decoration: none; }
+.rg-admin-page .rg-admin-header { background: #fff; box-shadow: 0 1px 4px #1d243009; }
+.rg-admin-page .rg-header-main {
+  max-width: 1260px; min-height: 78px; margin: 0 auto; padding: 17px 26px;
+  display: flex; align-items: center; gap: 23px;
+}
+.rg-admin-page .rg-brand { display: flex; flex-direction: column; gap: 2px; flex: 0 0 auto; }
+.rg-admin-page .rg-brand-title { font-size: 24px; line-height: 1; color: #073d91; letter-spacing: -.9px; }
+.rg-admin-page .rg-brand-title strong { color: #159346; font-weight: 700; }
+.rg-admin-page .rg-brand-subtitle { font-size: 8px; letter-spacing: 1px; color: #737b86; }
+.rg-admin-page .rg-header-section { display: flex; flex-direction: column; gap: 2px; padding-left: 15px; border-left: 1px solid #e4e6eb; }
+.rg-admin-page .rg-header-section strong { font-size: 11px; color: #06449a; letter-spacing: .03em; }
+.rg-admin-page .rg-header-section span { font-size: 9px; color: #626d79; }
+.rg-admin-page .rg-header-user { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+.rg-admin-page .rg-user-details { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+.rg-admin-page .rg-user-details strong { font-size: 11px; font-weight: 700; }
+.rg-admin-page .rg-user-details small { color: #737b86; font-size: 9px; }
+.rg-admin-page .rg-logout-form { margin: 0; }
+.rg-admin-page .rg-logout { background: #06449a; border: none; border-radius: 50%; color: #fff; width: 40px; height: 40px; font-size: 11px; cursor: pointer; }
+.rg-admin-page .rg-logout:hover { background: #07377d; }
+.rg-admin-page .rg-header-nav { display: flex; align-items: center; gap: 6px; padding: 0 max(26px, calc((100vw - 1208px) / 2)); min-height: 48px; background: #f7f5f4; border-top: 1px solid #f0edeb; overflow-x: auto; }
+.rg-admin-page .rg-nav-link { white-space: nowrap; padding: 14px 12px; font-size: 10px; color: #47505b; border-bottom: 2px solid transparent; }
+.rg-admin-page a.rg-nav-link:hover { color: #06449a; }
+.rg-admin-page .rg-nav-active { color: #06449a; border-bottom-color: #06449a; font-weight: 700; }
+.rg-admin-page .rg-nav-future { color: #7f8790; cursor: default; }
+.rg-admin-page .rg-content { width: min(100%, 1260px); margin: 0 auto; padding: 26px 26px 70px; }
+.rg-admin-page .rg-page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 23px; }
+.rg-admin-page .rg-page-heading { min-width: 0; }
+.rg-admin-page .rg-overline { margin: 0 0 8px; color: #06449a; letter-spacing: .06em; font-size: 9px; font-weight: 800; }
+.rg-admin-page .rg-overline span { color: #8b939d; font-weight: 500; letter-spacing: 0; }
+.rg-admin-page h1 { margin: 0; font-size: clamp(20px, 2vw, 26px); line-height: 1.25; color: #08418b; font-weight: 700; }
+.rg-admin-page .rg-page-actions { display: flex; gap: 9px; align-items: center; }
+.rg-admin-page .rg-button { min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 13px; border: 0; border-radius: 5px; cursor: pointer; line-height: 1.2; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.rg-admin-page .rg-button-primary { background: #06449a; color: #fff; }
+.rg-admin-page .rg-button-primary:hover { background: #07377d; }
+.rg-admin-page .rg-button-secondary { background: #e8effa; color: #06449a; }
+.rg-admin-page .rg-button-secondary:hover { background: #dbe8fa; }
+.rg-admin-page .rg-button-tertiary { background: #fff; color: #3e4853; border: 1px solid #e5e8ed; }
+.rg-admin-page .rg-button-tertiary:hover { background: #f5f7fa; }
+.rg-admin-page .rg-button-danger { color: #a52d2d; background: #fff0ef; }
+.rg-admin-page .rg-button-danger:hover { background: #ffe0dd; }
+.rg-admin-page .rg-button-full { width: 100%; }
+.rg-admin-page .rg-action-popover { position: relative; }
+.rg-admin-page .rg-action-popover > summary { list-style: none; }
+.rg-admin-page .rg-action-popover > summary::-webkit-details-marker { display: none; }
+.rg-admin-page .rg-action-popover[open] > summary { box-shadow: 0 0 0 2px #b6cbed; }
+.rg-admin-page .rg-action-body { position: absolute; right: 0; top: calc(100% + 10px); width: 340px; padding: 19px; z-index: 40; border-radius: 8px; border: 1px solid #e5e8ed; background: #fff; box-shadow: 0 14px 35px #1b35542c; }
+.rg-admin-page .rg-action-body h2, .rg-admin-page .rg-action-body h4 { margin: 0 0 6px; font-size: 15px; color: #26303b; }
+.rg-admin-page .rg-action-body p { margin: 0 0 15px; color: #69727c; font-size: 11px; line-height: 1.5; }
+.rg-admin-page .rg-form { display: grid; gap: 13px; }
+.rg-admin-page .rg-field { display: grid; gap: 5px; }
+.rg-admin-page .rg-field label { font-weight: 700; font-size: 10px; color: #35404e; }
+.rg-admin-page .rg-field input, .rg-admin-page .rg-field select { width: 100%; min-height: 37px; padding: 8px 10px; border-radius: 5px; border: 1px solid #dbe0e7; background: #fff; color: #303744; font-size: 11px; }
+.rg-admin-page .rg-field input:focus-visible, .rg-admin-page .rg-field select:focus-visible { outline: 2px solid #a1c2ff; outline-offset: 1px; }
+.rg-admin-page .rg-notice { margin: 0 0 18px; border: 1px solid; padding: 11px 14px; border-radius: 6px; font-size: 11px; }
+.rg-admin-page .rg-notice-success { background: #e7f6ec; border-color: #b9e4c7; color: #176b36; }
+.rg-admin-page .rg-notice-error { background: #fff0ef; border-color: #efc3c0; color: #a1322c; }
+.rg-admin-page .rg-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-bottom: 24px; }
+.rg-admin-page .rg-metric { display: flex; flex-direction: column; min-height: 103px; padding: 17px 20px; border-radius: 7px; background: #fff; border: 1px solid #f0eeee; }
+.rg-admin-page .rg-metric-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.rg-admin-page .rg-metric-top > span:first-child { font-size: 9px; font-weight: 800; color: #626a74; letter-spacing: .03em; }
+.rg-admin-page .rg-metric-icon { width: 35px; height: 35px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 6px; color: #06449a; background: #eaf0fb; font-size: 18px; }
+.rg-admin-page .rg-metric-value { margin-top: -5px; color: #06449a; font-size: 24px; line-height: 1.25; }
+.rg-admin-page .rg-metric-value.rg-metric-green { color: #16783c; }
+.rg-admin-page .rg-metric > small { color: #828995; font-size: 9px; }
+.rg-admin-page .rg-restaurants > h2 { font-size: 18px; font-weight: 700; margin: 0 0 13px; color: #29313b; }
+.rg-admin-page .rg-restaurants > h2 span { color: #838a94; font-size: 11px; font-weight: 400; }
+.rg-admin-page .rg-empty-state { padding: 26px; border: 1px dashed #d7dfe8; border-radius: 8px; background: #fff; }
+.rg-admin-page .rg-empty-state strong { font-size: 14px; }
+.rg-admin-page .rg-empty-state p { font-size: 11px; color: #78818c; }
+.rg-admin-page .rg-restaurant-card { position: relative; margin-bottom: 16px; border: 1px solid #eeeceb; background: #fff; border-radius: 7px; }
+.rg-admin-page .rg-restaurant-head { display: flex; align-items: center; gap: 14px; padding: 15px 17px; background: #f5f3f2; border-radius: 7px 7px 0 0; }
+.rg-admin-page .rg-restaurant-number { display: grid; place-items: center; flex: 0 0 auto; width: 38px; height: 38px; border-radius: 4px; color: #fff; background: #06449a; font-size: 15px; font-weight: 800; }
+.rg-admin-page .rg-restaurant-title { min-width: 0; }
+.rg-admin-page .rg-restaurant-title h3 { margin: 0 0 4px; font-size: 15px; color: #06449a; overflow-wrap: anywhere; }
+.rg-admin-page .rg-restaurant-title p { margin: 0; font-size: 9px; color: #6b7480; }
+.rg-admin-page .rg-restaurant-actions { margin-left: auto; flex: 0 0 auto; }
+.rg-admin-page .rg-action-popover-edit .rg-action-body { width: 300px; }
+.rg-admin-page .rg-action-popover-edit .rg-action-body form + form { margin-top: 10px; }
+.rg-admin-page .rg-unit-details > summary { list-style: none; }
+.rg-admin-page .rg-unit-details > summary::-webkit-details-marker { display: none; }
+.rg-admin-page .rg-collapse-toggle { width: fit-content; margin: 0 18px 0 auto; display: flex; align-items: center; gap: 6px; padding: 8px 0; color: #06449a; font-size: 10px; font-weight: 700; cursor: pointer; }
+.rg-admin-page .rg-chevron { display: inline-block; transition: transform .2s ease; }
+.rg-admin-page .rg-unit-details[open] .rg-chevron { transform: rotate(180deg); }
+.rg-admin-page .rg-unit-body { padding: 1px 17px 16px; border-top: 1px solid #f1f1f1; }
+.rg-admin-page .rg-floor-group { margin-top: 13px; }
+.rg-admin-page .rg-floor-group + .rg-floor-group { margin-top: 17px; }
+.rg-admin-page .rg-floor-group h4 { margin: 0 0 7px; font-size: 10px; font-weight: 800; color: #06449a; }
+.rg-admin-page .rg-gate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.rg-admin-page .rg-gate-tile { position: relative; min-width: 0; min-height: 57px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: #f5f3f2; border-radius: 5px; }
+.rg-admin-page .rg-gate-info { display: flex; flex-direction: column; gap: 6px; }
+.rg-admin-page .rg-gate-info strong { color: #26303b; font-size: 10px; }
+.rg-admin-page .rg-gate-mode { color: #66717c; font-size: 9px; }
+.rg-admin-page .rg-gate-fastpass { color: #06449a; }
+.rg-admin-page .rg-mode-dot { width: 6px; height: 6px; margin-right: 4px; display: inline-block; background: #229b50; border-radius: 50%; }
+.rg-admin-page .rg-gate-fastpass .rg-mode-dot { background: #4277dc; }
+.rg-admin-page .rg-gate-editor { position: relative; flex: 0 0 auto; }
+.rg-admin-page .rg-gate-editor > summary { color: #06449a; background: #e6ecf5; list-style: none; border-radius: 4px; padding: 7px 10px; cursor: pointer; font-size: 9px; font-weight: 700; }
+.rg-admin-page .rg-gate-editor > summary::-webkit-details-marker { display: none; }
+.rg-admin-page .rg-gate-editor-body { position: absolute; right: 0; top: calc(100% + 7px); width: 220px; padding: 14px; z-index: 30; background: #fff; border: 1px solid #dce3ed; border-radius: 7px; box-shadow: 0 12px 30px #1b35542c; }
+.rg-admin-page .rg-gate-editor-body form + form { margin-top: 9px; }
+.rg-admin-page .rg-gate-editor-body .rg-form { gap: 9px; }
+.rg-admin-page .rg-no-gates { padding: 12px; border-radius: 5px; color: #73808b; background: #f5f3f2; font-size: 11px; }
+@media (max-width: 960px) {
+  .rg-admin-page .rg-page-intro { align-items: flex-start; flex-direction: column; }
+  .rg-admin-page .rg-page-actions { justify-content: flex-start; }
+  .rg-admin-page .rg-header-nav { padding-left: 18px; }
+}
+@media (max-width: 680px) {
+  .rg-admin-page .rg-header-main { padding: 15px 18px; gap: 12px; flex-wrap: wrap; }
+  .rg-admin-page .rg-header-section { border-left: 0; padding-left: 0; }
+  .rg-admin-page .rg-header-user { margin-left: auto; }
+  .rg-admin-page .rg-user-details { display: none; }
+  .rg-admin-page .rg-content { padding: 20px 15px 50px; }
+  .rg-admin-page .rg-metrics { grid-template-columns: 1fr; }
+  .rg-admin-page .rg-metric { min-height: 90px; }
+  .rg-admin-page .rg-metric-value { margin-top: -5px; }
+  .rg-admin-page .rg-gate-grid { grid-template-columns: 1fr; }
+  .rg-admin-page .rg-restaurant-head { gap: 9px; flex-wrap: wrap; }
+  .rg-admin-page .rg-restaurant-actions { width: 100%; margin-left: 0; }
+  .rg-admin-page .rg-action-popover-edit .rg-action-body { left: 0; right: auto; }
+  .rg-admin-page .rg-page-actions { width: 100%; flex-wrap: wrap; }
+  .rg-admin-page .rg-action-body { left: 0; right: auto; width: min(340px, calc(100vw - 35px)); }
+  .rg-admin-page .rg-action-popover-edit .rg-action-body { width: min(300px, calc(100vw - 35px)); }
+}

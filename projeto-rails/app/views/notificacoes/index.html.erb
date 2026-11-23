@@ -1,0 +1,27 @@
+<main class="operator-app">
+  <%= render "shared/cabecalho_estudante" %>
+
+  <div class="page-content">
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">FastPass</p>
+        <h1>Notificações</h1>
+      </div>
+    </section>
+
+    <% if @notificacoes.any? %>
+      <ol class="notification-list">
+        <% @notificacoes.each do |notificacao| %>
+          <li class="notification-item">
+            <p class="notification-message"><%= notificacao.mensagem %></p>
+            <time class="notification-time" datetime="<%= notificacao.created_at.iso8601 %>">
+              <%= notificacao.created_at.in_time_zone("America/Sao_Paulo").strftime("%d/%m/%Y às %H:%M") %>
+            </time>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p class="empty-state" role="status">Você ainda não tem notificações.</p>
+    <% end %>
+  </div>
+</main>
