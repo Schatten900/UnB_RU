@@ -4,14 +4,14 @@ name: Code Quality
 on:
   push:
   pull_request:
-    
+
 defaults:
   run:
     working-directory: projeto-rails
 
 jobs:
   complexity:
-    name: ABC Score and RubyCritic
+    name: ABC Score e RubyCritic
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +20,14 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2.11'
+          working-directory: projeto-rails
           bundler-cache: true
+
+      - name: Verify dependencies
+        run: |
+          bundle check
+          bundle exec rubycritic --version
+          bundle exec rubocop --version
 
       - name: Generate RubyCritic report
         run: |
@@ -40,11 +47,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rubycritic-report
-          path: tmp/rubycritic/
+          path: projeto-rails/tmp/rubycritic/
 
   coverage:
     name: Test Coverage
     runs-on: ubuntu-latest
+
     env:
       RAILS_ENV: test
 
@@ -54,7 +62,16 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2.11'
+          working-directory: projeto-rails
           bundler-cache: true
+
+      - name: Verify RSpec installation
+        run: |
+          bundle check
+          bundle exec rspec --version
+
+      - name: Prepare test database
+        run: bundle exec rails db:test:prepare
 
       - name: Run RSpec with SimpleCov
         run: bundle exec rspec
@@ -64,4 +81,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: simplecov-report
-          path: coverage/
+          path: projeto-rails/coverage/
