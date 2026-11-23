@@ -13,3 +13,6 @@ AllCops:
     - "tmp/**/*"
     - "log/**/*"
     - "config/initializers/**/*"
+
+Metrics/AbcSize:
+  Max: 19.99

@@ -1,0 +1,63 @@
+
+name: Code Quality
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  complexity:
+    name: ABC Score and RubyCritic
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.3'
+          bundler-cache: true
+
+      - name: Generate RubyCritic report
+        run: |
+          bundle exec rubycritic app \
+            --format html \
+            --path tmp/rubycritic \
+            --no-browser
+
+      - name: Check ABC Score
+        run: |
+          bundle exec rubocop app \
+            --only Metrics/AbcSize \
+            --format simple
+
+      - name: Upload RubyCritic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rubycritic-report
+          path: tmp/rubycritic/
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.3'
+          bundler-cache: true
+
+      - name: Run RSpec with SimpleCov
+        run: bundle exec rspec
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simplecov-report
+          path: coverage/

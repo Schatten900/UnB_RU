@@ -81,4 +81,8 @@ group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
   gem "minitest", "< 6"
+
+  gem "rubycritic", require: false
+  gem "simplecov", require: false
+  gem "rdoc", require: false
 end
