@@ -11,8 +11,7 @@ SimpleCov.at_exit do
   end
 end
 
-if ENV["ENFORCE_TEST_COVERAGE"] == "true"
-  SimpleCov.coverage(:line) do
-    minimum 90.00, per: %r{\Aapp/(controllers|models)/.*\.rb\z}
-  end
+SimpleCov.coverage(:line) do
+  minimum 90.00, per: group("Models")
+  minimum 90.00, per: group("Controllers")
 end
