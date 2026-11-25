@@ -51,6 +51,17 @@ funcionario2.senha = "Demo1234!"
 funcionario2.save!
 
 
+administrador = Usuario.find_or_initialize_by(matricula: "999900002")
+administrador.assign_attributes(
+	nome: "Administrador de demonstração",
+	perfil: "administrador",
+	turno: turno2,
+	restaurante: restaurantes.first,
+	saldo: 0
+)
+administrador.senha = "Demo1234!"
+administrador.save!
+
 cardapio = Cardapio.find_or_initialize_by(turno: turno, data: Date.current)
 cardapio.update!(
 	opcao_padrao: "Frango Assado",
@@ -69,6 +80,8 @@ puts "Dados de demonstração carregados."
 puts "Login funcionário: 999000001 / Demo1234!"
 
 puts "Login funcionário 2: 999000002 / Demo1234!"
+
+puts "Login admin : 999900002 / Demo1234!"
 
 puts "Restaurantes: #{restaurantes.map(&:nome).join(', ')}"
 puts "Cardápios de hoje: tarde, das 14:00 às 16:00; demo, das 17:00 às 23:00."

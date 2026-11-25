@@ -16,6 +16,8 @@ class Turno < ApplicationRecord
 
   private
 
+
+  
   def fim_depois_do_inicio
     return unless inicio && fim
 

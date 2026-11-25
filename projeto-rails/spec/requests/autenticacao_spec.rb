@@ -116,6 +116,38 @@ RSpec.describe "Autenticacao", type: :request do
     expect(response).to have_http_status(:unauthorized)
     expect(session[:usuario_matricula]).to be_nil
   end
+
+  it "recusa login de funcionario fora do turno sem criar sessao" do
+    funcionario = criar_usuario(
+      matricula: "999123456",
+      turno: turno
+    )
+    allow(Time).to receive(:current).and_return(
+      Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 18, 0)
+    )
+
+    post login_path, params: {
+      matricula: funcionario.matricula,
+      senha: "senha-segura"
+    }
+
+    expect(response).to have_http_status(:unauthorized)
+    expect(session[:usuario_matricula]).to be_nil
+  end
+
+  it "informa indisponibilidade sem estabelecer sessao" do
+    allow(AutenticacaoFuncionarioService).to receive(:call)
+      .and_raise(ActiveRecord::ConnectionNotEstablished)
+
+    post login_path, params: {
+      matricula: "999123456",
+      senha: "senha-segura"
+    }
+
+    expect(response).to have_http_status(:service_unavailable)
+    expect(response.body).to include("O serviço está indisponivel no momento")
+    expect(session[:usuario_matricula]).to be_nil
+  end
 end
 
 # AI: ChatGPT
