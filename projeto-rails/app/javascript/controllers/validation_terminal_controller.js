@@ -68,12 +68,13 @@ export default class extends Controller {
   simulate(event) {
     const scenario = event.currentTarget.dataset.scenario
     const urls = { ok: this.okUrlValue, outside: this.outsideUrlValue, balance: this.balanceUrlValue, normal: this.normalUrlValue }
-    return this.sendReading(urls[scenario])
+    return this.sendReading(urls[scenario], true)
   }
 
-  async sendReading(url) {
+  async sendReading(url, simulated = false) {
     if (this.busy) return
     this.clearReading()
+    this.simulatedReading = simulated
     this.setBusy(true)
     try {
       const data = await this.post(url, { modo: this.selectedMode, matricula: this.readIdentification() })
@@ -125,7 +126,8 @@ export default class extends Controller {
     this.setMode(data.modo)
     const blocked = !data.autorizado
     this.bannerTarget.className = `terminal-result-banner ${blocked ? "is-blocked" : "is-approved"}`
-    this.resultTitleTarget.textContent = data.confirmado ? "PASSAGEM CONFIRMADA · SIMULAÇÃO" : blocked ? "ACESSO BLOQUEADO · SIMULAÇÃO" : "ACESSO LIBERADO · SIMULAÇÃO"
+    const title = data.confirmado ? "PASSAGEM CONFIRMADA" : blocked ? "ACESSO BLOQUEADO" : "ACESSO LIBERADO"
+    this.resultTitleTarget.textContent = title + (this.simulatedReading ? " · SIMULAÇÃO" : "")
     const detalhes = {
       autorizado: "Leitura registrada. Aguardando confirmação da passagem.",
       fora_da_janela: "Leitura fora da janela sorteada. Tentativa bloqueada e registrada.",
@@ -143,7 +145,7 @@ export default class extends Controller {
     this.windowTarget.textContent = data.janela || "Não se aplica"
     this.readTimeTarget.textContent = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(data.horario))
     this.timeResultTarget.textContent = data.modo === "normal" ? "Modo comum" : !data.janela ? "Sem janela válida" : data.motivo === "fora_da_janela" ? "Fora da janela" : "Dentro da janela"
-    this.readerStatusTarget.textContent = "● Leitura simulada registrada"
+    this.readerStatusTarget.textContent = this.simulatedReading ? "● Leitura simulada registrada" : "● Leitura registrada"
     this.recordsTarget.innerHTML = data.registros_html
   }
 

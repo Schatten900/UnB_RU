@@ -86,6 +86,7 @@ RSpec.describe "Terminal de validação", type: :request do
     end
 
     it "processa a matrícula e só debita após confirmar manualmente a passagem" do
+      expect(SimulacaoTerminalService).not_to receive(:call)
       expect {
         simular("processar_leitura", "normal", matricula: estudante.matricula)
       }.to change(Acesso, :count).by(1)
@@ -133,6 +134,37 @@ RSpec.describe "Terminal de validação", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(resposta["erro"]).to include("Informe a matrícula")
+    end
+
+    it "retorna erro quando a matrícula não é encontrada" do
+      expect {
+        simular("processar_leitura", "normal", matricula: "000000000")
+      }.not_to change(Acesso, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(resposta["erro"]).to include("Não existe estudante")
+    end
+
+    it "bloqueia a leitura real sem saldo sem efetuar débito" do
+      simular("processar_leitura", "normal", matricula: sem_saldo.matricula)
+
+      expect(response).to have_http_status(:ok)
+      expect(resposta["motivo"]).to eq("saldo_insuficiente")
+      expect(resposta["autorizacao"]).to be_nil
+      expect(resposta["origem_leitura"]).to eq("informada")
+      expect(Acesso.last.status).to eq("bloqueado")
+      expect(sem_saldo.reload.saldo).to eq(0)
+    end
+
+    it "registra o bloqueio da leitura real sem FastPass contemplado" do
+      InscricaoFastpass.where(usuario_matricula: estudante.matricula).delete_all
+      simular("processar_leitura", "fastpass", matricula: estudante.matricula)
+
+      expect(response).to have_http_status(:ok)
+      expect(resposta["motivo"]).to eq("sem_fastpass")
+      expect(resposta["autorizacao"]).to be_nil
+      expect(Acesso.last.status).to eq("bloqueado")
+      expect(estudante.reload.saldo).to eq(30)
     end
 
     it "seleciona um estudante existente e registra a leitura sem criar dados auxiliares nem debitar" do
