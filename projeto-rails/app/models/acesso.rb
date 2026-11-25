@@ -48,24 +48,50 @@ class Acesso < ApplicationRecord
 
   private
 
+  # Confirma o acesso pendente em uma transação
+  #
+  # +agora+ é o instante da passagem. Retorna true na confirmação ou false
+  # quando o acesso não pode ser reservado ou o saldo é insuficiente.
   def confirmar_passagem_pendente!(agora:)
     self.class.transaction(requires_new: true) do
-      reservados = self.class.where(id: id, status: "pendente", passagem_em: nil)
-                             .update_all(passagem_em: agora)
-      next false if reservados.zero?
+      next false unless reservar_passagem(agora)
 
       preco = turno.preco
-      debitos = Usuario.where(matricula: usuario_matricula)
-                       .where("saldo >= ?", preco)
-                       .update_all(["saldo = saldo - ?", preco])
+      raise ActiveRecord::Rollback unless debitar_saldo(preco)
 
-      raise ActiveRecord::Rollback if debitos.zero?
-
-      update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
-      Restaurante.where(id: catraca.restaurante_id)
-                 .update_all(["faturamento = faturamento + ?", preco])
+      registrar_passagem(agora, preco)
+      atualizar_faturamento(preco)
       usuario.reload
       true
     end || false
+  end
+
+  # Reserva a passagem em +agora+ somente se o acesso estiver pendente e não usado.
+  # Retorna true se a atualização condicional afetou o registro.
+  def reservar_passagem(agora)
+    self.class.where(id: id, status: "pendente", passagem_em: nil)
+              .update_all(passagem_em: agora)
+              .positive?
+  end
+
+  # Debita +preco+ somente se o saldo no banco for suficiente.
+  # Retorna true quando o débito foi realizado.
+  def debitar_saldo(preco)
+    Usuario.where(matricula: usuario_matricula)
+           .where("saldo >= ?", preco)
+           .update_all(["saldo = saldo - ?", preco])
+           .positive?
+  end
+
+  # Persiste o horário +agora+, o valor debitado +preco+ e o status liberado.
+  # Propaga erros de persistência para desfazer a transação chamadora.
+  def registrar_passagem(agora, preco)
+    update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
+  end
+
+  # Incrementa o faturamento do restaurante pelo +preco+ na transação chamadora.
+  def atualizar_faturamento(preco)
+    Restaurante.where(id: catraca.restaurante_id)
+               .update_all(["faturamento = faturamento + ?", preco])
   end
 end
