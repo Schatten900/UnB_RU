@@ -118,13 +118,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_11_14_000000) do
     t.index ["turno_id"], name: "index_usuarios_on_turno_id"
   end
 
-  add_foreign_key "acessos", "catracas"
-  add_foreign_key "acessos", "inscricoes_fastpass", column: "inscricao_fastpass_id"
-  add_foreign_key "acessos", "turnos"
-  add_foreign_key "acessos", "usuarios", column: "usuario_matricula", primary_key: "matricula"
-  add_foreign_key "cardapios", "turnos"
-  add_foreign_key "cardapios_restaurantes", "cardapios"
-  add_foreign_key "cardapios_restaurantes", "restaurantes"
   add_foreign_key "catracas", "restaurantes"
   add_foreign_key "inscricoes_fastpass", "catracas"
   add_foreign_key "inscricoes_fastpass", "sorteios"
