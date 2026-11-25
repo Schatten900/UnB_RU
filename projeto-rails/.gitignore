@@ -36,3 +36,5 @@
 
 # Local Bundler dependencies and configuration
 /vendor/bundle/
+
+/coverage/

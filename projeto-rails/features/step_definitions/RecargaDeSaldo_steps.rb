@@ -12,6 +12,7 @@ output below:
 Dado('que estou autenticado como estudante') do
   # Mock or set up a logged-in student session
   @current_user = { role: :student, id: 250111111, balance: 0.00 }
+  entrar_aceitacao("250111111")
   # In a real app using Capybara, you might visit a login page and fill credentials
 end
 

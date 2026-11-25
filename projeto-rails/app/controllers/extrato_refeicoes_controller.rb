@@ -23,10 +23,8 @@ class ExtratoRefeicoesController < ApplicationController
     paginar_lancamentos(extrato.lancamentos)
   end
 
-  # Envia como anexo o PDF de todos os lançamentos que atendem aos filtros.
-  #
-  # A exportação usa a conta autenticada e independe da página exibida na tela.
-  # Erros de argumentos são tratados pelo rescue_from do controller.
+  # Exporta o histórico do estudante autenticado usando os filtros da requisição.
+  # Retorna o download PDF ou erro de filtro; consulta o banco sem gravar.
   def exportar
     documento = ExportacaoHistoricoPdfService.call(usuario: usuario_atual, filtros: parametros_filtros)
     send_data documento.conteudo, filename: documento.nome_arquivo,

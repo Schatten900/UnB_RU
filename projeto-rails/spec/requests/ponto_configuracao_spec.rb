@@ -22,6 +22,18 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
     expect(response).to redirect_to(login_path)
   end
 
+  it "impede funcionario nao autenticado de configurar o ponto de acesso" do
+    restaurante = Restaurante.create!(nome: "RU de teste")
+    catraca = restaurante.catracas.create!(piso: 1, modo_acesso: "normal")
+
+    post operator_ponto_configuracao_path,
+      params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
+
+    expect(response).to redirect_to(login_path)
+    expect(session[:restaurante_id]).to be_nil
+    expect(session[:catraca_id]).to be_nil
+  end
+
   it "salva restaurante e catraca na sessao" do
     restaurante = Restaurante.create!(nome: "RU de teste")
     catraca = restaurante.catracas.create!(piso: 1, modo_acesso: "normal")
@@ -34,6 +46,21 @@ RSpec.describe "Configuracao do ponto de acesso", type: :request do
     expect(response).to redirect_to(operator_ponto_configuracao_path)
     expect(session[:restaurante_id]).to eq(restaurante.id)
     expect(session[:catraca_id]).to eq(catraca.id)
+  end
+
+  it "registra em log o restaurante e a catraca selecionados" do
+    restaurante = Restaurante.create!(nome: "RU de teste")
+    catraca = restaurante.catracas.create!(piso: 1, modo_acesso: "normal")
+    allow(Time).to receive(:current).and_return(Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 12, 0))
+    post login_path, params: { matricula: funcionario.matricula, senha: "senha-segura" }
+    allow(Rails.logger).to receive(:info).and_call_original
+
+    post operator_ponto_configuracao_path,
+      params: { restaurante_id: restaurante.id, catraca_id: catraca.id }
+
+    expect(response).to redirect_to(operator_ponto_configuracao_path)
+    expect(Rails.logger).to have_received(:info)
+      .with("Restaurante #{restaurante.id} e catraca #{catraca.id} selecionados por funcionário #{funcionario.matricula}")
   end
 
   it "rejeita catraca que nao pertence ao restaurante informado" do
