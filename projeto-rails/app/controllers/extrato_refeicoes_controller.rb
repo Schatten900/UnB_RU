@@ -27,6 +27,8 @@ class ExtratoRefeicoesController < ApplicationController
     @lancamentos = extrato.lancamentos.slice(@inicio, @por_pagina) || []
   end
 
+  # Exporta o histórico do estudante autenticado usando os filtros da requisição.
+  # Retorna o download PDF ou erro de filtro; consulta o banco sem gravar.
   def exportar
     documento = ExportacaoHistoricoPdfService.call(usuario: usuario_atual, filtros: parametros_filtros)
     send_data documento.conteudo, filename: documento.nome_arquivo,

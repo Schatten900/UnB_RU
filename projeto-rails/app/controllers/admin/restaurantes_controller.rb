@@ -1,11 +1,15 @@
 module Admin
   class RestaurantesController < BaseController
+    # Lista restaurantes, catracas e seus indicadores.
+    # Sem argumentos; retorna HTML e consulta o banco.
     def index
       @restaurantes = GestaoRestaurantesService.listar_restaurantes.to_a
       @total_catracas = Catraca.count
       @total_fastpass = Catraca.where(modo_acesso: "fastpass").count
     end
 
+    # Cadastra o restaurante informado na requisição.
+    # Retorna redirecionamento com sucesso ou erro; grava no banco.
     def create
       GestaoRestaurantesService.cadastrar_restaurante(
         usuario: usuario_atual,
@@ -16,6 +20,8 @@ module Admin
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
 
+    # Atualiza o restaurante identificado na requisição.
+    # Retorna redirecionamento com sucesso ou erro; grava no banco.
     def update
       restaurante = Restaurante.find(params[:id])
       GestaoRestaurantesService.editar_restaurante(
@@ -28,6 +34,8 @@ module Admin
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
 
+    # Remove o restaurante indicado quando não há registros impeditivos.
+    # Retorna redirecionamento com sucesso ou erro; exclui o registro quando permitido.
     def destroy
       restaurante = Restaurante.find(params[:id])
       GestaoRestaurantesService.remover_restaurante(
@@ -44,6 +52,8 @@ module Admin
 
     private
 
+    # Seleciona o nome permitido nos parâmetros de restaurante.
+    # Sem argumentos; retorna parâmetros permitidos, sem acessar o banco.
     def restaurante_params
       params.require(:restaurante).permit(:nome)
     end

@@ -6,6 +6,8 @@ class GeradorPdfHistoricoMock
     keyword_init: true
   )
 
+  # Simula a exportação do usuário e dos lançamentos recebidos.
+  # Retorna Resultado em texto simples; não gera PDF nem altera o banco.
   def self.call(usuario:, lancamentos:)
     Resultado.new(
       simulado: true,
