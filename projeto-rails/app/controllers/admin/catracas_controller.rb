@@ -1,5 +1,7 @@
 module Admin
   class CatracasController < BaseController
+    # Cadastra uma catraca no restaurante informado na requisição.
+    # Retorna redirecionamento com sucesso ou erro; grava no banco.
     def create
       atributos = catraca_params
       restaurante = Restaurante.find(atributos[:restaurante_id])
@@ -14,6 +16,8 @@ module Admin
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
 
+    # Atualiza piso e modalidade da catraca identificada na requisição.
+    # Retorna redirecionamento com sucesso ou erro; grava no banco.
     def update
       catraca = Catraca.find(params[:id])
       atributos = catraca_params
@@ -28,6 +32,8 @@ module Admin
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
 
+    # Remove a catraca indicada quando não possui registros impeditivos.
+    # Retorna redirecionamento com sucesso ou erro; exclui o registro quando permitido.
     def destroy
       catraca = Catraca.find(params[:id])
       GestaoRestaurantesService.remover_catraca(usuario: usuario_atual, catraca: catraca)
@@ -39,6 +45,8 @@ module Admin
 
     private
 
+    # Seleciona restaurante, piso e modalidade permitidos na requisição.
+    # Sem argumentos; retorna parâmetros permitidos, sem acessar o banco.
     def catraca_params
       params.require(:catraca).permit(:restaurante_id, :piso, :modo_acesso)
     end
