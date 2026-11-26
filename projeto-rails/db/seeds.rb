@@ -2,9 +2,11 @@ if Rails.env.development?
 
 turno2 = Turno.find_or_initialize_by(nome: "Tarde - refeição atual")
 turno2.update!(inicio: "14:00", fim: "17:00", preco: 4.50)
+Turnos::GerarTimeframe.new(turno2, 15).call
 
 turno = Turno.find_or_initialize_by(nome: "Demo - refeição atual")
 turno.update!(inicio: "17:00", fim: "23:00", preco: 4.50)
+Turnos::GerarTimeframe.new(turno, 15).call
 
 restaurantes = ["Demo - RU Darcy Ribeiro", "Demo - RU Gama"].map do |nome|
 	Restaurante.find_or_create_by!(nome: nome)
@@ -12,7 +14,7 @@ end
 
 restaurantes.each_with_index do |restaurante, index|
 	catraca = Catraca.find_or_initialize_by(restaurante_id: restaurante.id, piso: index + 1)
-	catraca.update!(modo_acesso: "normal")
+	catraca.update!(modo_acesso: "fastpass")
 end
 
 estudante = Usuario.find_or_initialize_by(matricula: "232040501")
@@ -75,6 +77,15 @@ cardapio_tarde.update!(
 	opcao_ovolactovegetariana: "Moqueca de banana com proteína de soja",
 	opcao_vegetariana_estrita: "Lasanha de brócolis"
 )
+
+sorteio_demo = Sorteio.find_or_initialize_by(data: Date.current)
+sorteio_demo.status = "aberto"
+sorteio_demo.cotas = restaurantes.to_h do |restaurante|
+  janelas = TimeFrame.includes(:turno).order(:inicio, :id)
+  cotas = janelas.to_h { |janela| [janela.id.to_s, 1] }
+  [restaurante.id.to_s, cotas]
+end
+sorteio_demo.save!
 
 puts "Dados de demonstração carregados."
 puts "Login funcionário: 999000001 / Demo1234!"
