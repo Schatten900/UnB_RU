@@ -5,7 +5,7 @@ module Admin
     def index
       @restaurantes = GestaoRestaurantesService.listar_restaurantes.to_a
       @total_catracas = Catraca.count
-      @total_fastpass = Catraca.where(modo_acesso: "fastpass").count
+      @total_fastpass = Catraca.where(modo_acesso: 'fastpass').count
     end
 
     # Cadastra o restaurante informado na requisição.
@@ -15,7 +15,7 @@ module Admin
         usuario: usuario_atual,
         nome: restaurante_params[:nome]
       )
-      redirect_to admin_restaurantes_path, notice: "Restaurante cadastrado com sucesso."
+      redirect_to admin_restaurantes_path, notice: 'Restaurante cadastrado com sucesso.'
     rescue ActiveRecord::RecordInvalid => e
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
@@ -29,7 +29,7 @@ module Admin
         restaurante: restaurante,
         nome: restaurante_params[:nome]
       )
-      redirect_to admin_restaurantes_path, notice: "Restaurante atualizado com sucesso."
+      redirect_to admin_restaurantes_path, notice: 'Restaurante atualizado com sucesso.'
     rescue ActiveRecord::RecordInvalid => e
       redirect_to admin_restaurantes_path, alert: e.record.errors.full_messages.to_sentence
     end
@@ -41,13 +41,13 @@ module Admin
       GestaoRestaurantesService.remover_restaurante(
         usuario: usuario_atual, restaurante: restaurante
       )
-      redirect_to admin_restaurantes_path, notice: "Restaurante removido com sucesso."
+      redirect_to admin_restaurantes_path, notice: 'Restaurante removido com sucesso.'
     rescue ActiveRecord::RecordNotDestroyed
       redirect_to admin_restaurantes_path,
-                  alert: "Remova primeiro as catracas associadas ao restaurante."
+                  alert: 'Remova primeiro as catracas associadas ao restaurante.'
     rescue ActiveRecord::InvalidForeignKey
       redirect_to admin_restaurantes_path,
-                  alert: "Nao foi possivel remover o restaurante: existem registros associados."
+                  alert: 'Nao foi possivel remover o restaurante: existem registros associados.'
     end
 
     private

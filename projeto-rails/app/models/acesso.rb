@@ -1,4 +1,4 @@
-#models/acesso.rb
+# models/acesso.rb
 class Acesso < ApplicationRecord
   class PermissaoNegada < StandardError; end
 
@@ -7,15 +7,13 @@ class Acesso < ApplicationRecord
   belongs_to :catraca
   belongs_to :inscricao_fastpass, optional: true
 
-  def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil) 
-    unless ator&.perfil == "administrador"
-      raise PermissaoNegada, "Você não tem permissão para consultar o relatório global"
+  def self.relatorio_global(ator:, restaurante_id: nil, catraca_id: nil, agrupar_por: nil)
+    unless ator&.perfil == 'administrador'
+      raise PermissaoNegada, 'Você não tem permissão para consultar o relatório global'
     end
 
     acessos = all
-    if restaurante_id.present?
-      acessos = acessos.joins(:catraca).where(catracas: { restaurante_id: restaurante_id })
-    end
+    acessos = acessos.joins(:catraca).where(catracas: { restaurante_id: restaurante_id }) if restaurante_id.present?
     acessos = acessos.where(catraca_id: catraca_id) if catraca_id.present?
 
     case agrupar_por
@@ -69,29 +67,29 @@ class Acesso < ApplicationRecord
   # Reserva a passagem em +agora+ somente se o acesso estiver pendente e não usado.
   # Retorna true se a atualização condicional afetou o registro.
   def reservar_passagem(agora)
-    self.class.where(id: id, status: "pendente", passagem_em: nil)
-              .update_all(passagem_em: agora)
-              .positive?
+    self.class.where(id: id, status: 'pendente', passagem_em: nil)
+        .update_all(passagem_em: agora)
+        .positive?
   end
 
   # Debita +preco+ somente se o saldo no banco for suficiente.
   # Retorna true quando o débito foi realizado.
   def debitar_saldo(preco)
     Usuario.where(matricula: usuario_matricula)
-           .where("saldo >= ?", preco)
-           .update_all(["saldo = saldo - ?", preco])
+           .where('saldo >= ?', preco)
+           .update_all(['saldo = saldo - ?', preco])
            .positive?
   end
 
   # Persiste o horário +agora+, o valor debitado +preco+ e o status liberado.
   # Propaga erros de persistência para desfazer a transação chamadora.
   def registrar_passagem(agora, preco)
-    update!(passagem_em: agora, valor_debitado: preco, status: "liberado")
+    update!(passagem_em: agora, valor_debitado: preco, status: 'liberado')
   end
 
   # Incrementa o faturamento do restaurante pelo +preco+ na transação chamadora.
   def atualizar_faturamento(preco)
     Restaurante.where(id: catraca.restaurante_id)
-               .update_all(["faturamento = faturamento + ?", preco])
+               .update_all(['faturamento = faturamento + ?', preco])
   end
 end

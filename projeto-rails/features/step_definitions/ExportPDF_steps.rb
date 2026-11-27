@@ -1,4 +1,3 @@
-
 # AI USAGE REPORT
 # Gemini 3.1 flash was utilized to check and fix minor syntax issues
 # Strategy: Use natural language + modified code template + gherkin code, and ask AI if this is correct, AI should point out problems and fixed code
@@ -6,12 +5,11 @@
 # (provided code)
 # Output:
 
-
 # features/step_definitions/shift_time_steps.rb
 
 Dado('que estou autenticado como funcionário {string}') do |staff_id|
   @staff_id = staff_id
-  @current_user = { id: staff_id, role: :staff } 
+  @current_user = { id: staff_id, role: :staff }
 end
 
 Dado('eu navego para a página do relatório de operações globais') do
@@ -27,7 +25,7 @@ Dado('que minha conta de funcionário é de administrador geral') do
 end
 
 Quando('eu clico em {string}') do |button_text|
-  if button_text == "Exportar Relatório"
+  if button_text == 'Exportar Relatório'
     # Check permissions based on role
     if @current_user[:role] == :general_administrator
       @report_generated = true
@@ -36,7 +34,7 @@ Quando('eu clico em {string}') do |button_text|
     else
       @report_generated = false
       @pdf_downloaded = false
-      @error_message = "Você não tem permissões para esta funcionalidade"
+      @error_message = 'Você não tem permissões para esta funcionalidade'
     end
   end
 end
@@ -57,28 +55,26 @@ end
 Então('o arquivo PDF deve ser baixado com sucesso') do
   expect(@pdf_downloaded).to be(true)
 end
-=begin
-
-Feature: Export Global Operations Report
-  As a system general administrator
-  In order to conduct internal auditing
-  I want to be able to export Operation Reports in PDF
-
-  Background:
-    Given I am authenticated as staff "999991111"
-    And I navigate to the global operations report page
-
-  Scenario: Sad Path - User lacks administrative permissions
-    Given my staff account is not a general administrator
-    When I click "Export Report"
-    Then the global operations report should not be generated or downloaded
-    And I should see an error message "You lack permissions for this functionality"
-
-  Scenario: Happy Path - User has administrative permissions
-    Given my staff account is a general administrator
-    When I click "Export Report"
-    Then the global operations report should be generated
-    And the PDF file should be downloaded successfully
-
-
-=end
+#
+# Feature: Export Global Operations Report
+#   As a system general administrator
+#   In order to conduct internal auditing
+#   I want to be able to export Operation Reports in PDF
+#
+#   Background:
+#     Given I am authenticated as staff "999991111"
+#     And I navigate to the global operations report page
+#
+#   Scenario: Sad Path - User lacks administrative permissions
+#     Given my staff account is not a general administrator
+#     When I click "Export Report"
+#     Then the global operations report should not be generated or downloaded
+#     And I should see an error message "You lack permissions for this functionality"
+#
+#   Scenario: Happy Path - User has administrative permissions
+#     Given my staff account is a general administrator
+#     When I click "Export Report"
+#     Then the global operations report should be generated
+#     And the PDF file should be downloaded successfully
+#
+#

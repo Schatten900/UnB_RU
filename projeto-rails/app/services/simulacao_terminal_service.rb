@@ -20,7 +20,7 @@ class SimulacaoTerminalService
   def self.call(catraca:, turno:, modo:, cenario:, matricula: nil, agora: Time.current)
     validar_parametros!(modo, cenario, turno)
     modo = modo_do_cenario(modo, cenario)
-    agora = agora.in_time_zone("America/Sao_Paulo")
+    agora = agora.in_time_zone('America/Sao_Paulo')
     matricula = matricula.to_s.strip
     estudante, inscricao = localizar_leitura(turno, modo, cenario, matricula, agora)
     validar_estudante_encontrado!(estudante)
@@ -32,16 +32,16 @@ class SimulacaoTerminalService
 
   # Valida modo, cenário e tarifa positiva
   def self.validar_parametros!(modo, cenario, turno)
-    raise ArgumentError, "Modo inválido." unless MODOS.include?(modo)
-    raise ArgumentError, "Cenário inválido." unless CENARIOS.include?(cenario)
-    raise ArgumentError, "Configure um turno com tarifa positiva para simular." unless turno&.preco&.positive?
+    raise ArgumentError, 'Modo inválido.' unless MODOS.include?(modo)
+    raise ArgumentError, 'Cenário inválido.' unless CENARIOS.include?(cenario)
+    raise ArgumentError, 'Configure um turno com tarifa positiva para simular.' unless turno&.preco&.positive?
   end
   private_class_method :validar_parametros!
 
   # Retorna o modo exigido pelo cenário ou preserva o +modo+ recebido
   def self.modo_do_cenario(modo, cenario)
-    return "fastpass" if cenario == "fora_janela"
-    return "normal" if cenario == "modo_comum"
+    return 'fastpass' if cenario == 'fora_janela'
+    return 'normal' if cenario == 'modo_comum'
 
     modo
   end
@@ -51,7 +51,8 @@ class SimulacaoTerminalService
   def self.validar_estudante_encontrado!(estudante)
     return if estudante
 
-    raise ArgumentError, "Nenhum estudante cadastrado atende ao cenário. Verifique saldo, inscrição e janela FastPass do turno."
+    raise ArgumentError,
+          'Nenhum estudante cadastrado atende ao cenário. Verifique saldo, inscrição e janela FastPass do turno.'
   end
   private_class_method :validar_estudante_encontrado!
 
@@ -60,7 +61,7 @@ class SimulacaoTerminalService
   # +matricula+ determina a origem "informada" ou "automatica"
   # A janela é nil no modo normal
   def self.montar_resultado(estudante, inscricao, catraca, turno, modo, matricula, agora)
-    if modo == "fastpass"
+    if modo == 'fastpass'
       janela = inscricao&.time_frame
       validacao = validar_fastpass(estudante, inscricao, catraca, turno, janela, agora)
     else
@@ -68,7 +69,7 @@ class SimulacaoTerminalService
     end
 
     Resultado.new(validacao: validacao, modo: modo, janela: janela,
-      origem_leitura: matricula.present? ? "informada" : "automatica")
+                  origem_leitura: matricula.present? ? 'informada' : 'automatica')
   end
   private_class_method :montar_resultado
 
@@ -78,7 +79,7 @@ class SimulacaoTerminalService
   # Retorna o resultado fornecido pelo ValidacaoFastpassService.
   def self.validar_fastpass(estudante, inscricao, catraca, turno, janela, agora)
     # O toggle afeta somente esta leitura; não reconfigura a catraca no banco.
-    catraca.modo_acesso = "fastpass"
+    catraca.modo_acesso = 'fastpass'
     validacao = ValidacaoFastpassService.call(
       usuario: estudante, catraca: catraca, turno: turno,
       inscricao: inscricao, time_frame: janela,
@@ -97,9 +98,9 @@ class SimulacaoTerminalService
     autorizado = estudante.saldo_suficiente_para?(turno)
     acesso = Acesso.create!(
       usuario: estudante, catraca: catraca, turno: turno, data_hora: agora,
-      status: autorizado ? "pendente" : "bloqueado", valor_debitado: 0
+      status: autorizado ? 'pendente' : 'bloqueado', valor_debitado: 0
     )
-    validacao = ValidacaoFastpassService::Resultado.new(
+    ValidacaoFastpassService::Resultado.new(
       autorizado: autorizado, motivo: autorizado ? :autorizado : :saldo_insuficiente,
       acesso: acesso, confirmado: false
     )
@@ -111,7 +112,7 @@ class SimulacaoTerminalService
   # Na seleção automática normal, a inscrição é nil
   def self.localizar_leitura(turno, modo, cenario, matricula, agora)
     return localizar_por_matricula(matricula, turno, agora) if matricula.present?
-    return [selecionar_estudante_normal(turno, cenario), nil] if modo == "normal"
+    return [selecionar_estudante_normal(turno, cenario), nil] if modo == 'normal'
 
     inscricao = selecionar_inscricao_fastpass(turno, cenario, agora)
     [inscricao&.usuario, inscricao]
@@ -119,19 +120,19 @@ class SimulacaoTerminalService
   private_class_method :localizar_leitura
 
   # Retorna estudantes, excluindo matrículas reservadas a funcionários/admin
-  def self.estudantes_cadastrados()
-    Usuario.where(perfil: "estudante").where.not("matricula LIKE ?", "999%")
+  def self.estudantes_cadastrados
+    Usuario.where(perfil: 'estudante').where.not('matricula LIKE ?', '999%')
   end
   private_class_method :estudantes_cadastrados
 
   # Retorna inscrições contempladas da data de +agora+ e do +turno+, por ID
   def self.inscricoes_do_turno(turno, agora)
     InscricaoFastpass.joins(:sorteio, :time_frame, :usuario)
-                                 .where(resultado: InscricaoFastpass::RESULTADO_GANHOU,
-                                        sorteios: { data: agora.to_date },
-                                        time_frames: { turno_id: turno.id },
-                                        usuarios: { perfil: "estudante" })
-                                 .includes(:usuario, :time_frame).order(:id)
+                     .where(resultado: InscricaoFastpass::RESULTADO_GANHOU,
+                            sorteios: { data: agora.to_date },
+                            time_frames: { turno_id: turno.id },
+                            usuarios: { perfil: 'estudante' })
+                     .includes(:usuario, :time_frame).order(:id)
   end
   private_class_method :inscricoes_do_turno
 
@@ -140,7 +141,7 @@ class SimulacaoTerminalService
   # Retorna [Usuario, InscricaoFastpass], com inscrição possivelmente nil
   def self.localizar_por_matricula(matricula, turno, agora)
     estudante = estudantes_cadastrados.find_by(matricula: matricula)
-    raise ArgumentError, "Não existe estudante cadastrado com a matrícula lida." unless estudante
+    raise ArgumentError, 'Não existe estudante cadastrado com a matrícula lida.' unless estudante
 
     candidatas = inscricoes_do_turno(turno, agora).where(usuario_matricula: estudante.matricula).to_a
     inscricao = candidatas.find do |item|
@@ -153,7 +154,7 @@ class SimulacaoTerminalService
   # Retorna o primeiro estudante por matrícula cujo saldo corresponde ao cenário.
   def self.selecionar_estudante_normal(turno, cenario)
     estudantes_cadastrados.where("saldo #{comparacao_saldo(cenario)} ?", turno.preco)
-      .order(:matricula).first
+                          .order(:matricula).first
   end
   private_class_method :selecionar_estudante_normal
 
@@ -170,13 +171,13 @@ class SimulacaoTerminalService
   # "fora_janela" exige estar fora do intervalo; os demais cenários, dentro.
   def self.candidato_fastpass?(inscricao, cenario, agora)
     dentro = ValidacaoFastpassService.dentro_da_janela?(inscricao.time_frame, agora)
-    inscricao.usuario.estudante? && (cenario == "fora_janela" ? !dentro : dentro)
+    inscricao.usuario.estudante? && (cenario == 'fora_janela' ? !dentro : dentro)
   end
   private_class_method :candidato_fastpass?
 
   # Retorna um operador SQL fixo para selecionar saldo insuficiente ou suficiente.
   def self.comparacao_saldo(cenario)
-    cenario == "sem_saldo" ? "<" : ">="
+    cenario == 'sem_saldo' ? '<' : '>='
   end
   private_class_method :comparacao_saldo
 end

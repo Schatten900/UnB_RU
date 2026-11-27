@@ -5,7 +5,7 @@ class ExtratoRefeicoesController < ApplicationController
   before_action :exigir_estudante
 
   rescue_from ArgumentError do |erro|
-    if action_name == "exportar" || params[:mes_referencia].present?
+    if action_name == 'exportar' || params[:mes_referencia].present?
       render plain: "Filtro inválido: #{erro.message}", status: :bad_request
     else
       redirect_to student_extrato_refeicoes_path, alert: erro.message
@@ -28,7 +28,7 @@ class ExtratoRefeicoesController < ApplicationController
   def exportar
     documento = ExportacaoHistoricoPdfService.call(usuario: usuario_atual, filtros: parametros_filtros)
     send_data documento.conteudo, filename: documento.nome_arquivo,
-              type: documento.tipo_mime, disposition: "attachment"
+                                  type: documento.tipo_mime, disposition: 'attachment'
   end
 
   # Exibe ou envia em PDF o comprovante de um lançamento da própria conta.
@@ -58,10 +58,10 @@ class ExtratoRefeicoesController < ApplicationController
   # Lança ActiveRecord::RecordNotFound para tipos ou registros inválidos.
   def localizar_lancamento_recibo
     case params[:tipo]
-    when "refeicao"
+    when 'refeicao'
       acesso = usuario_atual.historico_refeicoes.includes(catraca: :restaurante).find(params[:id])
       ExtratoRefeicoesService.lancamento_refeicao(acesso)
-    when "recarga"
+    when 'recarga'
       recarga = usuario_atual.extrato_recargas.concluida.find(params[:id])
       ExtratoRefeicoesService.lancamento_recarga(recarga)
     else
@@ -79,12 +79,12 @@ class ExtratoRefeicoesController < ApplicationController
   # Gera e envia o comprovante do lançamento como anexo PDF.
   def enviar_recibo_pdf
     documento = GeradorPdfHistorico.call(
-      usuario: usuario_atual, lancamentos: [@lancamento], titulo: "Comprovante de lançamento"
+      usuario: usuario_atual, lancamentos: [@lancamento], titulo: 'Comprovante de lançamento'
     )
     send_data documento.conteudo,
               filename: nome_arquivo_recibo,
               type: documento.tipo_mime,
-              disposition: "attachment"
+              disposition: 'attachment'
   end
 
   # Retorna o nome do PDF usando o tipo e o identificador do lançamento.
@@ -95,7 +95,7 @@ class ExtratoRefeicoesController < ApplicationController
   # Disponibiliza os filtros de +extrato+ e os restaurantes para a view.
   def carregar_filtros_extrato(extrato)
     @filtros = extrato.filtros
-    @periodo = @filtros.fetch("periodo")
+    @periodo = @filtros.fetch('periodo')
     @restaurantes = Restaurante.order(:nome)
   end
 
@@ -127,10 +127,10 @@ class ExtratoRefeicoesController < ApplicationController
   def exigir_estudante
     return if usuario_atual&.estudante?
 
-    if usuario_atual && action_name == "exportar"
+    if usuario_atual && action_name == 'exportar'
       head :forbidden
     else
-      redirect_to login_path, alert: "Acesso restrito a estudantes."
+      redirect_to login_path, alert: 'Acesso restrito a estudantes.'
     end
   end
 

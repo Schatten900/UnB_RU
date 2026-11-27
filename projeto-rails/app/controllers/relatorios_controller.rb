@@ -22,16 +22,16 @@ class RelatoriosController < ApplicationController
 
     # FastPass é identificado pela inscrição vinculada ao acesso.
     @total_fastpass = @acessos_concluidos
-      .where.not(inscricao_fastpass_id: nil)
-      .count
+                      .where.not(inscricao_fastpass_id: nil)
+                      .count
 
     @total_comum = @total_acessos - @total_fastpass
 
     @ticket_medio = if @total_acessos.positive?
-      @arrecadacao_global / @total_acessos
-    else
-      0
-    end
+                      @arrecadacao_global / @total_acessos
+                    else
+                      0
+                    end
 
     # Quantidade de catracas cadastradas.
     @total_catracas = Catraca.count
@@ -40,14 +40,14 @@ class RelatoriosController < ApplicationController
     @estatisticas_restaurantes = {}
 
     dados_restaurantes = @acessos_concluidos
-      .joins(:catraca)
-      .group("catracas.restaurante_id")
-      .pluck(
-        "catracas.restaurante_id",
-        Arel.sql("COUNT(acessos.id)"),
-        Arel.sql("COUNT(acessos.inscricao_fastpass_id)"),
-        Arel.sql("COALESCE(SUM(acessos.valor_debitado), 0)")
-      )
+                         .joins(:catraca)
+                         .group('catracas.restaurante_id')
+                         .pluck(
+                           'catracas.restaurante_id',
+                           Arel.sql('COUNT(acessos.id)'),
+                           Arel.sql('COUNT(acessos.inscricao_fastpass_id)'),
+                           Arel.sql('COALESCE(SUM(acessos.valor_debitado), 0)')
+                         )
 
     dados_restaurantes.each do |restaurante_id, acessos, fastpass, arrecadacao|
       @estatisticas_restaurantes[restaurante_id] = {
@@ -61,12 +61,12 @@ class RelatoriosController < ApplicationController
     @estatisticas_turnos = {}
 
     dados_turnos = @acessos_concluidos
-      .group(:turno_id)
-      .pluck(
-        :turno_id,
-        Arel.sql("COUNT(acessos.id)"),
-        Arel.sql("COALESCE(SUM(acessos.valor_debitado), 0)")
-      )
+                   .group(:turno_id)
+                   .pluck(
+                     :turno_id,
+                     Arel.sql('COUNT(acessos.id)'),
+                     Arel.sql('COALESCE(SUM(acessos.valor_debitado), 0)')
+                   )
 
     dados_turnos.each do |turno_id, acessos, arrecadacao|
       @estatisticas_turnos[turno_id] = {
@@ -79,12 +79,11 @@ class RelatoriosController < ApplicationController
   private
 
   def exigir_administrador!
-    unless current_usuario&.administrador?
-      redirect_to root_path, alert: "Acesso restrito a administradores."
-    end
+    return if current_usuario&.administrador?
+
+    redirect_to root_path, alert: 'Acesso restrito a administradores.'
   end
 end
 
-
-#AI ChatGPT web
-#Prompt and Strategy: provided pertinent files, asked help in natural language to integrate the relatorios part with the backend
+# AI ChatGPT web
+# Prompt and Strategy: provided pertinent files, asked help in natural language to integrate the relatorios part with the backend

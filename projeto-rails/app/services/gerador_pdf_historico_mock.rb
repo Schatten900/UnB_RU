@@ -12,7 +12,7 @@ class GeradorPdfHistoricoMock
     Resultado.new(
       simulado: true,
       nome_arquivo: "historico_#{usuario.matricula}_mock.txt",
-      tipo_mime: "text/plain",
+      tipo_mime: 'text/plain',
       conteudo: "Exportacao simulada - nenhum PDF foi gerado.\n" \
                 "Matricula: #{usuario.matricula}\n" \
                 "Total de lancamentos: #{lancamentos.size}\n",

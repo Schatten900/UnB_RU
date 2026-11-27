@@ -1,4 +1,4 @@
-#turnos_controller.rb
+# turnos_controller.rb
 module Api
   class TurnosController < ApplicationController
     before_action :authenticate_usuario!
@@ -35,7 +35,7 @@ module Api
       else
         render json: {
           erros: turno.errors.full_messages
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       end
     end
 
@@ -54,18 +54,18 @@ module Api
       else
         render json: {
           erros: turno.errors.full_messages
-        }, status: :unprocessable_entity
+        }, status: :unprocessable_content
       end
     end
 
     private
 
     def require_funcionario
-      unless current_usuario.funcionario? || current_usuario.administrador?
-        render json: {
-          erro: "Você não tem permissões para esta funcionalidade"
-        }, status: :forbidden
-      end
+      return if current_usuario.funcionario? || current_usuario.administrador?
+
+      render json: {
+        erro: 'Você não tem permissões para esta funcionalidade'
+      }, status: :forbidden
     end
 
     def turno_params
@@ -78,5 +78,5 @@ module Api
     end
   end
 end
-#AI: GPT desktop, no think
-#Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb
+# AI: GPT desktop, no think
+# Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb

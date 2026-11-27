@@ -1,4 +1,3 @@
-
 # models/usuario.rb
 
 ##
@@ -12,7 +11,7 @@
 # A matrícula é utilizada como chave primária do registro.
 #
 class Usuario < ApplicationRecord
-  require "bcrypt"
+  require 'bcrypt'
 
   self.primary_key = :matricula
 
@@ -23,17 +22,17 @@ class Usuario < ApplicationRecord
   # de referência. Quando um usuário é excluído, suas recargas
   # também são excluídas.
   has_many :recargas,
-    foreign_key: :usuario_matricula,
-    primary_key: :matricula,
-    dependent: :destroy
+           foreign_key: :usuario_matricula,
+           primary_key: :matricula,
+           dependent: :destroy
 
   ##
   # Associação com os registros de acesso do usuário.
   #
   # Utiliza a matrícula para localizar os acessos correspondentes.
   has_many :acessos,
-    foreign_key: :usuario_matricula,
-    primary_key: :matricula
+           foreign_key: :usuario_matricula,
+           primary_key: :matricula
 
   ##
   # Associação opcional com o turno do usuário.
@@ -46,9 +45,9 @@ class Usuario < ApplicationRecord
   ##
   # Valida a presença, unicidade e formato numérico da matrícula.
   validates :matricula,
-    presence: true,
-    uniqueness: true,
-    format: { with: /\A\d{9}\z/ }
+            presence: true,
+            uniqueness: true,
+            format: { with: /\A\d{9}\z/ }
 
   ##
   # Valida a presença do nome do usuário.
@@ -78,7 +77,7 @@ class Usuario < ApplicationRecord
   # Efeito colateral: Não modifica atributos nem registros
   # do banco de dados.
   def administrador?
-    matricula.to_s.start_with?("9999")
+    matricula.to_s.start_with?('9999')
   end
 
   ##
@@ -94,7 +93,7 @@ class Usuario < ApplicationRecord
   # Efeito colateral: Não modifica atributos nem registros
   # do banco de dados.
   def funcionario?
-    matricula.to_s.start_with?("999") && !administrador?
+    matricula.to_s.start_with?('999') && !administrador?
   end
 
   ##
@@ -242,11 +241,11 @@ class Usuario < ApplicationRecord
   def definir_perfil
     self.perfil =
       if administrador?
-        "administrador"
+        'administrador'
       elsif funcionario?
-        "funcionario"
+        'funcionario'
       else
-        "estudante"
+        'estudante'
       end
   end
 end

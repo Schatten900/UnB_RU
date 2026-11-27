@@ -1,18 +1,18 @@
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Acesso, type: :model do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:turno) do
-    Turno.create!(nome: "Almoço", inicio: "11:00", fim: "14:30", preco: "4.50")
+    Turno.create!(nome: 'Almoço', inicio: '11:00', fim: '14:30', preco: '4.50')
   end
 
   def criar_acesso(matricula:, saldo:)
     Usuario.create!(
       matricula: matricula,
       nome: "Estudante #{matricula}",
-      senha_hash: "senha-hash",
-      perfil: "estudante",
+      senha_hash: 'senha-hash',
+      perfil: 'estudante',
       saldo: saldo
     )
 
@@ -28,18 +28,18 @@ RSpec.describe Acesso, type: :model do
       turno: turno,
       catraca_id: catraca_id,
       data_hora: Time.current,
-      status: "pendente",
+      status: 'pendente',
       passagem_em: nil,
       valor_debitado: 0
     )
   end
 
-  describe "#liberacao_permitida?" do
+  describe '#liberacao_permitida?' do
     [
-      ["saldo suficiente", "221012345", "15.50", true],
-      ["saldo igual ao preço", "250000001", "4.50", true],
-      ["saldo insuficiente", "251123339", "3.50", false],
-      ["saldo zerado", "232421234", "0.00", false]
+      ['saldo suficiente', '221012345', '15.50', true],
+      ['saldo igual ao preço', '250000001', '4.50', true],
+      ['saldo insuficiente', '251123339', '3.50', false],
+      ['saldo zerado', '232421234', '0.00', false]
     ].each do |cenario, matricula, saldo, permitido|
       it "retorna #{permitido} para #{cenario} sem debitar antes da passagem" do
         acesso = criar_acesso(matricula: matricula, saldo: saldo)
@@ -52,13 +52,13 @@ RSpec.describe Acesso, type: :model do
     end
   end
 
-  describe "#confirmar_passagem!" do
-    it "confirma uma única passagem para o mesmo FastPass mesmo com duas leituras pendentes" do
-      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+  describe '#confirmar_passagem!' do
+    it 'confirma uma única passagem para o mesmo FastPass mesmo com duas leituras pendentes' do
+      acesso = criar_acesso(matricula: '221012345', saldo: '15.50')
       inscricao = InscricaoFastpass.create!(usuario: acesso.usuario,
-        sorteio: Sorteio.create!(data: Date.current, status: "concluido"),
-        time_frame: turno.time_frames.create!(inicio: "12:00", fim: "12:15"),
-        catraca: acesso.catraca, resultado: "ganhou")
+                                            sorteio: Sorteio.create!(data: Date.current, status: 'concluido'),
+                                            time_frame: turno.time_frames.create!(inicio: '12:00', fim: '12:15'),
+                                            catraca: acesso.catraca, resultado: 'ganhou')
       acesso.update!(inscricao_fastpass_id: inscricao.id)
       outra_leitura = acesso.dup
       outra_leitura.save!
@@ -70,8 +70,8 @@ RSpec.describe Acesso, type: :model do
       expect(acesso.catraca.restaurante.reload.faturamento).to eq(4.5)
     end
 
-    it "não debita novamente ao confirmar usando outra instância do mesmo acesso" do
-      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
+    it 'não debita novamente ao confirmar usando outra instância do mesmo acesso' do
+      acesso = criar_acesso(matricula: '221012345', saldo: '15.50')
       segunda_instancia = described_class.find(acesso.id)
 
       expect(acesso.confirmar_passagem!).to be(true)
@@ -79,9 +79,9 @@ RSpec.describe Acesso, type: :model do
       expect(acesso.usuario.reload.saldo).to eq(11.to_d)
     end
 
-    it "não confirma uma tentativa bloqueada" do
-      acesso = criar_acesso(matricula: "221012345", saldo: "15.50")
-      acesso.update!(status: "bloqueado")
+    it 'não confirma uma tentativa bloqueada' do
+      acesso = criar_acesso(matricula: '221012345', saldo: '15.50')
+      acesso.update!(status: 'bloqueado')
 
       expect(acesso.confirmar_passagem!).to be(false)
       expect(acesso.reload.passagem_em).to be_nil
@@ -89,8 +89,8 @@ RSpec.describe Acesso, type: :model do
     end
 
     [
-      ["221012345", "15.50", "11.00"],
-      ["231045229", "45.00", "40.50"]
+      ['221012345', '15.50', '11.00'],
+      ['231045229', '45.00', '40.50']
     ].each do |matricula, saldo_inicial, saldo_final|
       it "debita R$ 4,50 na passagem e altera o saldo de #{saldo_inicial} para #{saldo_final}" do
         acesso = criar_acesso(matricula: matricula, saldo: saldo_inicial)
@@ -100,7 +100,7 @@ RSpec.describe Acesso, type: :model do
 
           expect(acesso.usuario.reload.saldo).to eq(BigDecimal(saldo_final))
           expect(acesso.reload.passagem_em).to eq(Time.current)
-          expect(acesso.valor_debitado).to eq(BigDecimal("4.50"))
+          expect(acesso.valor_debitado).to eq(BigDecimal('4.50'))
         end
       end
     end

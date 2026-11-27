@@ -1,4 +1,4 @@
-#app/services/recargas/criar_recarga
+# app/services/recargas/criar_recarga
 
 module Recargas
   class CriarRecarga
@@ -22,7 +22,7 @@ module Recargas
           data_hora: Time.current
         )
 
-        if @metodo == "pix"
+        if @metodo == 'pix'
           recarga.update!(
             codigo_pix: "PIX-MOCK-#{recarga.id}-#{SecureRandom.hex(4)}"
           )
@@ -34,5 +34,5 @@ module Recargas
   end
 end
 
-#AI: GPT desktop, no think
-#Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb
+# AI: GPT desktop, no think
+# Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb

@@ -11,9 +11,7 @@ class ConfirmacaoPassagemFastpassService
     resultado.acesso.with_lock do
       validar_tentativa!(resultado)
 
-      unless resultado.acesso.confirmar_passagem!(agora: agora)
-        raise SaldoInsuficiente
-      end
+      raise SaldoInsuficiente unless resultado.acesso.confirmar_passagem!(agora: agora)
     end
 
     resultado.confirmado = true
@@ -24,10 +22,9 @@ class ConfirmacaoPassagemFastpassService
   # Retorna nil ou lança erro; não altera registros.
   def self.validar_tentativa!(resultado)
     raise PassagemJaConfirmada if resultado.confirmado? || resultado.acesso.passagem_em.present?
-    unless resultado.autorizado? && resultado.acesso.status == "pendente"
-      raise PassagemNaoAutorizada
-    end
+    return if resultado.autorizado? && resultado.acesso.status == 'pendente'
+
+    raise PassagemNaoAutorizada
   end
   private_class_method :validar_tentativa!
-
 end

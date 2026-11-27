@@ -2,17 +2,17 @@ class ExtratoRefeicoesService
   FILTROS = %w[periodo mes_referencia evento restaurante_id metodo].freeze
   METODOS = %w[comum fastpass pix cartao_credito].freeze
   REFEICOES = {
-    "cafe_da_manha" => %w[cafe_da_manha],
-    "almoco" => %w[almoco],
-    "jantar" => %w[jantar]
+    'cafe_da_manha' => %w[cafe_da_manha],
+    'almoco' => %w[almoco],
+    'jantar' => %w[jantar]
   }.freeze
   Resultado = Struct.new(:lancamentos, :resumo, :filtros, keyword_init: true)
 
   def self.call(usuario:, filtros: {}, agora: Time.current)
-    raise ArgumentError, "Estudante não informado." unless usuario&.matricula.present?
+    raise ArgumentError, 'Estudante não informado.' unless usuario&.matricula.present?
 
     filtros = normalizar_filtros(filtros)
-    agora = agora.in_time_zone("America/Sao_Paulo")
+    agora = agora.in_time_zone('America/Sao_Paulo')
     acessos = usuario.historico_refeicoes.includes(catraca: :restaurante)
     recargas = usuario.extrato_recargas.concluida
     mes = agora.beginning_of_month..agora
@@ -23,13 +23,13 @@ class ExtratoRefeicoesService
       quantidade_recargas_mes: recargas.where(data_hora: mes).count
     }
 
-    inicio = case filtros["periodo"]
-    when "30" then (agora - 29.days).beginning_of_day
-    when "mes" then agora.beginning_of_month
-    end
-    if filtros["mes_referencia"]
-      referencia = Date.strptime(filtros["mes_referencia"], "%Y-%m")
-      intervalo = referencia.in_time_zone("America/Sao_Paulo")...referencia.next_month.in_time_zone("America/Sao_Paulo")
+    inicio = case filtros['periodo']
+             when '30' then (agora - 29.days).beginning_of_day
+             when 'mes' then agora.beginning_of_month
+             end
+    if filtros['mes_referencia']
+      referencia = Date.strptime(filtros['mes_referencia'], '%Y-%m')
+      intervalo = referencia.in_time_zone('America/Sao_Paulo')...referencia.next_month.in_time_zone('America/Sao_Paulo')
       acessos = acessos.where(passagem_em: intervalo)
       recargas = recargas.where(data_hora: intervalo)
     elsif inicio
@@ -37,34 +37,34 @@ class ExtratoRefeicoesService
       recargas = recargas.where(data_hora: inicio..agora)
     end
 
-    if REFEICOES.key?(filtros["evento"])
-      nomes = REFEICOES.fetch(filtros["evento"])
-      turnos = Turno.all.select { |turno| nomes.include?(turno.nome.parameterize(separator: "_")) }
+    if REFEICOES.key?(filtros['evento'])
+      nomes = REFEICOES.fetch(filtros['evento'])
+      turnos = Turno.all.select { |turno| nomes.include?(turno.nome.parameterize(separator: '_')) }
       acessos = acessos.where(turno_id: turnos.map(&:id))
       recargas = recargas.none
-    elsif filtros["evento"] == "recarga"
+    elsif filtros['evento'] == 'recarga'
       acessos = acessos.none
-    elsif filtros["evento"] == "refeicao"
+    elsif filtros['evento'] == 'refeicao'
       recargas = recargas.none
-    elsif filtros["evento"].to_s.start_with?("turno:")
-      acessos = acessos.where(turno_id: filtros["evento"].delete_prefix("turno:"))
-      recargas = recargas.none
-    end
-
-    if filtros["restaurante_id"].present?
-      acessos = acessos.joins(:catraca).where(catracas: { restaurante_id: filtros["restaurante_id"] })
+    elsif filtros['evento'].to_s.start_with?('turno:')
+      acessos = acessos.where(turno_id: filtros['evento'].delete_prefix('turno:'))
       recargas = recargas.none
     end
 
-    case filtros["metodo"]
-    when "comum"
+    if filtros['restaurante_id'].present?
+      acessos = acessos.joins(:catraca).where(catracas: { restaurante_id: filtros['restaurante_id'] })
+      recargas = recargas.none
+    end
+
+    case filtros['metodo']
+    when 'comum'
       acessos = acessos.where(inscricao_fastpass_id: nil)
       recargas = recargas.none
-    when "fastpass"
+    when 'fastpass'
       acessos = acessos.where.not(inscricao_fastpass_id: nil)
       recargas = recargas.none
-    when "pix", "cartao_credito"
-      recargas = recargas.where(metodo: filtros["metodo"])
+    when 'pix', 'cartao_credito'
+      recargas = recargas.where(metodo: filtros['metodo'])
       acessos = acessos.none
     end
 
@@ -77,12 +77,12 @@ class ExtratoRefeicoesService
   def self.lancamento_refeicao(acesso)
     {
       id: "acesso-#{acesso.id}", registro_id: acesso.id, data_hora: acesso.passagem_em,
-      tipo: "refeicao", nome: acesso.turno.nome, turno_id: acesso.turno_id,
+      tipo: 'refeicao', nome: acesso.turno.nome, turno_id: acesso.turno_id,
       restaurante_id: acesso.catraca.restaurante_id,
       local: "#{acesso.catraca.restaurante.nome} · Piso #{acesso.catraca.piso}",
       detalhe: "Catraca #{acesso.catraca_id} · #{acesso.status.humanize}",
-      metodo: acesso.inscricao_fastpass_id ? "fastpass" : "comum",
-      metodo_nome: acesso.inscricao_fastpass_id ? "FastPass" : "Comum",
+      metodo: acesso.inscricao_fastpass_id ? 'fastpass' : 'comum',
+      metodo_nome: acesso.inscricao_fastpass_id ? 'FastPass' : 'Comum',
       valor: acesso.valor_debitado
     }
   end
@@ -90,32 +90,33 @@ class ExtratoRefeicoesService
   def self.lancamento_recarga(recarga)
     {
       id: "recarga-#{recarga.id}", registro_id: recarga.id, data_hora: recarga.data_hora,
-      tipo: "recarga", nome: "Recarga de Saldo",
-      local: recarga.pix? ? "Pagamento via PIX" : "Pagamento via cartão",
-      detalhe: "Recarga concluída", metodo: recarga.metodo,
-      metodo_nome: recarga.pix? ? "PIX" : "Cartão de crédito", valor: recarga.valor
+      tipo: 'recarga', nome: 'Recarga de Saldo',
+      local: recarga.pix? ? 'Pagamento via PIX' : 'Pagamento via cartão',
+      detalhe: 'Recarga concluída', metodo: recarga.metodo,
+      metodo_nome: recarga.pix? ? 'PIX' : 'Cartão de crédito', valor: recarga.valor
     }
   end
 
   def self.normalizar_filtros(filtros)
-    dados = filtros.to_h.stringify_keys.slice(*FILTROS).transform_values { |valor| valor.to_s.strip }.reject { |_, valor| valor.blank? }
-    dados["periodo"] = dados["periodo"].presence_in(%w[30 mes todos]) || "30"
-    if dados["mes_referencia"]
-      referencia = dados["mes_referencia"]
-      unless /\A\d{4}-(?:0[1-9]|1[0-2])\z/.match?(referencia)
-        raise ArgumentError, "Mês inválido. Use AAAA-MM."
-      end
-      Date.strptime(referencia, "%Y-%m")
+    dados = filtros.to_h.stringify_keys.slice(*FILTROS).transform_values do |valor|
+      valor.to_s.strip
+    end.reject { |_, valor| valor.blank? }
+    dados['periodo'] = dados['periodo'].presence_in(%w[30 mes todos]) || '30'
+    if dados['mes_referencia']
+      referencia = dados['mes_referencia']
+      raise ArgumentError, 'Mês inválido. Use AAAA-MM.' unless /\A\d{4}-(?:0[1-9]|1[0-2])\z/.match?(referencia)
+
+      Date.strptime(referencia, '%Y-%m')
     end
-    if dados["evento"].present? && !REFEICOES.key?(dados["evento"]) && !%w[recarga refeicao].include?(dados["evento"]) && !/\Aturno:[1-9]\d*\z/.match?(dados["evento"])
-      raise ArgumentError, "Selecione uma refeição válida."
+    if dados['evento'].present? && !REFEICOES.key?(dados['evento']) && !%w[recarga
+                                                                           refeicao].include?(dados['evento']) && !/\Aturno:[1-9]\d*\z/.match?(dados['evento'])
+      raise ArgumentError, 'Selecione uma refeição válida.'
     end
-    if dados["restaurante_id"].present? && !/\A[1-9]\d*\z/.match?(dados["restaurante_id"])
-      raise ArgumentError, "Selecione um restaurante válido."
+    if dados['restaurante_id'].present? && !/\A[1-9]\d*\z/.match?(dados['restaurante_id'])
+      raise ArgumentError, 'Selecione um restaurante válido.'
     end
-    if dados["metodo"].present? && !METODOS.include?(dados["metodo"])
-      raise ArgumentError, "Selecione um método válido."
-    end
+    raise ArgumentError, 'Selecione um método válido.' if dados['metodo'].present? && !METODOS.include?(dados['metodo'])
+
     dados
   end
 end
