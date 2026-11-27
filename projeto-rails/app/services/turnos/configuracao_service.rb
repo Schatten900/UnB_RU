@@ -50,14 +50,14 @@ module Turnos
       normalizar_horarios!(dados)
       duracao = Integer(duracao_intervalo.to_s, 10)
       unless duracao.between?(1, DURACAO_MAXIMA)
-        raise ArgumentError, "A duracao das janelas deve estar entre 1 e 120 minutos."
+        raise ArgumentError, 'A duracao das janelas deve estar entre 1 e 120 minutos.'
       end
 
       duracao
-    rescue TypeError, ArgumentError => erro
-      raise erro if erro.message.start_with?("Informe horarios", "A duracao")
+    rescue TypeError, ArgumentError => e
+      raise e if e.message.start_with?('Informe horarios', 'A duracao')
 
-      raise ArgumentError, "A duracao das janelas deve ser um numero inteiro de minutos."
+      raise ArgumentError, 'A duracao das janelas deve ser um numero inteiro de minutos.'
     end
 
     # Valida e normaliza os horários do Hash dados recebido para HH:MM.
@@ -66,21 +66,22 @@ module Turnos
       inicio = dados[:inicio].to_s
       fim = dados[:fim].to_s
       unless HORARIO_VALIDO.match?(inicio) && HORARIO_VALIDO.match?(fim)
-        raise ArgumentError, "Informe horarios validos, com o fim posterior ao inicio."
+        raise ArgumentError, 'Informe horarios validos, com o fim posterior ao inicio.'
       end
+
       dados[:inicio] = inicio[0, 5]
       dados[:fim] = fim[0, 5]
-      unless dados[:inicio] < dados[:fim]
-        raise ArgumentError, "Informe horarios validos, com o fim posterior ao inicio."
-      end
+      return if dados[:inicio] < dados[:fim]
+
+      raise ArgumentError, 'Informe horarios validos, com o fim posterior ao inicio.'
     end
 
     # Compara o turno com os dados e a duração recebidos.
     # Retorna Boolean; consulta as janelas sem alterar registros.
     def self.regenerar_janelas?(turno, dados, duracao)
       turno.time_frames.empty? ||
-        turno.inicio.strftime("%H:%M") != dados.fetch(:inicio) ||
-        turno.fim.strftime("%H:%M") != dados.fetch(:fim) ||
+        turno.inicio.strftime('%H:%M') != dados.fetch(:inicio) ||
+        turno.fim.strftime('%H:%M') != dados.fetch(:fim) ||
         duracao_atual(turno) != duracao
     end
 
@@ -90,7 +91,7 @@ module Turnos
       return unless InscricaoFastpass.where(time_frame_id: turno.time_frames.select(:id)).exists?
 
       raise JanelasComInscricoes,
-            "Este turno possui inscricoes FastPass. Mantenha os horarios e as janelas atuais."
+            'Este turno possui inscricoes FastPass. Mantenha os horarios e as janelas atuais.'
     end
 
     private_class_method :validar!, :normalizar_horarios!, :regenerar_janelas?, :exigir_janelas_sem_inscricoes!

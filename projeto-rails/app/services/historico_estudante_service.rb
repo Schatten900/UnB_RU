@@ -1,6 +1,6 @@
 # Compatibilidade com os consumidores da consulta existente na sprint-2.
 class HistoricoEstudanteService
-  ZONA = "America/Sao_Paulo".freeze
+  ZONA = 'America/Sao_Paulo'.freeze
 
   # Consulta o histórico do usuário com os filtros e o horário de referência recebidos.
   # Retorna Array de lançamentos; consulta o banco sem gravar.

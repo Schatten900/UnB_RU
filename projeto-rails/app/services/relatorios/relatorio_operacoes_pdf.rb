@@ -1,17 +1,16 @@
-
 module Relatorios
   class RelatorioOperacoesPdf
     def self.generate
       Prawn::Document.new do |pdf|
         pdf.text(
-          "Relatório Global de Operações",
+          'Relatório Global de Operações',
           size: 20,
           style: :bold
         )
 
         pdf.move_down 20
 
-        pdf.text "RECARGAS", size: 16, style: :bold
+        pdf.text 'RECARGAS', size: 16, style: :bold
         pdf.move_down 10
 
         Recarga.includes(:usuario).find_each do |recarga|
@@ -27,7 +26,7 @@ module Relatorios
 
         pdf.move_down 20
 
-        pdf.text "ACESSOS", size: 16, style: :bold
+        pdf.text 'ACESSOS', size: 16, style: :bold
         pdf.move_down 10
 
         Acesso.includes(:usuario).find_each do |acesso|
@@ -43,5 +42,5 @@ module Relatorios
     end
   end
 end
-#AI: GPT desktop, no think
-#Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb
+# AI: GPT desktop, no think
+# Prompt and strategy: First, we warmed GPT up by asking for file structure given the proposed feature, then we asked for a code with our project's specs, this was consolidated with other .rb

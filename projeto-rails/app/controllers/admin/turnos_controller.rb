@@ -17,11 +17,11 @@ module Admin
         atributos: turno_params,
         duracao_intervalo: params[:duracao_intervalo]
       )
-      redirect_to admin_turnos_path(turno_id: turno.id), notice: "Turno cadastrado e janelas geradas."
-    rescue ActiveRecord::RecordInvalid => erro
-      redirect_to admin_turnos_path, alert: erro.record.errors.full_messages.to_sentence
-    rescue ArgumentError => erro
-      redirect_to admin_turnos_path, alert: erro.message
+      redirect_to admin_turnos_path(turno_id: turno.id), notice: 'Turno cadastrado e janelas geradas.'
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_turnos_path, alert: e.record.errors.full_messages.to_sentence
+    rescue ArgumentError => e
+      redirect_to admin_turnos_path, alert: e.message
     end
 
     # Atualiza o turno informado, preservando janelas com inscrições.
@@ -29,11 +29,11 @@ module Admin
     def update
       turno = Turno.find(params[:id])
       atualizar_turno(turno)
-      redirecionar_turno(turno.id, notice: "Configuracao do turno salva.")
-    rescue Turnos::ConfiguracaoService::JanelasComInscricoes, ArgumentError => erro
-      redirecionar_turno(params[:id], alert: erro.message)
-    rescue ActiveRecord::RecordInvalid => erro
-      redirecionar_turno(params[:id], alert: erro.record.errors.full_messages.to_sentence)
+      redirecionar_turno(turno.id, notice: 'Configuracao do turno salva.')
+    rescue Turnos::ConfiguracaoService::JanelasComInscricoes, ArgumentError => e
+      redirecionar_turno(params[:id], alert: e.message)
+    rescue ActiveRecord::RecordInvalid => e
+      redirecionar_turno(params[:id], alert: e.record.errors.full_messages.to_sentence)
     end
 
     private
@@ -65,7 +65,7 @@ module Admin
     def exigir_administrador
       return if usuario_atual&.administrador?
 
-      redirect_to login_path, alert: "Acesso restrito a administradores."
+      redirect_to login_path, alert: 'Acesso restrito a administradores.'
     end
 
     # Seleciona nome, horários e preço permitidos na requisição.

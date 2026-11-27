@@ -6,7 +6,7 @@ class VagasFastpassController < ApplicationController
 
   # Exibe as janelas e as cotas do restaurante na data solicitada.
   #
-  # Usa +restaurante_id+ para selecionar o restaurante e +data+ 
+  # Usa +restaurante_id+ para selecionar o restaurante e +data+
   # Sem esses parâmetros, utiliza o primeiro restaurante por nome e a data atual.
   # Redireciona para a grade com alerta quando a data é inválida.
   def index
@@ -15,7 +15,7 @@ class VagasFastpassController < ApplicationController
     @janelas = TimeFrame.includes(:turno).order(:inicio, :id)
     carregar_cotas
   rescue Date::Error
-    redirect_to admin_vagas_fastpass_path, alert: "Informe uma data válida."
+    redirect_to admin_vagas_fastpass_path, alert: 'Informe uma data válida.'
   end
 
   # Salva as cotas e retorna a grade do restaurante e da data selecionados.
@@ -38,8 +38,8 @@ class VagasFastpassController < ApplicationController
       cotas: parametros_cotas
     )
     redirecionar_cotas_salvas(restaurante)
-  rescue ArgumentError, ActiveRecord::RecordInvalid => erro
-    redirect_to admin_vagas_fastpass_path(restaurante_id: params[:restaurante_id]), alert: erro.message
+  rescue ArgumentError, ActiveRecord::RecordInvalid => e
+    redirect_to admin_vagas_fastpass_path(restaurante_id: params[:restaurante_id]), alert: e.message
   end
 
   # Executa o sorteio indicado em +sorteio_id+ e agenda a notificação do resultado.
@@ -53,9 +53,10 @@ class VagasFastpassController < ApplicationController
     FastPasses::RealizarSorteioService.call(sorteio: sorteio)
     NotificarFastPassJob.perform_later(sorteio.id)
     redirect_to admin_vagas_fastpass_path(data: sorteio.data, restaurante_id: params[:restaurante_id]),
-      notice: "Sorteio concluído para todos os restaurantes configurados. Resultados disponíveis aos estudantes."
-  rescue ArgumentError => erro
-    redirect_to admin_vagas_fastpass_path(data: sorteio&.data, restaurante_id: params[:restaurante_id]), alert: erro.message
+                notice: 'Sorteio concluído para todos os restaurantes configurados. Resultados disponíveis aos estudantes.'
+  rescue ArgumentError => e
+    redirect_to admin_vagas_fastpass_path(data: sorteio&.data, restaurante_id: params[:restaurante_id]),
+                alert: e.message
   end
 
   private
@@ -75,7 +76,7 @@ class VagasFastpassController < ApplicationController
     redirect_to admin_vagas_fastpass_path(
       restaurante_id: restaurante.id,
       data: params[:data]
-    ), notice: "Cotas salvas para o sorteio."
+    ), notice: 'Cotas salvas para o sorteio.'
   end
 
   # Disponibiliza os restaurantes e seleciona o solicitado em +restaurante_id+.
@@ -85,10 +86,10 @@ class VagasFastpassController < ApplicationController
   def carregar_restaurante
     @restaurantes = Restaurante.order(:nome)
     @restaurante = if params[:restaurante_id].present?
-      @restaurantes.find(params[:restaurante_id])
-    else
-      @restaurantes.first
-    end
+                     @restaurantes.find(params[:restaurante_id])
+                   else
+                     @restaurantes.first
+                   end
   end
 
   # Carrega o sorteio da data e as cotas do restaurante selecionado.
@@ -98,10 +99,10 @@ class VagasFastpassController < ApplicationController
   def carregar_cotas
     @sorteio = Sorteio.find_by(data: @data)
     @cotas = if @sorteio && @restaurante
-      @sorteio.cotas_do_restaurante(@restaurante).transform_keys(&:to_i)
-    else
-      {}
-    end
+               @sorteio.cotas_do_restaurante(@restaurante).transform_keys(&:to_i)
+             else
+               {}
+             end
 
     @cota_diaria = @cotas.values.sum
   end
@@ -111,6 +112,6 @@ class VagasFastpassController < ApplicationController
   def exigir_administrador
     return if usuario_atual&.administrador?
 
-    redirect_to login_path, alert: "Acesso não autorizado."
+    redirect_to login_path, alert: 'Acesso não autorizado.'
   end
 end

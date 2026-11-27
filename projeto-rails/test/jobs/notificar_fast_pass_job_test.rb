@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class NotificarFastPassJobTest < ActiveJob::TestCase
   # test "the truth" do

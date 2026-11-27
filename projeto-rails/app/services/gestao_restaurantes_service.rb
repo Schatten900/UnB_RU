@@ -31,7 +31,7 @@ class GestaoRestaurantesService
 
   # Cadastra catraca com usuário, restaurante, piso e modalidade recebidos.
   # Retorna Catraca ou lança erro; exige administrador e grava no banco.
-  def self.cadastrar_catraca(usuario:, restaurante:, piso:, modo_acesso: "normal")
+  def self.cadastrar_catraca(usuario:, restaurante:, piso:, modo_acesso: 'normal')
     exigir_administrador!(usuario)
     restaurante.catracas.create!(piso: piso, modo_acesso: modo_acesso)
   end
@@ -56,9 +56,9 @@ class GestaoRestaurantesService
   # Verifica a permissão administrativa do usuário recebido.
   # Retorna nil ou lança AcessoNegado; não altera registros.
   def self.exigir_administrador!(usuario)
-    return if usuario&.perfil == "administrador"
+    return if usuario&.perfil == 'administrador'
 
-    raise AcessoNegado, "Operacao restrita a administradores"
+    raise AcessoNegado, 'Operacao restrita a administradores'
   end
   private_class_method :exigir_administrador!
 end

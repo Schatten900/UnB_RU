@@ -3,19 +3,19 @@ class ExportacaoHistoricoPdfService
   # Aceita gerador e modelos opcionais; retorna o documento gerado e consulta o banco.
   def self.call(usuario:, mes: nil, ano: nil, filtros: {}, gerador_pdf: GeradorHistoricoPdf,
                 recargas_model: nil, acessos_model: nil)
-    raise ArgumentError, "Estudante não informado" if usuario&.matricula.blank?
+    raise ArgumentError, 'Estudante não informado' if usuario&.matricula.blank?
 
     # Compatibilidade com os consumidores que injetam modelos de consulta.
     if recargas_model || acessos_model
       return exportar_com_modelos(usuario: usuario, mes: mes, ano: ano,
-        gerador_pdf: gerador_pdf, recargas_model: recargas_model || Recarga,
-        acessos_model: acessos_model || Acesso)
+                                  gerador_pdf: gerador_pdf, recargas_model: recargas_model || Recarga,
+                                  acessos_model: acessos_model || Acesso)
     end
 
     filtros = filtros.to_h.stringify_keys
     if mes || ano
       referencia = Date.new(Integer(ano), Integer(mes), 1)
-      filtros["mes_referencia"] = referencia.strftime("%Y-%m")
+      filtros['mes_referencia'] = referencia.strftime('%Y-%m')
     end
     extrato = ExtratoRefeicoesService.call(usuario: usuario, filtros: filtros)
     gerador_pdf.call(usuario: usuario, lancamentos: extrato.lancamentos)
@@ -30,7 +30,7 @@ class ExportacaoHistoricoPdfService
     matricula = usuario.matricula
 
     recargas = recargas_model.where(
-      usuario_matricula: matricula, data_hora: inicio...fim, status: "concluida"
+      usuario_matricula: matricula, data_hora: inicio...fim, status: 'concluida'
     )
 
     registros_acesso = acessos_model.where(
@@ -47,7 +47,7 @@ class ExportacaoHistoricoPdfService
   # Retorna Array de Hash; pode carregar a consulta, sem alterar registros.
   def self.lancamentos_recargas(recargas)
     recargas.map do |recarga|
-      { tipo: "recarga", data_hora: recarga.data_hora, valor: recarga.valor }
+      { tipo: 'recarga', data_hora: recarga.data_hora, valor: recarga.valor }
     end
   end
 
@@ -55,7 +55,7 @@ class ExportacaoHistoricoPdfService
   # Retorna Array de Hash; pode carregar a consulta, sem alterar registros.
   def self.lancamentos_acessos(acessos)
     acessos.map do |acesso|
-      { tipo: "acesso", data_hora: acesso.passagem_em,
+      { tipo: 'acesso', data_hora: acesso.passagem_em,
         valor: acesso.valor_debitado, status: acesso.status }
     end
   end

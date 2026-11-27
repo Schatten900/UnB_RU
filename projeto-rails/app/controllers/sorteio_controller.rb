@@ -1,5 +1,2 @@
 class SorteioController < ApplicationController
-
-
-
 end

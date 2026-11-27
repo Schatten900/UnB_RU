@@ -11,6 +11,6 @@ class NotificacoesController < ApplicationController
   def exigir_estudante
     return if usuario_atual&.estudante?
 
-    redirect_to login_path, alert: "Acesso restrito a estudantes autenticados."
+    redirect_to login_path, alert: 'Acesso restrito a estudantes autenticados.'
   end
 end

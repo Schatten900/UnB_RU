@@ -1,13 +1,13 @@
 # spec/requests/autenticacao_spec.rb
 
-require "rails_helper"
+require 'rails_helper'
 
-RSpec.describe "Autenticacao", type: :request do
+RSpec.describe 'Autenticacao', type: :request do
   let(:turno) do
     Turno.create!(
-      nome: "Expediente",
-      inicio: "09:00",
-      fim: "17:00",
+      nome: 'Expediente',
+      inicio: '09:00',
+      fim: '17:00',
       preco: 0
     )
   end
@@ -15,37 +15,37 @@ RSpec.describe "Autenticacao", type: :request do
   def criar_usuario(matricula:, turno:)
     Usuario.create!(
       matricula: matricula,
-      nome: "Pessoa de teste",
-      senha: "senha-segura",
-      perfil: "estudante",
+      nome: 'Pessoa de teste',
+      senha: 'senha-segura',
+      perfil: 'estudante',
       turno: turno,
       saldo: 10
     )
   end
 
-  it "renderiza a tela de login" do
+  it 'renderiza a tela de login' do
     get login_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("login-form")
+    expect(response.body).to include('login-form')
   end
 
-  it "renderiza o login na raiz sem autenticação" do
+  it 'renderiza o login na raiz sem autenticação' do
     get root_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("login-form")
+    expect(response.body).to include('login-form')
   end
 
-  it "autentica estudante e direciona ao inicio" do
+  it 'autentica estudante e direciona ao inicio' do
     estudante = criar_usuario(
-      matricula: "232040501",
+      matricula: '232040501',
       turno: turno
     )
 
     post login_path, params: {
       matricula: estudante.matricula,
-      senha: "senha-segura"
+      senha: 'senha-segura'
     }
 
     expect(response).to redirect_to(student_inicio_path)
@@ -56,19 +56,19 @@ RSpec.describe "Autenticacao", type: :request do
     expect(response).to redirect_to(student_inicio_path)
   end
 
-  it "autentica funcionario dentro do turno e direciona a configuracao" do
+  it 'autentica funcionario dentro do turno e direciona a configuracao' do
     funcionario = criar_usuario(
-      matricula: "999123456",
+      matricula: '999123456',
       turno: turno
     )
 
     allow(Time).to receive(:current).and_return(
-      Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 12, 0)
+      Time.find_zone!('America/Sao_Paulo').local(2026, 10, 30, 12, 0)
     )
 
     post login_path, params: {
       matricula: funcionario.matricula,
-      senha: "senha-segura"
+      senha: 'senha-segura'
     }
 
     expect(response).to redirect_to(operator_ponto_configuracao_path)
@@ -79,15 +79,15 @@ RSpec.describe "Autenticacao", type: :request do
     expect(response).to redirect_to(operator_ponto_configuracao_path)
   end
 
-  it "autentica administrador e direciona à gestão de restaurantes, mantendo acesso à configuração" do
+  it 'autentica administrador e direciona à gestão de restaurantes, mantendo acesso à configuração' do
     administrador = criar_usuario(
-      matricula: "999912345",
+      matricula: '999912345',
       turno: turno
     )
 
     post login_path, params: {
       matricula: administrador.matricula,
-      senha: "senha-segura"
+      senha: 'senha-segura'
     }
 
     expect(response).to redirect_to(admin_restaurantes_path)
@@ -102,50 +102,50 @@ RSpec.describe "Autenticacao", type: :request do
     expect(response).to have_http_status(:ok)
   end
 
-  it "recusa credenciais incorretas sem criar sessao" do
+  it 'recusa credenciais incorretas sem criar sessao' do
     funcionario = criar_usuario(
-      matricula: "999123456",
+      matricula: '999123456',
       turno: turno
     )
 
     post login_path, params: {
       matricula: funcionario.matricula,
-      senha: "incorreta"
+      senha: 'incorreta'
     }
 
     expect(response).to have_http_status(:unauthorized)
     expect(session[:usuario_matricula]).to be_nil
   end
 
-  it "recusa login de funcionario fora do turno sem criar sessao" do
+  it 'recusa login de funcionario fora do turno sem criar sessao' do
     funcionario = criar_usuario(
-      matricula: "999123456",
+      matricula: '999123456',
       turno: turno
     )
     allow(Time).to receive(:current).and_return(
-      Time.find_zone!("America/Sao_Paulo").local(2026, 10, 30, 18, 0)
+      Time.find_zone!('America/Sao_Paulo').local(2026, 10, 30, 18, 0)
     )
 
     post login_path, params: {
       matricula: funcionario.matricula,
-      senha: "senha-segura"
+      senha: 'senha-segura'
     }
 
     expect(response).to have_http_status(:unauthorized)
     expect(session[:usuario_matricula]).to be_nil
   end
 
-  it "informa indisponibilidade sem estabelecer sessao" do
+  it 'informa indisponibilidade sem estabelecer sessao' do
     allow(AutenticacaoFuncionarioService).to receive(:call)
       .and_raise(ActiveRecord::ConnectionNotEstablished)
 
     post login_path, params: {
-      matricula: "999123456",
-      senha: "senha-segura"
+      matricula: '999123456',
+      senha: 'senha-segura'
     }
 
     expect(response).to have_http_status(:service_unavailable)
-    expect(response.body).to include("O serviço está indisponivel no momento")
+    expect(response.body).to include('O serviço está indisponivel no momento')
     expect(session[:usuario_matricula]).to be_nil
   end
 end

@@ -1,18 +1,16 @@
-=begin
-GENERATED/AIDED BY AI, USED AS TEMPLATE FOR OTHERS
-AI: Gemini
-prompt: Now I need to continue with this, AI is allowed and I will ask your help and credit you when needed, okay?
-Here is the following, now I need to do a Ruby based BDD, I Just want the first:
-(first sprint description + gherkin)
-output below:
-=end
+# GENERATED/AIDED BY AI, USED AS TEMPLATE FOR OTHERS
+# AI: Gemini
+# prompt: Now I need to continue with this, AI is allowed and I will ask your help and credit you when needed, okay?
+# Here is the following, now I need to do a Ruby based BDD, I Just want the first:
+# (first sprint description + gherkin)
+# output below:
 
 # features/step_definitions/add_credit_steps.rb
 
 Dado('que estou autenticado como estudante') do
   # Mock or set up a logged-in student session
-  @current_user = { role: :student, id: 250111111, balance: 0.00 }
-  entrar_aceitacao("250111111")
+  @current_user = { role: :student, id: 250_111_111, balance: 0.00 }
+  entrar_aceitacao('250111111')
   # In a real app using Capybara, you might visit a login page and fill credentials
 end
 
@@ -40,15 +38,13 @@ end
 Quando('eu confirmo o pagamento') do
   # Simulate form submission for a valid path
   @transaction = { method: @payment_method, amount: @amount, status: :pending }
-  if @amount > 0
-    @pix_code = "pix_hash_123456789"
-  end
+  @pix_code = 'pix_hash_123456789' if @amount > 0
 end
 
 Quando('eu envio o formulário') do
   # Simulate form submission for a sad path (invalid amount)
   if @amount <= 0
-    @error_message = "Por favor, insira um valor de crédito válido"
+    @error_message = 'Por favor, insira um valor de crédito válido'
     @transaction_created = false
   else
     @transaction_created = true
@@ -72,30 +68,26 @@ Então('eu devo ver uma mensagem de erro {string}') do |expected_message|
   expect(@error_message).to eq(expected_message)
 end
 
-
-
-=begin
-#language: en
+# #language: en
 # Feature: Add account credit via PIX or credit card
-  As a student
-  In order to have sufficient balance to access the university restaurant (RU)
-  I want to add credits to my account using PIX or a credit card
-
-  Background:
-    Given I am authenticated as a student
-    And I navigate to the add credit page
-
-  Scenario: Happy Path - Successfully add credit via PIX
-    When I select PIX as the payment method
-    And I enter the amount of "20.00"
-    And I confirm the payment
-    Then I should see a PIX payment code generated
-    And my pending balance should reflect the added amount
-
-  Scenario: Sad Path - Invalid credit amount
-    When I select credit card as the payment method
-    And I enter an invalid amount of "-5.00"
-    And I submit the form
-    Then a new transaction should not be created
-    And I should see an error message "Please enter a valid credit amount"
-=end
+#   As a student
+#   In order to have sufficient balance to access the university restaurant (RU)
+#   I want to add credits to my account using PIX or a credit card
+#
+#   Background:
+#     Given I am authenticated as a student
+#     And I navigate to the add credit page
+#
+#   Scenario: Happy Path - Successfully add credit via PIX
+#     When I select PIX as the payment method
+#     And I enter the amount of "20.00"
+#     And I confirm the payment
+#     Then I should see a PIX payment code generated
+#     And my pending balance should reflect the added amount
+#
+#   Scenario: Sad Path - Invalid credit amount
+#     When I select credit card as the payment method
+#     And I enter an invalid amount of "-5.00"
+#     And I submit the form
+#     Then a new transaction should not be created
+#     And I should see an error message "Please enter a valid credit amount"

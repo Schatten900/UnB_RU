@@ -11,10 +11,10 @@ class TerminalValidacaoController < ApplicationController
   rescue_from ArgumentError, ActiveRecord::RecordInvalid do |erro|
     render json: { erro: erro.message }, status: :unprocessable_content
   end
-  
+
   # Registro não encontrado
   rescue_from ActiveRecord::RecordNotFound do
-    render json: { erro: "Autorização inválida ou de outra catraca." }, status: :not_found
+    render json: { erro: 'Autorização inválida ou de outra catraca.' }, status: :not_found
   end
 
   # Exibe a tela do terminal.
@@ -33,32 +33,32 @@ class TerminalValidacaoController < ApplicationController
     acesso = confirmar_acesso(estudante)
 
     render json: dados_passagem_confirmada(acesso, estudante), status: :ok
-    rescue FastPasses::ConfirmarPassagemService::PassagemNegada => erro
-      render json: { sucesso: false, erro: erro.message },
-            status: :unprocessable_entity
-    rescue ActiveRecord::RecordNotUnique
-      render json: {
-        sucesso: false,
-        erro: "Este FastPass já foi utilizado."
-      }, status: :unprocessable_entity
+  rescue FastPasses::ConfirmarPassagemService::PassagemNegada => e
+    render json: { sucesso: false, erro: e.message },
+           status: :unprocessable_content
+  rescue ActiveRecord::RecordNotUnique
+    render json: {
+      sucesso: false,
+      erro: 'Este FastPass já foi utilizado.'
+    }, status: :unprocessable_content
   end
 
   # Verifica a configuração da catraca e a presença de +usuario_matricula+.
   #
-  # Retorna true se os dados estiverem presentes, caso contrário retorna um status 
+  # Retorna true se os dados estiverem presentes, caso contrário retorna um status
   # HTTP 422 (unprocessable_entity)
   def validar_dados_liberacao
     unless @catraca_operador
       render json: {
-        erro: "Nenhuma catraca está configurada para este terminal."
-      }, status: :unprocessable_entity
+        erro: 'Nenhuma catraca está configurada para este terminal.'
+      }, status: :unprocessable_content
       return false
     end
 
     if params[:usuario_matricula].blank?
       render json: {
-        erro: "Matrícula do estudante não informada."
-      }, status: :unprocessable_entity
+        erro: 'Matrícula do estudante não informada.'
+      }, status: :unprocessable_content
       return false
     end
 
@@ -72,7 +72,7 @@ class TerminalValidacaoController < ApplicationController
     estudante = Usuario.find_by(matricula: params[:usuario_matricula])
     return estudante if estudante
 
-    render json: { erro: "Estudante não encontrado." }, status: :not_found
+    render json: { erro: 'Estudante não encontrado.' }, status: :not_found
     nil
   end
 
@@ -95,7 +95,7 @@ class TerminalValidacaoController < ApplicationController
     {
       sucesso: true,
       mensagem: mensagem_passagem_confirmada(acesso),
-      horario: acesso.passagem_em.strftime("%H:%M"),
+      horario: acesso.passagem_em.strftime('%H:%M'),
       valor_debitado: acesso.valor_debitado,
       saldo_atual: estudante.reload.saldo
     }
@@ -106,8 +106,8 @@ class TerminalValidacaoController < ApplicationController
   # +acesso+ deve possuir a inscrição no FastPass.
   def mensagem_passagem_confirmada(acesso)
     janela = acesso.inscricao_fastpass.time_frame
-    inicio = janela.inicio.strftime("%H:%M")
-    fim = janela.fim.strftime("%H:%M")
+    inicio = janela.inicio.strftime('%H:%M')
+    fim = janela.fim.strftime('%H:%M')
 
     "Catraca liberada! Passagem confirmada entre #{inicio} e #{fim}."
   end
@@ -123,29 +123,29 @@ class TerminalValidacaoController < ApplicationController
     )
     responder(
       resultado.validacao.acesso, modo: resultado.modo, janela: resultado.janela,
-      autorizado: resultado.validacao.autorizado?, motivo: resultado.validacao.motivo,
-      origem_leitura: "informada"
+                                  autorizado: resultado.validacao.autorizado?, motivo: resultado.validacao.motivo,
+                                  origem_leitura: 'informada'
     )
   end
 
   # Executa a simulação do cenário ok
   def simular_ok
-    simular("ok")
+    simular('ok')
   end
 
   # Executa a simulação de leitura fora da janela de horário.
   def simular_fora_janela
-    simular("fora_janela")
+    simular('fora_janela')
   end
 
   # Executa a simulação de leitura com saldo insuficiente.
   def simular_sem_saldo
-    simular("sem_saldo")
+    simular('sem_saldo')
   end
 
   # Executa a simulação de leitura no modo de acesso comum.
   def simular_modo_comum
-    simular("modo_comum")
+    simular('modo_comum')
   end
 
   # Confirma uma passagem pendente usando o token recebido em +autorizacao+
@@ -156,18 +156,19 @@ class TerminalValidacaoController < ApplicationController
     acesso = Acesso.find_signed!(params[:autorizacao], purpose: finalidade_autorizacao)
     raise ActiveRecord::RecordNotFound unless acesso.catraca_id == @catraca_operador.id
 
-    if acesso.passagem_em || acesso.status != "pendente"
-      return render json: { erro: "Esta passagem já foi confirmada ou está bloqueada." }, status: :conflict
+    if acesso.passagem_em || acesso.status != 'pendente'
+      return render json: { erro: 'Esta passagem já foi confirmada ou está bloqueada.' }, status: :conflict
     end
 
     resultado = ValidacaoFastpassService::Resultado.new(autorizado: true, acesso: acesso, confirmado: false)
     ConfirmacaoPassagemFastpassService.call(resultado: resultado)
     inscricao = InscricaoFastpass.find_by(id: acesso.inscricao_fastpass_id)
-    responder(acesso, modo: inscricao ? "fastpass" : "normal", janela: inscricao&.time_frame, confirmado: true)
+    responder(acesso, modo: inscricao ? 'fastpass' : 'normal', janela: inscricao&.time_frame, confirmado: true)
   rescue ActiveSupport::MessageVerifier::InvalidSignature
-    render json: { erro: "Autorização inválida ou expirada. Faça uma nova leitura." }, status: :not_found
+    render json: { erro: 'Autorização inválida ou expirada. Faça uma nova leitura.' }, status: :not_found
   rescue ConfirmacaoPassagemFastpassService::SaldoInsuficiente
-    render json: { erro: "Não foi possível confirmar: saldo insuficiente ou passagem já confirmada." }, status: :conflict
+    render json: { erro: 'Não foi possível confirmar: saldo insuficiente ou passagem já confirmada.' },
+           status: :conflict
   end
 
   private
@@ -180,18 +181,19 @@ class TerminalValidacaoController < ApplicationController
     @catraca_operador = @restaurante_operador&.catracas&.find_by(id: session[:catraca_id])
     @turno_operador = usuario_atual.turno
     @acessos_operador = if @catraca_operador
-      Acesso.where(catraca_id: @catraca_operador.id)
-            .includes(:usuario)
-            .order(data_hora: :desc, id: :desc).limit(20)
-    else
-      Acesso.none
-    end
+                          Acesso.where(catraca_id: @catraca_operador.id)
+                                .includes(:usuario)
+                                .order(data_hora: :desc, id: :desc).limit(20)
+                        else
+                          Acesso.none
+                        end
   end
+
   # Envia JSON com HTTP 422 se não houver catraca configurada.
   def exigir_ponto_configurado
     return if @catraca_operador
 
-    render json: { erro: "Configure um restaurante e uma catraca antes de simular." }, status: :unprocessable_content
+    render json: { erro: 'Configure um restaurante e uma catraca antes de simular.' }, status: :unprocessable_content
   end
 
   # Delega a leitura ao SimulacaoTerminalService e envia o resultado por #responder.
@@ -205,8 +207,8 @@ class TerminalValidacaoController < ApplicationController
     )
     responder(
       resultado.validacao.acesso, modo: resultado.modo, janela: resultado.janela,
-      autorizado: resultado.validacao.autorizado?, motivo: resultado.validacao.motivo,
-      origem_leitura: resultado.origem_leitura
+                                  autorizado: resultado.validacao.autorizado?, motivo: resultado.validacao.motivo,
+                                  origem_leitura: resultado.origem_leitura
     )
   end
 
@@ -229,10 +231,11 @@ class TerminalValidacaoController < ApplicationController
   # - +origem_leitura+: origem da leitura, quando informada.
   #
   # Atualiza o contexto e inclui dados do estudante, valores, janela, token e
-  # HTML das últimas validações. 
-  def responder(acesso, modo:, janela: nil, autorizado: true, motivo: :autorizado, confirmado: false, origem_leitura: nil)
+  # HTML das últimas validações.
+  def responder(acesso, modo:, janela: nil, autorizado: true, motivo: :autorizado, confirmado: false,
+                origem_leitura: nil)
     carregar_contexto
-    estudante = acesso.usuario.reload
+    acesso.usuario.reload
     render json: {
       acesso_id: acesso.id, modo: modo, autorizado: autorizado, motivo: motivo,
       confirmado: confirmado, horario: acesso.data_hora.iso8601, origem_leitura: origem_leitura,
@@ -285,9 +288,9 @@ class TerminalValidacaoController < ApplicationController
   # Usa os acessos do contexto e o título "Últimas validações registradas".
   def registros_acessos_html
     render_to_string(
-      partial: "terminal_validacao/acessos",
+      partial: 'terminal_validacao/acessos',
       formats: [:html],
-      locals: { titulo: "Últimas validações registradas" }
+      locals: { titulo: 'Últimas validações registradas' }
     )
   end
 end

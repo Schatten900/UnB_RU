@@ -21,12 +21,12 @@ class HistoricoLocalController < ApplicationController
     nome_base = "historico_catraca_#{@catraca.id}_#{Time.zone.today.iso8601}"
 
     case params[:formato].to_s.downcase
-    when "csv"
+    when 'csv'
       enviar_csv(acessos, nome_base)
-    when "pdf"
+    when 'pdf'
       enviar_pdf(acessos, nome_base)
     else
-      redirect_to operator_historico_local_path, alert: "Formato de exportacao invalido."
+      redirect_to operator_historico_local_path, alert: 'Formato de exportacao invalido.'
     end
   end
 
@@ -36,14 +36,14 @@ class HistoricoLocalController < ApplicationController
   # Recebe acessos e nome_base; retorna a resposta de download, sem gravar no banco.
   def enviar_csv(acessos, nome_base)
     send_data Relatorios::HistoricoLocalExportacao.csv(acessos: acessos),
-              filename: "#{nome_base}.csv", type: "text/csv; charset=utf-8", disposition: "attachment"
+              filename: "#{nome_base}.csv", type: 'text/csv; charset=utf-8', disposition: 'attachment'
   end
 
   # Envia o PDF dos acessos da catraca configurada.
   # Recebe acessos e nome_base; retorna a resposta de download, sem gravar no banco.
   def enviar_pdf(acessos, nome_base)
     send_data Relatorios::HistoricoLocalExportacao.pdf(acessos: acessos, catraca: @catraca),
-              filename: "#{nome_base}.pdf", type: "application/pdf", disposition: "attachment"
+              filename: "#{nome_base}.pdf", type: 'application/pdf', disposition: 'attachment'
   end
 
   # Calcula a página válida para o escopo de acessos recebido.
@@ -71,7 +71,7 @@ class HistoricoLocalController < ApplicationController
     hoje = Time.zone.today.all_day
     confirmados = todos.where(passagem_em: hoje)
     @passagens_hoje = confirmados.count
-    @bloqueios_hoje = todos.where(status: "bloqueado", data_hora: hoje).count
+    @bloqueios_hoje = todos.where(status: 'bloqueado', data_hora: hoje).count
     @valor_debitado_hoje = confirmados.sum(:valor_debitado)
   end
 
@@ -80,7 +80,7 @@ class HistoricoLocalController < ApplicationController
   def carregar_catraca_configurada
     # A tela US12 e destinada ao fiscal que opera um ponto configurado.
     unless usuario_atual&.funcionario?
-      redirect_to operator_ponto_configuracao_path, alert: "Historico local disponivel para funcionarios."
+      redirect_to operator_ponto_configuracao_path, alert: 'Historico local disponivel para funcionarios.'
       return
     end
 
@@ -90,7 +90,7 @@ class HistoricoLocalController < ApplicationController
     return if @catraca
 
     redirect_to operator_ponto_configuracao_path,
-                alert: "Configure um restaurante e uma catraca antes de consultar o historico."
+                alert: 'Configure um restaurante e uma catraca antes de consultar o historico.'
   end
 
   # Normaliza os filtros de status e vínculo recebidos na requisição.
@@ -110,9 +110,9 @@ class HistoricoLocalController < ApplicationController
     escopo = escopo.where(status: @status) if @status
 
     case @vinculo
-    when "fastpass"
+    when 'fastpass'
       escopo = escopo.where.not(inscricao_fastpass_id: nil)
-    when "sem_vinculo"
+    when 'sem_vinculo'
       escopo = escopo.where(inscricao_fastpass_id: nil)
     end
 

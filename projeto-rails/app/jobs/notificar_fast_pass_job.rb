@@ -1,4 +1,3 @@
-
 ##
 # Executa as notificações dos usuários inscritos no FastPass.
 #
@@ -8,7 +7,7 @@
 class NotificarFastPassJob < ApplicationJob
   ##
   # Define o fuso horário utilizado na identificação dos próximos turnos.
-  FUSO_HORARIO = "America/Sao_Paulo"
+  FUSO_HORARIO = 'America/Sao_Paulo'
 
   queue_as :default
 
@@ -54,7 +53,7 @@ class NotificarFastPassJob < ApplicationJob
   # das inscrições associadas ao sorteio.
   def notificar_sorteio(sorteio_id)
     sorteio = Sorteio.find(sorteio_id)
-    return unless sorteio.status == "concluido"
+    return unless sorteio.status == 'concluido'
 
     notificar(sorteio.inscricoes_fastpass)
   end
@@ -78,11 +77,11 @@ class NotificarFastPassJob < ApplicationJob
     horario_local = agora.in_time_zone(FUSO_HORARIO)
     horario_alvo = horario_local + 1.hour
     data_alvo = horario_alvo.to_date
-    hora_alvo = horario_alvo.strftime("%H:%M")
+    hora_alvo = horario_alvo.strftime('%H:%M')
 
     # Encontra os turnos que começam daqui a uma hora.
     turnos = Turno.all.select do |turno|
-      turno.inicio&.strftime("%H:%M") == hora_alvo
+      turno.inicio&.strftime('%H:%M') == hora_alvo
     end
 
     sorteio = Sorteio.find_by(data: data_alvo)
@@ -131,18 +130,16 @@ class NotificarFastPassJob < ApplicationJob
   # inscrições para "entregue" ou "falhou" e registrar erros no log.
   def notificar(inscricoes)
     inscricoes.each do |inscricao|
-      begin
-        inscricao.with_lock do
-          next unless inscricao.status_notificacao == "pendente"
-          next if inscricao.resultado.blank?
+      inscricao.with_lock do
+        next unless inscricao.status_notificacao == 'pendente'
+        next if inscricao.resultado.blank?
 
-          NotificacaoService.call(inscricao: inscricao)
-        end
-      rescue StandardError => e
-        inscricao.update!(status_notificacao: "falhou")
-
-        Rails.logger.error("Erro ao notificar inscrição #{inscricao.id}: #{e.message}")
+        NotificacaoService.call(inscricao: inscricao)
       end
+    rescue StandardError => e
+      inscricao.update!(status_notificacao: 'falhou')
+
+      Rails.logger.error("Erro ao notificar inscrição #{inscricao.id}: #{e.message}")
     end
   end
 end

@@ -1,4 +1,3 @@
-
 ##
 # Serviço responsável por gerar notificações para os usuários
 # inscritos no sorteio do FastPass.
@@ -7,7 +6,6 @@
 # e registra a notificação no banco de dados.
 #
 class NotificacaoService
-
   ##
   # Cria uma notificação de acordo com o resultado de uma inscrição
   # FastPass e atualiza seu status de notificação.
@@ -32,9 +30,9 @@ class NotificacaoService
   def self.call(inscricao:)
     mensagem = case inscricao.resultado
                when InscricaoFastpass::RESULTADO_GANHOU
-                 "Parabéns! Você ganhou o FastPass."
+                 'Parabéns! Você ganhou o FastPass.'
                when InscricaoFastpass::RESULTADO_NAO_GANHOU
-                 "Você não foi contemplado no sorteio de FastPass."
+                 'Você não foi contemplado no sorteio de FastPass.'
                else
                  return false
                end
@@ -46,7 +44,7 @@ class NotificacaoService
       )
 
       inscricao.update!(
-        status_notificacao: "entregue",
+        status_notificacao: 'entregue',
         notificada_em: Time.current
       )
     end
